@@ -5,15 +5,14 @@ export default $config({
       name: "CCC",
       removal: input?.stage === "production" ? "retain" : "remove",
       protect: ["production"].includes(input?.stage),
-      home: "aws",
+      home: "cloudflare",
       providers: { cloudflare: "6.17.0" },
     };
   },
   async run() {
-    const storage = await import("./infra/storage");
-    await import("./infra/api");
+    const db = await import("./infra/db");
     return {
-      MyBucket: storage.bucket.name,
+      DatabaseId: db.database.databaseId,
     };
   },
 });
