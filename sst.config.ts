@@ -12,10 +12,12 @@ export default $config({
   async run() {
     const db = await import("./infra/db");
     const workers = await import("./infra/workers");
+    const web = await import("./infra/web");
     return {
       DatabaseId: db.database.databaseId,
       AuthApiUrl: workers.authApi.url,
       ApiUrl: workers.api.url,
+      WebUrl: web.website.url,
     };
   },
 });
