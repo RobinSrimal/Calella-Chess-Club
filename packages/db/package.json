@@ -1,0 +1,16 @@
+{
+  "name": "@CCC/db",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "vitest --run",
+    "typecheck": "tsc --noEmit"
+  },
+  "exports": {
+    "./schema": "./src/schema.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "vitest": "^2"
+  }
+}
