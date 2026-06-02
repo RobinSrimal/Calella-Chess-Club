@@ -6,6 +6,10 @@
 
 declare module "sst" {
   export interface Resource {
+    "AuthApi": {
+      "type": "sst.cloudflare.Worker"
+      "url": string
+    }
     "Database": {
       "databaseId": string
       "type": "sst.cloudflare.D1"
