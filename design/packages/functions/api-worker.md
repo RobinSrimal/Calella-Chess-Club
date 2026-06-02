@@ -10,7 +10,14 @@ packages/functions/src/api.ts
 
 Owns application data routes for current user, admin actions, posts, events, and public feeds.
 
-## Responsibilities
+## Current Implemented Scope
+
+```txt
+GET /api/health
+  Returns the App API Worker health status.
+```
+
+## Future Responsibilities
 
 ```txt
 verify access JWT cookie
