@@ -15,6 +15,7 @@ export default $config({
     return {
       DatabaseId: db.database.databaseId,
       AuthApiUrl: workers.authApi.url,
+      ApiUrl: workers.api.url,
     };
   },
 });
