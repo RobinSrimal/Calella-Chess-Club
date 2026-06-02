@@ -13,6 +13,9 @@ f5bf1b2 Document admin content public visibility default
 07fddc2 Configure Cloudflare provider for SST
 73819ea Add Cloudflare D1 resource
 c5bde75 Clean up AWS scaffold references
+c752dae Add db package scaffold
+43f8488 Add initial D1 migration scaffold
+77d88d5 Clarify D1 migration sequence
 ```
 
 ### Completed Slice: 001-cloudflare-d1-resource
@@ -91,12 +94,50 @@ package-lock.json still contains aws-sdk/aws4fetch entries because they are tran
 Historical implementation docs still mention the removed scaffold as part of the completed migration record.
 ```
 
+### Completed Slice: 002-db-package-and-empty-migration
+
+```txt
+commit hashes
+c752dae Add db package scaffold
+43f8488 Add initial D1 migration scaffold
+77d88d5 Clarify D1 migration sequence
+
+files changed
+package-lock.json
+packages/db/package.json
+packages/db/tsconfig.json
+packages/db/src/schema.ts
+packages/db/src/schema.test.ts
+packages/db/migrations/0001_empty.sql
+design/packages/db/migrations.md
+
+verification commands
+npm test --workspace packages/db
+npm run typecheck --workspace packages/db
+grep -E "\\b(CREATE|ALTER|DROP|INSERT)\\b" -n packages/db/migrations/0001_empty.sql
+npx tsc -p packages/core/tsconfig.json --noEmit
+npx tsc -p packages/functions/tsconfig.json --noEmit
+npx tsc -p packages/scripts/tsconfig.json --noEmit
+npx sst shell --stage dev -- vitest --run
+
+verification results
+DB Vitest exited 0 with 2 tests passing.
+DB typecheck exited 0.
+The migration grep printed no output and exited 1, confirming no CREATE, ALTER, DROP, or INSERT statements.
+Core, functions, and scripts TypeScript checks exited 0.
+Core Vitest exited 0 with 1 test passing when run from packages/core through SST shell against the dev stage.
+
+remaining note
+The D1 schema tables are still not created. That is intentionally deferred to the first schema migration slice.
+```
+
 ### Current State
 
 ```txt
 SST Cloudflare provider is configured and Cloudflare is the SST home provider.
 Cloudflare credentials are expected in the repo-root .env file.
 The dev stage has one Cloudflare D1 resource named Database.
+packages/db now owns migration metadata and a comment-only 0001_empty.sql scaffold migration.
 Design docs mirror intended infra, package, route, page, and table structure.
 No AWS resources are active in SST infra.
 No app-owned AWS scaffold references remain in active source or package metadata.
@@ -105,7 +146,7 @@ No app-owned AWS scaffold references remain in active source or package metadata
 ### Next Slice
 
 ```txt
-002-db-package-and-empty-migration
+003-auth-worker-health
 ```
 
-The next slice creates the `packages/db` structure and the first migration file without applying the full app schema yet.
+The next slice should add `packages/functions/src/auth.ts` as a Cloudflare Worker with a health route and no password logic.
