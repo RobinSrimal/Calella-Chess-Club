@@ -17,21 +17,15 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-No active implementation slice is planned in detail.
-```
-
-The next candidate slice is:
-
-```txt
 002-db-package-and-empty-migration
 ```
 
 Goal: create the `packages/db` structure and the first migration file without applying the full app schema yet.
 
-Detailed plan status:
+Detailed plan:
 
 ```txt
-to be written before implementation
+design/implementation/slices/002-db-package-and-empty-migration.md
 ```
 
 ## Future Slices
@@ -39,9 +33,6 @@ to be written before implementation
 Future slices are intentionally high-level until the previous slice has been completed and reviewed.
 
 ```txt
-002-db-package-and-empty-migration
-  Create packages/db structure and the first migration file without applying full app schema yet.
-
 003-auth-worker-health
   Add packages/functions/src/auth.ts as a Cloudflare Worker with a health route and no password logic.
 
