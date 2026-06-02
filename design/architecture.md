@@ -42,15 +42,16 @@ packages/core/
 
 ## Design Documents
 
-The design folder mirrors the intended code areas:
+The design folder mirrors the intended code areas and important substructures:
 
 ```txt
-design/architecture.md  high-level system design
-design/infra.md         SST and Cloudflare infrastructure
-design/website.md       Astro website and i18n behavior
-design/functions.md     Worker API, routes, and backend behavior
-design/db.md            D1 schema and persistence model
-design/auth.md          username/password auth and membership flow
+design/architecture.md
+design/infra/
+design/packages/web/
+design/packages/functions/
+design/packages/db/
+design/packages/scripts/
+design/packages/core/
 ```
 
 ## Primary Flows

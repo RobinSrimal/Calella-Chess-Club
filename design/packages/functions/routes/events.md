@@ -1,0 +1,22 @@
+# Routes: /api/events/*
+
+## Worker
+
+App API Worker.
+
+## Routes
+
+```txt
+GET    /api/events
+POST   /api/events
+GET    /api/events/:id
+PUT    /api/events/:id
+POST   /api/events/:id/publish
+POST   /api/events/:id/public
+POST   /api/events/:id/member-only
+DELETE /api/events/:id
+```
+
+## Rules
+
+Events are informational only in version 1. Members can create drafts, publish drafts, edit their own events, and soft-delete their own events. Admins can toggle public visibility and soft-delete published events. Admins cannot edit member-authored content and cannot see another user's drafts.
