@@ -2,8 +2,15 @@
   "name": "@CCC/functions",
   "version": "0.0.0",
   "type": "module",
+  "scripts": {
+    "test": "vitest --run",
+    "typecheck": "tsc --noEmit"
+  },
   "dependencies": {
     "@CCC/core": "*",
     "sst": "*"
+  },
+  "devDependencies": {
+    "vitest": "^2"
   }
 }
