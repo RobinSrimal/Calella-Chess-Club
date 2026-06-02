@@ -10,9 +10,19 @@ Migrations define the D1 schema. They are committed and run explicitly; request 
 packages/db/migrations/
 ```
 
-## First Migration Scope
+## Migration Sequence
 
-The first migration creates:
+```txt
+0001_empty.sql
+  Scaffold migration committed with the DB package. It contains no schema statements.
+
+Future schema migration
+  Creates users, email_verification_tokens, password_reset_tokens, refresh_sessions, login_attempts, posts, events, and audit_events.
+```
+
+## First Schema Migration Scope
+
+The first schema migration creates:
 
 ```txt
 users
