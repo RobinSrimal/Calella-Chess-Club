@@ -4,6 +4,11 @@ node_modules
 # sst
 .sst
 
+# generated package output
+packages/*/.astro
+packages/*/.wrangler
+packages/*/dist
+
 # tmp files
 .#*
 
