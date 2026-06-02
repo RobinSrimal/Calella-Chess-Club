@@ -17,21 +17,15 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-No active implementation slice is planned in detail.
-```
-
-The next candidate slice is:
-
-```txt
 004-api-worker-health
 ```
 
 Goal: add `packages/functions/src/api.ts` as a Cloudflare Worker with a health route and access-JWT parsing left out.
 
-Detailed plan status:
+Detailed plan:
 
 ```txt
-to be written before implementation
+design/implementation/slices/004-api-worker-health.md
 ```
 
 ## Future Slices
