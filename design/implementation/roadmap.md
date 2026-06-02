@@ -17,15 +17,21 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-003-auth-worker-health
+No active implementation slice is planned in detail.
 ```
 
-Goal: add `packages/functions/src/auth.ts` as a Cloudflare Worker with a health route and no password logic.
-
-Detailed plan:
+The next candidate slice is:
 
 ```txt
-design/implementation/slices/003-auth-worker-health.md
+004-api-worker-health
+```
+
+Goal: add `packages/functions/src/api.ts` as a Cloudflare Worker with a health route and access-JWT parsing left out.
+
+Detailed plan status:
+
+```txt
+to be written before implementation
 ```
 
 ## Future Slices
@@ -33,9 +39,6 @@ design/implementation/slices/003-auth-worker-health.md
 Future slices are intentionally high-level until the previous slice has been completed and reviewed.
 
 ```txt
-004-api-worker-health
-  Add packages/functions/src/api.ts as a Cloudflare Worker with a health route and access-JWT parsing left out.
-
 005-web-astro-shell
   Add packages/web Astro shell with locale routing and static route shells for public, auth, member, and admin pages.
 
