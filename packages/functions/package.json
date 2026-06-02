@@ -1,9 +1,9 @@
 {
-  "name": "@monorepo-template/functions",
+  "name": "@CCC/functions",
   "version": "0.0.0",
   "type": "module",
   "dependencies": {
-    "@monorepo-template/core": "*",
+    "@CCC/core": "*",
     "sst": "*"
   },
   "devDependencies": {
