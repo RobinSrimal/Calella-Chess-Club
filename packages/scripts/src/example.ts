@@ -1,4 +1,9 @@
 import { Resource } from "sst";
 import { Example } from "@CCC/core/example";
 
-console.log(`${Example.hello()} Linked to database ${Resource.Database.databaseId}.`);
+const databaseStatus =
+  typeof Resource.Database.prepare === "function"
+    ? "D1 binding ready"
+    : "D1 binding missing";
+
+console.log(`${Example.hello()} ${databaseStatus}.`);

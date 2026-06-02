@@ -6,18 +6,9 @@
 
 declare module "sst" {
   export interface Resource {
-    "Api": {
-      "type": "sst.cloudflare.Worker"
-      "url": string
-    }
-    "AuthApi": {
-      "type": "sst.cloudflare.Worker"
-      "url": string
-    }
-    "Database": {
-      "databaseId": string
-      "type": "sst.cloudflare.D1"
-    }
+    "Api": import("@cloudflare/workers-types").Service
+    "AuthApi": import("@cloudflare/workers-types").Service
+    "Database": import("@cloudflare/workers-types").D1Database
     "Web": {
       "type": "sst.cloudflare.Astro"
       "url": string
