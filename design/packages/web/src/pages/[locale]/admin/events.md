@@ -20,3 +20,5 @@ soft-delete published event
 ```
 
 Admins cannot edit member-authored event content and cannot see other users' drafts.
+
+Admin-authored events are not public by default. Immediate public publishing is an explicit unchecked option in the admin user's own event publishing workflow; otherwise events are member-only until marked public here.

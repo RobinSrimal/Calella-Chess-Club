@@ -22,3 +22,5 @@ soft-delete own post
 ```
 
 Drafts are visible only to their creator.
+
+When the current user is an admin, the publish flow includes an unchecked "make public immediately" control. If left unchecked, the post is published for members only. Non-admin users never see this control.

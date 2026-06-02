@@ -22,3 +22,5 @@ soft-delete own event
 ```
 
 Events are informational only in version 1: no recurrence and no RSVP.
+
+When the current user is an admin, the publish flow includes an unchecked "make public immediately" control. If left unchecked, the event is published for members only. Non-admin users never see this control.
