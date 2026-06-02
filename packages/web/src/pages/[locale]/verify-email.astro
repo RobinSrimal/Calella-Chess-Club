@@ -1,0 +1,18 @@
+---
+import PublicLayout from "../../layouts/PublicLayout.astro";
+import PageIntro from "../../components/PageIntro.astro";
+import { getTranslations } from "../../i18n";
+import { getLocaleFromParam, writeLocaleCookie } from "../../lib/locale";
+
+const locale = getLocaleFromParam(Astro.params.locale);
+if (!locale) {
+  return Astro.redirect("/ca");
+}
+
+writeLocaleCookie(Astro.cookies, locale);
+const t = getTranslations(locale);
+---
+
+<PublicLayout locale={locale} title={t.auth.verifyTitle} currentPath={Astro.url.pathname}>
+  <PageIntro title={t.auth.verifyTitle} />
+</PublicLayout>

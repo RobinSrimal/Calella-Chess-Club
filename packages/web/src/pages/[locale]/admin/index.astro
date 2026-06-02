@@ -1,0 +1,26 @@
+---
+import PageIntro from "../../../components/PageIntro.astro";
+import { getTranslations } from "../../../i18n";
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { getLocaleFromParam, writeLocaleCookie } from "../../../lib/locale";
+
+const locale = getLocaleFromParam(Astro.params.locale);
+if (!locale) {
+  return Astro.redirect("/ca");
+}
+
+writeLocaleCookie(Astro.cookies, locale);
+const t = getTranslations(locale);
+---
+
+<AdminLayout locale={locale} title={t.admin.dashboardTitle} currentPath={Astro.url.pathname}>
+  <PageIntro title={t.admin.dashboardTitle} summary={t.admin.dashboardSummary} />
+  <div class="shell-inner section-grid">
+    <article class="panel">
+      <h2>{t.admin.usersTitle}</h2>
+    </article>
+    <article class="panel">
+      <h2>{t.admin.postsTitle}</h2>
+    </article>
+  </div>
+</AdminLayout>
