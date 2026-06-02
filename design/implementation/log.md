@@ -12,6 +12,7 @@ eff8414 Split auth into separate Worker design
 f5bf1b2 Document admin content public visibility default
 07fddc2 Configure Cloudflare provider for SST
 73819ea Add Cloudflare D1 resource
+c5bde75 Clean up AWS scaffold references
 ```
 
 ### Completed Slice: 001-cloudflare-d1-resource
@@ -54,7 +55,40 @@ npx sst deploy --stage dev --target Database failed with "Target not found: Data
 The deploy was retried without --target because active SST config contained only the D1 resource.
 
 open follow-up
-packages/functions and packages/scripts still contain AWS scaffold example code and are replaced in later Worker/script slices.
+The generated package examples still need to be replaced by real Worker and script slices.
+```
+
+### Completed Cleanup: AWS Scaffold References
+
+```txt
+commit hash
+c5bde75
+
+files changed
+README.md
+design/implementation/roadmap.md
+package-lock.json
+packages/functions/package.json
+packages/functions/src/api.ts
+packages/scripts/src/example.ts
+
+verification commands
+grep -R "sst\\.aws\\|Resource\\.MyBucket\\|MyBucket\\|MyApi\\|aws-lambda\\|@types/aws-lambda\\|aws-monorepo\\|Lambda functions\\|AWS" -n README.md sst.config.ts infra packages package.json package-lock.json design/architecture.md design/infra design/packages design/implementation/roadmap.md
+npm ls @types/aws-lambda
+npx tsc -p packages/functions/tsconfig.json --noEmit
+npx tsc -p packages/scripts/tsconfig.json --noEmit
+npx tsc -p packages/core/tsconfig.json --noEmit
+npx sst shell --stage dev -- vitest --run
+
+verification result
+No app-owned AWS scaffold references remain in README, active infra, packages, package metadata, or current design docs.
+@types/aws-lambda is no longer installed.
+TypeScript checks exited 0 for core, functions, and scripts.
+Vitest exited 0 with 1 test passing.
+
+remaining note
+package-lock.json still contains aws-sdk/aws4fetch entries because they are transitive dependencies of SST itself.
+Historical implementation docs still mention the removed scaffold as part of the completed migration record.
 ```
 
 ### Current State
@@ -65,6 +99,7 @@ Cloudflare credentials are expected in the repo-root .env file.
 The dev stage has one Cloudflare D1 resource named Database.
 Design docs mirror intended infra, package, route, page, and table structure.
 No AWS resources are active in SST infra.
+No app-owned AWS scaffold references remain in active source or package metadata.
 ```
 
 ### Next Slice
