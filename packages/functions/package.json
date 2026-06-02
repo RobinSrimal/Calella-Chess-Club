@@ -5,8 +5,5 @@
   "dependencies": {
     "@CCC/core": "*",
     "sst": "*"
-  },
-  "devDependencies": {
-    "@types/aws-lambda": "^8"
   }
 }

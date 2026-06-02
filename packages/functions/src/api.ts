@@ -1,10 +1,9 @@
 import { Resource } from "sst";
-import { Handler } from "aws-lambda";
 import { Example } from "@CCC/core/example";
 
-export const handler: Handler = async (_event) => {
+export function health() {
   return {
-    statusCode: 200,
-    body: `${Example.hello()} Linked to ${Resource.MyBucket.name}.`,
+    message: Example.hello(),
+    databaseId: Resource.Database.databaseId,
   };
-};
+}

@@ -1,81 +1,50 @@
-# Monorepo Template
+# Calella Chess Club
 
-A template to create a monorepo SST v3 project. [Learn more](https://sst.dev/docs/set-up-a-monorepo).
+Cloudflare/SST app for the Calella Chess Club.
 
-## Get started
+## Current Stack
 
-1. Use this template to [create your own repo](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+- SST v3
+- Cloudflare D1
+- Cloudflare Workers planned under `packages/functions`
+- Astro website planned under `packages/web`
 
-2. Clone the new repo.
+## Setup
 
-   ```bash
-   git clone <REPO_URL> MY_APP
-   cd MY_APP
-   ```
+Install dependencies:
 
-3. Rename the files in the project to the name of your app.
+```bash
+npm install
+```
 
-   ```bash
-   npx replace-in-file '/CCC/g' 'MY_APP' '**/*.*' --verbose
-   ```
+Create a repo-root `.env` file with the Cloudflare values documented in `design/infra/secrets.md`.
 
-4. Deploy!
+Deploy the current development stage:
 
-   ```bash
-   npm install
-   npx sst deploy
-   ```
+```bash
+npx sst deploy --stage dev
+```
 
-5. Optionally, enable [_git push to deploy_](https://sst.dev/docs/console/#autodeploy).
+Check the current development-stage diff:
 
-## Usage
+```bash
+npx sst diff --stage dev
+```
 
-This template uses [npm Workspaces](https://docs.npmjs.com/cli/v8/using-npm/workspaces). It has 3 packages to start with and you can add more it.
+## Packages
 
-1. `core/`
+- `packages/core`: shared domain code and tests.
+- `packages/functions`: Cloudflare Worker code.
+- `packages/scripts`: operational scripts run through `sst shell`.
 
-   This is for any shared code. It's defined as modules. For example, there's the `Example` module.
+## Design Docs
 
-   ```ts
-   export module Example {
-     export function hello() {
-       return "Hello, world!";
-     }
-   }
-   ```
+Design docs live under `design/` and mirror the intended code layout. Start with:
 
-   That you can use across other packages using.
-
-   ```ts
-   import { Example } from "@aws-monorepo/core/example";
-
-   Example.hello();
-   ```
-
-   We also have [Vitest](https://vitest.dev/) configured for testing this package with the `sst shell` CLI.
-
-   ```bash
-   npm test
-   ```
-
-2. `functions/`
-
-   This is for your Lambda functions and it uses the `core` package as a local dependency.
-
-3. `scripts/`
-
-    This is for any scripts that you can run on your SST app using the `sst shell` CLI and [`tsx`](https://www.npmjs.com/package/tsx). For example, you can run the example script using:
-
-   ```bash
-   npm run shell src/example.ts
-   ```
+- `design/architecture.md`
+- `design/implementation/roadmap.md`
+- `design/implementation/log.md`
 
 ### Infrastructure
 
-The `infra/` directory allows you to logically split the infrastructure of your app into separate files. This can be helpful as your app grows.
-
-In the template, we have an `api.ts`, and `storage.ts`. These export the created resources. And are imported in the `sst.config.ts`.
-
----
-
-**Join our community** [Discord](https://sst.dev/discord) | [YouTube](https://www.youtube.com/c/sst-dev) | [X.com](https://x.com/SST_dev)
+The `infra/` directory contains the active SST resources. The current deployed `dev` stage contains a single Cloudflare D1 database named `Database`.

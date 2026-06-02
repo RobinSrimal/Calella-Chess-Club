@@ -17,15 +17,21 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-001-cloudflare-d1-resource
+No active implementation slice is planned in detail.
 ```
 
-Goal: replace the active AWS scaffold resources with exactly one Cloudflare D1 resource managed by SST.
-
-Detailed plan:
+The next candidate slice is:
 
 ```txt
-design/implementation/slices/001-cloudflare-d1-resource.md
+002-db-package-and-empty-migration
+```
+
+Goal: create the `packages/db` structure and the first migration file without applying the full app schema yet.
+
+Detailed plan status:
+
+```txt
+to be written before implementation
 ```
 
 ## Future Slices
