@@ -10,7 +10,14 @@ packages/functions/src/auth.ts
 
 Owns username/password authentication and session refresh.
 
-## Responsibilities
+## Current Implemented Scope
+
+```txt
+GET /auth/health
+  Returns the Auth Worker health status.
+```
+
+## Future Responsibilities
 
 ```txt
 register users

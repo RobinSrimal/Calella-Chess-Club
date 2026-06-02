@@ -4,7 +4,13 @@
 
 Auth Worker.
 
-## Routes
+## Current Routes
+
+```txt
+GET /auth/health
+```
+
+## Future Routes
 
 ```txt
 POST /auth/register
@@ -18,7 +24,7 @@ POST /auth/reset-password
 
 ## Error Format
 
-All routes return stable error codes.
+All auth routes return stable error codes.
 
 ```json
 {
@@ -26,4 +32,10 @@ All routes return stable error codes.
     "code": "AUTH_INVALID_CREDENTIALS"
   }
 }
+```
+
+## Current Error Codes
+
+```txt
+AUTH_ROUTE_NOT_FOUND
 ```
