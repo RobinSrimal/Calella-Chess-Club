@@ -17,21 +17,15 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-No active implementation slice is planned in detail.
-```
-
-The next candidate slice is:
-
-```txt
 005-web-astro-shell
 ```
 
 Goal: add `packages/web` Astro shell with locale routing and static route shells for public, auth, member, and admin pages.
 
-Detailed plan status:
+Detailed plan:
 
 ```txt
-to be written before implementation
+design/implementation/slices/005-web-astro-shell.md
 ```
 
 ## Future Slices
