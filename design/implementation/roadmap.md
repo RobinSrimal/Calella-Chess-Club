@@ -17,15 +17,15 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-005-web-astro-shell
+006-auth-registration-email-verification
 ```
 
-Goal: add `packages/web` Astro shell with locale routing and static route shells for public, auth, member, and admin pages.
+Goal: implement user registration, bcrypt password hashing, email verification token storage, and Resend delivery in the Auth Worker.
 
 Detailed plan:
 
 ```txt
-design/implementation/slices/005-web-astro-shell.md
+design/implementation/slices/006-auth-registration-email-verification.md
 ```
 
 ## Future Slices
@@ -33,9 +33,6 @@ design/implementation/slices/005-web-astro-shell.md
 Future slices are intentionally high-level until the previous slice has been completed and reviewed.
 
 ```txt
-006-auth-registration-email-verification
-  Implement user registration, bcrypt-compatible hashing, email verification token storage, and Resend integration.
-
 007-login-refresh-logout-me
   Implement login, access JWT cookies, refresh cookies, logout, and /api/me.
 

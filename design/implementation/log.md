@@ -267,6 +267,119 @@ remaining note
 JWT parsing, current-user loading, authorization, posts, events, public feeds, admin actions, and D1 queries are intentionally not implemented yet.
 ```
 
+### Completed Slice: 005-web-astro-shell
+
+```txt
+commit hashes
+a63edb6 Plan web Astro shell slice
+0c8704c Add web Astro package scaffold
+355182b Add web locale helpers
+8c39628 Add web i18n dictionaries
+9d023d6 Add web shell layouts
+035af1d Add localized web route shells
+ddfb131 Upgrade SST to v4
+9864d9c Add web Astro infrastructure
+a32d4e4 Update SST env for web
+d3b4e5c Add Cloudflare worker types
+
+files changed
+package.json
+package-lock.json
+sst.config.ts
+sst-env.d.ts
+infra/web.ts
+packages/scripts/src/example.ts
+packages/web/package.json
+packages/web/astro.config.mjs
+packages/web/tsconfig.json
+packages/web/sst-env.d.ts
+packages/web/src/env.d.ts
+packages/web/src/lib/locale.ts
+packages/web/src/lib/locale.test.ts
+packages/web/src/i18n/ca.ts
+packages/web/src/i18n/es.ts
+packages/web/src/i18n/en.ts
+packages/web/src/i18n/index.ts
+packages/web/src/i18n/translations.test.ts
+packages/web/src/styles/global.css
+packages/web/src/components/LanguageSwitcher.astro
+packages/web/src/components/PageIntro.astro
+packages/web/src/layouts/PublicLayout.astro
+packages/web/src/layouts/AppLayout.astro
+packages/web/src/layouts/AdminLayout.astro
+packages/web/public/images/club-hero.png
+packages/web/src/pages/index.astro
+packages/web/src/pages/[locale]/index.astro
+packages/web/src/pages/[locale]/login.astro
+packages/web/src/pages/[locale]/register.astro
+packages/web/src/pages/[locale]/verify-email.astro
+packages/web/src/pages/[locale]/forgot-password.astro
+packages/web/src/pages/[locale]/reset-password.astro
+packages/web/src/pages/[locale]/member/index.astro
+packages/web/src/pages/[locale]/member/posts.astro
+packages/web/src/pages/[locale]/member/events.astro
+packages/web/src/pages/[locale]/admin/index.astro
+packages/web/src/pages/[locale]/admin/users.astro
+packages/web/src/pages/[locale]/admin/posts.astro
+packages/web/src/pages/[locale]/admin/events.astro
+
+implemented routes
+/
+/ca
+/es
+/en
+/{locale}/login
+/{locale}/register
+/{locale}/verify-email
+/{locale}/forgot-password
+/{locale}/reset-password
+/{locale}/member
+/{locale}/member/posts
+/{locale}/member/events
+/{locale}/admin
+/{locale}/admin/users
+/{locale}/admin/posts
+/{locale}/admin/events
+
+deployment command
+npx sst deploy --stage dev --print-logs
+
+deployment result
+SST deployed the dev stage and created the Cloudflare Astro Web resource.
+WebUrl: https://ccc-dev-webworkerscript.robin-srimal.workers.dev
+ApiUrl: https://ccc-dev-apiscript-noawkcsx.robin-srimal.workers.dev
+AuthApiUrl: https://ccc-dev-authapiscript-bdteakex.robin-srimal.workers.dev
+DatabaseId: edf26084-32a2-4d25-b608-ec4ed6a0e763
+
+live verification command
+node --input-type=module -e "const url = 'https://ccc-dev-webworkerscript.robin-srimal.workers.dev/ca'; const response = await fetch(url); const text = await response.text(); console.log(response.status); console.log(text.includes('Calella'));"
+
+live verification result
+200
+true
+
+local route verification command
+node --input-type=module -e "for (const path of ['/ca','/es','/en','/ca/member','/ca/admin']) { const res = await fetch('http://127.0.0.1:4321' + path); const text = await res.text(); console.log(path, res.status, text.includes('<html lang='), text.includes('Calella')); }"
+
+local route verification result
+/ca 200 true true
+/es 200 true true
+/en 200 true true
+/ca/member 200 true true
+/ca/admin 200 true true
+
+post-deploy diff command
+npx sst diff --stage dev --print-logs
+
+post-deploy diff result
+SST generated the same WebUrl, ApiUrl, AuthApiUrl, and DatabaseId.
+No D1 delete or replacement was reported.
+The Astro local builder command and Web Worker script metadata still show preview update noise because the Astro artifact is rebuilt during diff.
+
+remaining note
+The web package is a static route shell only. Real login, registration submission, session detection, member data, admin data, posts CRUD, events CRUD, Markdown rendering, and API calls are intentionally not implemented yet.
+```
+
 ### Current State
 
 ```txt
@@ -275,11 +388,14 @@ Cloudflare credentials are expected in the repo-root .env file.
 The dev stage has one Cloudflare D1 resource named Database.
 The dev stage has one Cloudflare Worker resource named AuthApi.
 The dev stage has one Cloudflare Worker resource named Api.
+The dev stage has one Cloudflare Astro resource named Web.
 AuthApiUrl is https://ccc-dev-authapiscript-bdteakex.robin-srimal.workers.dev.
 ApiUrl is https://ccc-dev-apiscript-noawkcsx.robin-srimal.workers.dev.
+WebUrl is https://ccc-dev-webworkerscript.robin-srimal.workers.dev.
 packages/db now owns migration metadata and a comment-only 0001_empty.sql scaffold migration.
 packages/functions now owns an Auth Worker with GET /auth/health and stable AUTH_ROUTE_NOT_FOUND handling.
 packages/functions now owns an App API Worker with GET /api/health and stable API_ROUTE_NOT_FOUND handling.
+packages/web now owns the Astro shell, localized routes, layout components, i18n dictionaries, and generated hero image.
 Design docs mirror intended infra, package, route, page, and table structure.
 No AWS resources are active in SST infra.
 No app-owned AWS scaffold references remain in active source or package metadata.
@@ -288,7 +404,7 @@ No app-owned AWS scaffold references remain in active source or package metadata
 ### Next Slice
 
 ```txt
-005-web-astro-shell
+006-auth-registration-email-verification
 ```
 
-The next slice candidate should add `packages/web` Astro shell with locale routing and static route shells for public, auth, member, and admin pages.
+The next slice candidate should implement the Auth Worker registration and email verification flow with D1-backed users, bcrypt password hashing, token hashing, and Resend delivery.

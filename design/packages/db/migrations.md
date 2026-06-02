@@ -16,23 +16,23 @@ packages/db/migrations/
 0001_empty.sql
   Scaffold migration committed with the DB package. It contains no schema statements.
 
-Future schema migration
-  Creates users, email_verification_tokens, password_reset_tokens, refresh_sessions, login_attempts, posts, events, and audit_events.
+0002_auth_registration.sql
+  Planned next. Creates users and email_verification_tokens for registration and email verification.
+
+Future auth/session migrations
+  Create password_reset_tokens, refresh_sessions, and login_attempts.
+
+Future content migrations
+  Create posts, events, and audit_events.
 ```
 
-## First Schema Migration Scope
+## Auth Registration Migration Scope
 
-The first schema migration creates:
+The first auth schema migration creates:
 
 ```txt
 users
 email_verification_tokens
-password_reset_tokens
-refresh_sessions
-login_attempts
-posts
-events
-audit_events
 ```
 
-Indexes should support login lookup, token lookup, active sessions, member content lists, public landing feeds, and admin membership queues.
+Indexes should support username lookup, email lookup, token lookup, and the admin pending membership queue.
