@@ -11,11 +11,12 @@ The app is deployed with SST and Cloudflare.
 ```txt
 SST
 ├─ sst.cloudflare.Astro  -> packages/web
-├─ sst.cloudflare.Worker -> packages/functions
+├─ sst.cloudflare.Worker -> packages/functions auth Worker
+├─ sst.cloudflare.Worker -> packages/functions app API Worker
 └─ sst.cloudflare.D1     -> packages/db migrations/schema
 ```
 
-The existing `packages/functions` package remains the backend package. Although Cloudflare calls the deployed backend resource a Worker, SST supports pointing a Cloudflare Worker handler at a path inside `packages/functions`.
+The existing `packages/functions` package remains the backend package. Although Cloudflare calls the deployed backend resources Workers, SST supports pointing Cloudflare Worker handlers at paths inside `packages/functions`.
 
 ## Code Areas
 
@@ -27,7 +28,7 @@ packages/web/
   Astro website for public, member, and admin UI
 
 packages/functions/
-  Cloudflare Worker API for auth, users, posts, events, and admin actions
+  Cloudflare Worker APIs for auth, users, posts, events, and admin actions
 
 packages/db/
   D1 schema and migrations
@@ -69,7 +70,7 @@ draft -> published to members -> optionally public on landing page -> soft delet
 Authentication:
 
 ```txt
-login -> 2-hour access JWT cookie + 14-day opaque refresh cookie
+login through auth Worker -> 2-hour access JWT cookie + 14-day opaque refresh cookie
 ```
 
 ## External Services

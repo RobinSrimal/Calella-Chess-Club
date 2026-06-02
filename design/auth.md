@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The app runs its own username/password auth in the Cloudflare Worker API. Auth supports registration, email verification, login, JWT access tokens, opaque refresh tokens, password reset, admin approval, and account disablement.
+The app runs its own username/password auth in a dedicated Cloudflare auth Worker. Auth supports registration, email verification, login, JWT access tokens, opaque refresh tokens, password reset, and account disablement checks.
 
 ## Registration
 
@@ -94,7 +94,11 @@ Cookies:
 
 ```txt
 ccc_access_token
+  Path=/api
+
 ccc_refresh_token
+  Path=/auth
+
 HTTP-only
 Secure in production
 SameSite=Lax
@@ -111,7 +115,7 @@ expiration
 jti
 ```
 
-Sensitive and admin routes re-check current user state in D1. General member routes may rely on the access JWT until it expires.
+The app API Worker receives the access JWT cookie on `/api/*` routes. Sensitive and admin routes re-check current user state in D1. General member routes may rely on the access JWT until it expires.
 
 ## Refresh
 

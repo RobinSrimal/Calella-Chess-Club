@@ -2,24 +2,26 @@
 
 ## Purpose
 
-`packages/functions` contains one Cloudflare Worker API. The API is REST-style JSON and is responsible for auth, membership administration, posts, events, and public content feeds.
+`packages/functions` contains two Cloudflare Worker APIs. Both are REST-style JSON APIs and share D1-backed domain state.
+
+The auth Worker owns authentication routes. The app API Worker owns current-user, membership administration, posts, events, and public content feeds.
 
 ## Route Groups
 
 Expected route groups:
 
 ```txt
-/auth/*
-/me
-/admin/users/*
-/posts/*
-/events/*
-/public/*
+/auth/*        auth Worker
+/api/me        app API Worker
+/api/admin/*   app API Worker
+/api/posts/*   app API Worker
+/api/events/*  app API Worker
+/api/public/*  app API Worker
 ```
 
 ## Auth Responsibilities
 
-The Worker:
+The auth Worker:
 
 ```txt
 registers users
@@ -30,11 +32,10 @@ issues refresh cookies
 refreshes access JWTs
 logs users out
 handles password reset
-checks authorization for protected routes
 records failed login attempts
 ```
 
-Sensitive and admin routes re-check the current user/account/membership state in D1 instead of trusting only JWT claims.
+The app API Worker verifies the access JWT cookie for protected routes. Sensitive and admin routes re-check the current user/account/membership state in D1 instead of trusting only JWT claims.
 
 ## Content Responsibilities
 
@@ -52,10 +53,9 @@ Members can create, publish, edit, and soft-delete their own posts/events. Admin
 
 ## Membership Responsibilities
 
-The Worker supports:
+The auth Worker creates the pending membership request after email verification. The app API Worker supports the admin-side membership lifecycle:
 
 ```txt
-automatic pending membership request after verified registration
 admin approval
 admin rejection
 admin movement from rejected back to pending/member
@@ -97,48 +97,48 @@ POST /auth/reset-password
 Current user:
 
 ```txt
-GET /me
+GET /api/me
 ```
 
 Admin users:
 
 ```txt
-GET  /admin/users
-POST /admin/users/:id/approve-membership
-POST /admin/users/:id/reject-membership
-POST /admin/users/:id/restore-membership
-POST /admin/users/:id/disable
+GET  /api/admin/users
+POST /api/admin/users/:id/approve-membership
+POST /api/admin/users/:id/reject-membership
+POST /api/admin/users/:id/restore-membership
+POST /api/admin/users/:id/disable
 ```
 
 Posts:
 
 ```txt
-GET    /posts
-POST   /posts
-GET    /posts/:id
-PUT    /posts/:id
-POST   /posts/:id/publish
-POST   /posts/:id/public
-POST   /posts/:id/member-only
-DELETE /posts/:id
+GET    /api/posts
+POST   /api/posts
+GET    /api/posts/:id
+PUT    /api/posts/:id
+POST   /api/posts/:id/publish
+POST   /api/posts/:id/public
+POST   /api/posts/:id/member-only
+DELETE /api/posts/:id
 ```
 
 Events:
 
 ```txt
-GET    /events
-POST   /events
-GET    /events/:id
-PUT    /events/:id
-POST   /events/:id/publish
-POST   /events/:id/public
-POST   /events/:id/member-only
-DELETE /events/:id
+GET    /api/events
+POST   /api/events
+GET    /api/events/:id
+PUT    /api/events/:id
+POST   /api/events/:id/publish
+POST   /api/events/:id/public
+POST   /api/events/:id/member-only
+DELETE /api/events/:id
 ```
 
 Public:
 
 ```txt
-GET /public/posts
-GET /public/events
+GET /api/public/posts
+GET /api/public/events
 ```

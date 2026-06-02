@@ -13,9 +13,13 @@ Cloudflare Astro site:
   packages/web
   public website, login/register, member UI, admin UI
 
-Cloudflare Worker:
+Cloudflare Auth Worker:
   packages/functions
-  REST-style JSON API
+  REST-style JSON API for /auth/*
+
+Cloudflare App API Worker:
+  packages/functions
+  REST-style JSON API for /api/*
 
 Cloudflare D1:
   application database
@@ -44,9 +48,19 @@ adapter: cloudflare({
 })
 ```
 
-## Worker
+## Workers
 
-Use one `sst.cloudflare.Worker` for the API. The handler should live under `packages/functions`, for example:
+Use two `sst.cloudflare.Worker` resources for backend APIs.
+
+The auth Worker handles registration, login, email verification, password reset, refresh, and logout. Its handler should live under `packages/functions`, for example:
+
+```ts
+new sst.cloudflare.Worker("AuthApi", {
+  handler: "packages/functions/src/auth.ts",
+});
+```
+
+The app API Worker handles current-user, admin, posts, events, and public-feed routes. Its handler should also live under `packages/functions`, for example:
 
 ```ts
 new sst.cloudflare.Worker("Api", {
@@ -54,7 +68,7 @@ new sst.cloudflare.Worker("Api", {
 });
 ```
 
-The Worker links to D1 and required secrets.
+Both Workers link to D1 and required secrets.
 
 ## D1
 
@@ -62,7 +76,14 @@ D1 schema and migrations are owned by `packages/db`. Infra creates and links the
 
 ## Domains
 
-The intended public domain is expected to route to the Astro site. API routes can either use a dedicated API subdomain or an `/api/*` route proxied to the API Worker. The implementation plan should pick one and keep same-site cookie behavior simple.
+The intended public domain is expected to route to the Astro site. API routing should keep cookies same-site and predictable:
+
+```txt
+/auth/* -> auth Worker
+/api/*  -> app API Worker
+```
+
+The access JWT cookie should be scoped to `/api` so it is sent to the app API Worker. The refresh cookie should be scoped to `/auth` so it is only sent to auth endpoints.
 
 ## Environments
 
