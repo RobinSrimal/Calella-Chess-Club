@@ -18,6 +18,10 @@ declare module "sst" {
       "databaseId": string
       "type": "sst.cloudflare.D1"
     }
+    "Web": {
+      "type": "sst.cloudflare.Astro"
+      "url": string
+    }
   }
 }
 
