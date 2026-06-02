@@ -18,6 +18,7 @@ c752dae Add db package scaffold
 77d88d5 Clarify D1 migration sequence
 6ca7abb Record db package slice
 c16acfe Plan auth Worker health slice
+4cabc4d Plan API Worker health slice
 ```
 
 ### Completed Slice: 001-cloudflare-d1-resource
@@ -200,6 +201,72 @@ remaining note
 Registration, login, cookies, JWT signing, refresh sessions, bcrypt hashing, email verification, password reset, and D1 queries are intentionally not implemented yet.
 ```
 
+### Completed Slice: 004-api-worker-health
+
+```txt
+commit hashes
+4cabc4d Plan API Worker health slice
+6694288 Add API Worker health handler
+555af83 Add API Worker infrastructure
+fb04977 Document API Worker health route
+a547186 Update SST env for API Worker
+
+files changed
+packages/functions/src/api.ts
+packages/functions/src/api.test.ts
+infra/workers.ts
+sst.config.ts
+sst-env.d.ts
+design/packages/functions/api-worker.md
+design/packages/functions/routes/api.md
+design/implementation/slices/004-api-worker-health.md
+design/implementation/roadmap.md
+
+implemented routes
+GET /api/health
+
+implemented stable error codes
+API_ROUTE_NOT_FOUND
+
+deployment command
+npx sst deploy --stage dev --print-logs
+
+deployment result
+SST deployed the dev stage and created the Cloudflare Api Worker.
+ApiUrl: https://ccc-dev-apiscript-noawkcsx.robin-srimal.workers.dev
+AuthApiUrl: https://ccc-dev-authapiscript-bdteakex.robin-srimal.workers.dev
+DatabaseId: edf26084-32a2-4d25-b608-ec4ed6a0e763
+
+live verification command
+npx sst shell --stage dev -- node --input-type=module -e 'import { Resource } from "sst"; const response = await fetch(`${Resource.Api.url}/api/health`); console.log(response.status); console.log(await response.text());'
+
+live verification result
+200
+{"service":"api","status":"ok"}
+
+verification commands
+npm test --workspace packages/functions
+npm run typecheck --workspace packages/functions
+npm test --workspace packages/db
+npm run typecheck --workspace packages/db
+npx tsc -p packages/core/tsconfig.json --noEmit
+npx tsc -p packages/scripts/tsconfig.json --noEmit
+npx sst shell --stage dev -- vitest --run
+npx sst diff --stage dev --print-logs
+
+verification results
+Functions Vitest exited 0 with 4 tests passing.
+Functions typecheck exited 0.
+DB Vitest exited 0 with 2 tests passing.
+DB typecheck exited 0.
+Core and scripts TypeScript checks exited 0.
+Core Vitest exited 0 with 1 test passing when run from packages/core through SST shell against the dev stage.
+SST diff exited 0 and generated the same ApiUrl, AuthApiUrl, and DatabaseId with no pending resource changes.
+
+remaining note
+JWT parsing, current-user loading, authorization, posts, events, public feeds, admin actions, and D1 queries are intentionally not implemented yet.
+```
+
 ### Current State
 
 ```txt
@@ -207,9 +274,12 @@ SST Cloudflare provider is configured and Cloudflare is the SST home provider.
 Cloudflare credentials are expected in the repo-root .env file.
 The dev stage has one Cloudflare D1 resource named Database.
 The dev stage has one Cloudflare Worker resource named AuthApi.
+The dev stage has one Cloudflare Worker resource named Api.
 AuthApiUrl is https://ccc-dev-authapiscript-bdteakex.robin-srimal.workers.dev.
+ApiUrl is https://ccc-dev-apiscript-noawkcsx.robin-srimal.workers.dev.
 packages/db now owns migration metadata and a comment-only 0001_empty.sql scaffold migration.
 packages/functions now owns an Auth Worker with GET /auth/health and stable AUTH_ROUTE_NOT_FOUND handling.
+packages/functions now owns an App API Worker with GET /api/health and stable API_ROUTE_NOT_FOUND handling.
 Design docs mirror intended infra, package, route, page, and table structure.
 No AWS resources are active in SST infra.
 No app-owned AWS scaffold references remain in active source or package metadata.
@@ -218,7 +288,7 @@ No app-owned AWS scaffold references remain in active source or package metadata
 ### Next Slice
 
 ```txt
-004-api-worker-health
+005-web-astro-shell
 ```
 
-The next slice candidate should add `packages/functions/src/api.ts` as a Cloudflare Worker with a health route and no access-JWT parsing.
+The next slice candidate should add `packages/web` Astro shell with locale routing and static route shells for public, auth, member, and admin pages.
