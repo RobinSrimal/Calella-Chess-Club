@@ -1,0 +1,4 @@
+-- 0001_empty.sql
+-- Scaffold migration for the Calella Chess Club D1 database.
+-- This migration intentionally creates no schema.
+-- Application tables and indexes are created in a subsequent schema migration.
