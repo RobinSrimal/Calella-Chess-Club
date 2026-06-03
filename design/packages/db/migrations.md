@@ -25,11 +25,14 @@ packages/db/migrations/
 0004_posts.sql
   Creates posts for member-created Markdown posts.
 
+0005_events.sql
+  Creates events for member-created calendar events.
+
 Future auth/session migrations
   Create password_reset_tokens.
 
 Future content migrations
-  Create events and audit_events.
+  Create audit_events.
 ```
 
 ## Auth Registration Migration Scope
@@ -65,3 +68,13 @@ posts
 ```
 
 Post rows store simple Markdown text, draft/published/deleted status, public visibility, timestamps, and soft-delete metadata. Indexes support author draft lookups, published member feeds, and public post feeds.
+
+## Events Migration Scope
+
+The events migration creates:
+
+```txt
+events
+```
+
+Event rows store simple Markdown descriptions, optional location, start/end timestamps, draft/published/deleted status, public visibility, timestamps, and soft-delete metadata. Indexes support author draft lookups, published calendar ranges, and public event feeds.

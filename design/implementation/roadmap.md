@@ -17,15 +17,15 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-010-events-drafts-publish
+011-public-landing-data
 ```
 
-Goal: implement member event drafts, publishing, editing, soft delete, and admin public visibility.
+Goal: expose public post/event feeds and connect the localized landing page to public data.
 
 Detailed plan:
 
 ```txt
-design/implementation/slices/010-events-drafts-publish.md
+design/implementation/slices/011-public-landing-data.md
 ```
 
 ## Future Slices
@@ -33,6 +33,9 @@ design/implementation/slices/010-events-drafts-publish.md
 Future slices are intentionally high-level until the previous slice has been completed and reviewed.
 
 ```txt
-011-public-landing-data
-  Connect public landing page feeds to public posts and events.
+012-member-content-ui
+  Connect member post/event screens to the authenticated APIs.
+
+013-admin-content-ui
+  Connect admin user/content screens to the admin APIs.
 ```

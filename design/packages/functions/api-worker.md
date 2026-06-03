@@ -48,12 +48,25 @@ DELETE /api/posts/:id
   Published posts are visible to approved members and admins.
   Admins can toggle public visibility on published posts.
   Deletes are soft deletes.
+
+GET /api/events
+POST /api/events
+GET /api/events/:id
+PUT /api/events/:id
+POST /api/events/:id/publish
+POST /api/events/:id/public
+POST /api/events/:id/member-only
+DELETE /api/events/:id
+  Requires an active, verified approved member or admin account.
+  Drafts are visible only to their author.
+  Published events are visible to approved members and admins.
+  Admins can toggle public visibility on published events.
+  Deletes are soft deletes.
 ```
 
 ## Future Responsibilities
 
 ```txt
-member events
 public posts/events
 stable error-code responses
 ```

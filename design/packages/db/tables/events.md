@@ -28,3 +28,11 @@ deleted_by
 Events are informational only in version 1. There is no recurrence and no RSVP. Drafts are visible only to the author. Public events are published events with `is_public = true`. Deletes are soft deletes.
 
 `is_public` defaults to `false` for every event, including events authored by admins. Admin-authored events become public only when the admin explicitly chooses immediate public visibility during publishing or later marks the published event public.
+
+## Indexes
+
+```txt
+idx_events_author_status
+idx_events_published_starts_at
+idx_events_public_starts_at
+```

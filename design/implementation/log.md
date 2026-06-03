@@ -687,6 +687,72 @@ remaining note
 Frontend post screens are still static route shells. Public landing page feeds are still not connected to public posts.
 ```
 
+### Completed Slice: 010-events-drafts-publish
+
+```txt
+commit hashes
+5463f1f Add events migration
+a17b601 Add event validation helpers
+3ff3ba5 Add event repository
+46e24f1 Add event API routes
+
+files changed
+packages/db/migrations/0005_events.sql
+packages/db/src/schema.ts
+packages/db/src/schema.test.ts
+packages/functions/src/api.ts
+packages/functions/src/api.test.ts
+packages/functions/src/events/repository.ts
+packages/functions/src/events/repository.test.ts
+packages/functions/src/events/validation.ts
+packages/functions/src/events/validation.test.ts
+
+implemented routes
+GET /api/events
+POST /api/events
+GET /api/events/:id
+PUT /api/events/:id
+POST /api/events/:id/publish
+POST /api/events/:id/public
+POST /api/events/:id/member-only
+DELETE /api/events/:id
+
+implemented stable error codes
+API_EVENT_NOT_FOUND
+
+D1 migration command
+npx wrangler d1 execute ccc-dev-databasedatabase-budbdcht --remote --file packages/db/migrations/0005_events.sql -y
+
+D1 migration result
+Wrangler executed 4 queries successfully.
+Remote D1 now has the events table and indexes.
+
+deployment command
+npx sst deploy --stage dev --print-logs
+
+deployment result
+SST deployed the dev stage and updated the Api Worker.
+AuthApiUrl: https://ccc-dev-authapiscript-bdteakex.robin-srimal.workers.dev
+ApiUrl: https://ccc-dev-apiscript-noawkcsx.robin-srimal.workers.dev
+WebUrl: https://ccc-dev-webworkerscript.robin-srimal.workers.dev
+DatabaseId: edf26084-32a2-4d25-b608-ec4ed6a0e763
+
+live verification result
+Temporary verified member and admin users were inserted into dev D1.
+POST /api/events returned 201 with a draft event and isPublic=false.
+GET /api/events returned 200 and included the creator's draft.
+POST /api/events/:id/publish with makePublic=true as a member returned 403 API_FORBIDDEN.
+POST /api/events/:id/publish as a member with default visibility returned 200 with status=published and isPublic=false.
+POST /api/events/:id/public as an admin returned 200 with isPublic=true.
+POST /api/events/:id/member-only as an admin returned 200 with isPublic=false.
+DELETE /api/events/:id as an admin returned 200 with status=deleted and deletedBy set to the admin id.
+GET /api/events/:id after delete returned 404 API_EVENT_NOT_FOUND.
+Temporary live-check users and events were deleted after verification.
+
+remaining note
+Frontend event screens are still static route shells. Public landing page feeds are still not connected to public events.
+```
+
 ### Current State
 
 ```txt
@@ -703,8 +769,9 @@ packages/db now owns migration metadata and a comment-only 0001_empty.sql scaffo
 packages/db now owns an applied auth registration migration for users and email_verification_tokens.
 packages/db now owns an applied auth session migration for refresh_sessions and login_attempts.
 packages/db now owns an applied posts migration.
+packages/db now owns an applied events migration.
 packages/functions now owns an Auth Worker with health, registration, email verification, login, refresh, and logout routes.
-packages/functions now owns an App API Worker with health, /api/me, admin user management routes, and post routes.
+packages/functions now owns an App API Worker with health, /api/me, admin user management routes, post routes, and event routes.
 packages/scripts now owns the first-admin promotion script.
 packages/web now owns the Astro shell, localized routes, layout components, i18n dictionaries, and generated hero image.
 Design docs mirror intended infra, package, route, page, and table structure.
@@ -715,7 +782,7 @@ No app-owned AWS scaffold references remain in active source or package metadata
 ### Next Slice
 
 ```txt
-010-events-drafts-publish
+011-public-landing-data
 ```
 
-The next slice candidate should implement member event drafts, publishing, editing, soft delete, and admin public visibility.
+The next slice candidate should expose public post/event feeds and connect the localized landing page to public data.

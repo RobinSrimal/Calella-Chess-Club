@@ -121,67 +121,73 @@ full Markdown rendering
 
 ### Task 1: Add Events Migration And Schema Metadata
 
-- [ ] Add `packages/db/migrations/0005_events.sql`.
-- [ ] Add events schema metadata in `packages/db/src/schema.ts`.
-- [ ] Include a foreign key from `events.author_id` to `users.id`.
-- [ ] Include a foreign key from `events.deleted_by` to `users.id`.
-- [ ] Add useful indexes for author drafts, published calendar ranges, and public event feeds.
-- [ ] Cover schema metadata with db tests.
+- [x] Add `packages/db/migrations/0005_events.sql`.
+- [x] Add events schema metadata in `packages/db/src/schema.ts`.
+- [x] Include a foreign key from `events.author_id` to `users.id`.
+- [x] Include a foreign key from `events.deleted_by` to `users.id`.
+- [x] Add useful indexes for author drafts, published calendar ranges, and public event feeds.
+- [x] Cover schema metadata with db tests.
 
 ### Task 2: Add Event Validation Helpers
 
-- [ ] Add title validation.
-- [ ] Add description Markdown validation.
-- [ ] Add optional location validation.
-- [ ] Add start/end date-time validation.
-- [ ] Reject empty, oversized, invalid date, or end-before-start payloads with stable field errors.
-- [ ] Add focused validation tests.
+- [x] Add title validation.
+- [x] Add description Markdown validation.
+- [x] Add optional location validation.
+- [x] Add start/end date-time validation.
+- [x] Reject empty, oversized, invalid date, or end-before-start payloads with stable field errors.
+- [x] Add focused validation tests.
 
 ### Task 3: Add Event Repository Methods
 
-- [ ] Add row mapping helpers.
-- [ ] Add list query for published member-visible events plus own drafts.
-- [ ] Add create draft method.
-- [ ] Add find-visible method for route access checks.
-- [ ] Add owner edit method.
-- [ ] Add publish method.
-- [ ] Add admin visibility toggle methods.
-- [ ] Add soft-delete method.
-- [ ] Cover SQL behavior with focused repository tests.
+- [x] Add row mapping helpers.
+- [x] Add list query for published member-visible events plus own drafts.
+- [x] Add create draft method.
+- [x] Add find-visible method for route access checks.
+- [x] Add owner edit method.
+- [x] Add publish method.
+- [x] Add admin visibility toggle methods.
+- [x] Add soft-delete method.
+- [x] Cover SQL behavior with focused repository tests.
 
 ### Task 4: Add Event Routes
 
-- [ ] Reuse member/admin current-user guard.
-- [ ] Implement `GET /api/events`.
-- [ ] Implement `POST /api/events`.
-- [ ] Implement `GET /api/events/:id`.
-- [ ] Implement `PUT /api/events/:id`.
-- [ ] Reject non-visible or deleted events with `API_EVENT_NOT_FOUND`.
-- [ ] Add route tests.
+- [x] Reuse member/admin current-user guard.
+- [x] Implement `GET /api/events`.
+- [x] Implement `POST /api/events`.
+- [x] Implement `GET /api/events/:id`.
+- [x] Implement `PUT /api/events/:id`.
+- [x] Reject non-visible or deleted events with `API_EVENT_NOT_FOUND`.
+- [x] Add route tests.
 
 ### Task 5: Implement Publish And Visibility Routes
 
-- [ ] Implement `POST /api/events/:id/publish`.
-- [ ] Keep published events member-only by default.
-- [ ] Allow admin-authored publish requests to explicitly set public visibility.
-- [ ] Reject immediate-public publish requests from non-admin users.
-- [ ] Implement `POST /api/events/:id/public`.
-- [ ] Implement `POST /api/events/:id/member-only`.
-- [ ] Add route tests.
+- [x] Implement `POST /api/events/:id/publish`.
+- [x] Keep published events member-only by default.
+- [x] Allow admin-authored publish requests to explicitly set public visibility.
+- [x] Reject immediate-public publish requests from non-admin users.
+- [x] Implement `POST /api/events/:id/public`.
+- [x] Implement `POST /api/events/:id/member-only`.
+- [x] Add route tests.
 
 ### Task 6: Implement Soft Delete
 
-- [ ] Implement `DELETE /api/events/:id`.
-- [ ] Allow owners to soft-delete their own events.
-- [ ] Allow admins to soft-delete published events.
-- [ ] Set `status = deleted`, `deleted_at`, `deleted_by`, and `updated_at`.
-- [ ] Add route tests.
+- [x] Implement `DELETE /api/events/:id`.
+- [x] Allow owners to soft-delete their own events.
+- [x] Allow admins to soft-delete published events.
+- [x] Set `status = deleted`, `deleted_at`, `deleted_by`, and `updated_at`.
+- [x] Add route tests.
 
 ### Task 7: Deploy And Record
 
-- [ ] Run package tests and typechecks.
-- [ ] Apply the events migration to dev D1.
-- [ ] Deploy dev.
-- [ ] Live-check draft create, publish, admin public toggle, and soft delete with temporary data.
-- [ ] Clean up temporary live-check data.
-- [ ] Update design docs, implementation log, and roadmap.
+- [x] Run package tests and typechecks.
+- [x] Apply the events migration to dev D1.
+- [x] Deploy dev.
+- [x] Live-check draft create, publish, admin public toggle, and soft delete with temporary data.
+- [x] Clean up temporary live-check data.
+- [x] Update design docs, implementation log, and roadmap.
+
+## Completion Notes
+
+The events API was deployed to the dev stage and live-checked with temporary D1 users. New events start as drafts and member-only. Member attempts to publish directly as public are rejected with `API_FORBIDDEN`. Admins can toggle published events public/member-only and soft-delete published events.
+
+Temporary live-check users and events were removed after verification. Frontend event screens and public landing feeds remain out of scope.
