@@ -363,6 +363,27 @@ input {
   color: var(--accent-strong);
 }
 
+.post-block-editor {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.post-block-editor:focus-within {
+  border-color: var(--focus);
+  outline: 2px solid color-mix(in srgb, var(--focus) 20%, transparent);
+}
+
+.post-block-editor .bn-container {
+  min-height: 220px;
+}
+
+.post-block-editor .bn-editor {
+  min-height: 220px;
+  padding: 12px;
+}
+
 .footer-content {
   min-height: 72px;
   display: flex;
