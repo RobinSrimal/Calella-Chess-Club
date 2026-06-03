@@ -11,6 +11,12 @@ import {
   type UserRole,
   createD1AuthRepository,
 } from "./auth/repository";
+import {
+  type Post,
+  type PostRepository,
+  createD1PostRepository,
+} from "./posts/repository";
+import { parsePostDraftBody, parsePostPublishBody } from "./posts/validation";
 
 export type ApiHealthResponse = {
   service: "api";
@@ -21,6 +27,7 @@ export type ApiErrorCode =
   | "API_AUTH_INVALID"
   | "API_AUTH_REQUIRED"
   | "API_FORBIDDEN"
+  | "API_POST_NOT_FOUND"
   | "API_USER_NOT_FOUND"
   | "API_VALIDATION_FAILED"
   | "API_ROUTE_NOT_FOUND";
@@ -44,6 +51,14 @@ export type AdminUserResponse = {
   user: AdminUserSummary;
 };
 
+export type PostsResponse = {
+  posts: Post[];
+};
+
+export type PostResponse = {
+  post: Post;
+};
+
 export type ApiContext = {
   repository: Pick<
     AuthRepository,
@@ -53,8 +68,20 @@ export type ApiContext = {
     | "updateMembershipStatus"
     | "disableUserAndRevokeSessions"
   >;
+  postRepository: Pick<
+    PostRepository,
+    | "listVisiblePosts"
+    | "findVisiblePostById"
+    | "createPostDraft"
+    | "updateOwnPost"
+    | "publishOwnDraft"
+    | "updatePublicVisibility"
+    | "softDeleteOwnPost"
+    | "softDeletePublishedPost"
+  >;
   jwtSigningSecret: string;
   now: () => Date;
+  newId: () => string;
 };
 
 type JsonBody =
@@ -62,7 +89,9 @@ type JsonBody =
   | ApiErrorResponse
   | MeResponse
   | AdminUsersResponse
-  | AdminUserResponse;
+  | AdminUserResponse
+  | PostsResponse
+  | PostResponse;
 
 const MEMBERSHIP_STATUSES = ["none", "pending", "member", "rejected"] as const;
 const USER_ROLES = ["user", "admin"] as const;
@@ -88,6 +117,24 @@ export async function handleApiRequest(
 
   if (request.method === "GET" && url.pathname === "/api/admin/users") {
     return listAdminUsers(request, url, context ?? createDefaultApiContext());
+  }
+
+  if (url.pathname === "/api/posts") {
+    if (request.method === "GET") {
+      return listPosts(request, context ?? createDefaultApiContext());
+    }
+    if (request.method === "POST") {
+      return createPost(request, context ?? createDefaultApiContext());
+    }
+  }
+
+  const postAction = parsePostAction(url.pathname, request.method);
+  if (postAction) {
+    return handlePostAction(
+      request,
+      postAction,
+      context ?? createDefaultApiContext(),
+    );
   }
 
   const adminUserAction = parseAdminUserAction(url.pathname);
@@ -134,6 +181,241 @@ async function me(request: Request, context: ApiContext): Promise<Response> {
   return jsonResponse({
     user,
   });
+}
+
+async function listPosts(
+  request: Request,
+  context: ApiContext,
+): Promise<Response> {
+  const current = await requireMemberOrAdmin(request, context);
+  if (!current.ok) {
+    return current.response;
+  }
+
+  return jsonResponse({
+    posts: await context.postRepository.listVisiblePosts({
+      userId: current.user.id,
+    }),
+  });
+}
+
+async function createPost(
+  request: Request,
+  context: ApiContext,
+): Promise<Response> {
+  const current = await requireMemberOrAdmin(request, context);
+  if (!current.ok) {
+    return current.response;
+  }
+
+  const json = await readJsonBody(request);
+  if (!json.ok) {
+    return errorResponse("API_VALIDATION_FAILED", 400, {
+      fields: ["body"],
+    });
+  }
+
+  const parsed = parsePostDraftBody(json.value);
+  if (!parsed.ok) {
+    return errorResponse("API_VALIDATION_FAILED", 400, {
+      fields: parsed.fields,
+    });
+  }
+
+  const nowIso = context.now().toISOString();
+  const post = await context.postRepository.createPostDraft({
+    id: context.newId(),
+    authorId: current.user.id,
+    title: parsed.value.title,
+    bodyMarkdown: parsed.value.bodyMarkdown,
+    createdAt: nowIso,
+  });
+  if (!post) {
+    return errorResponse("API_POST_NOT_FOUND", 404);
+  }
+
+  return jsonResponse({ post }, { status: 201 });
+}
+
+async function handlePostAction(
+  request: Request,
+  action: PostAction,
+  context: ApiContext,
+): Promise<Response> {
+  if (action.kind === "get") {
+    return getPost(request, action.postId, context);
+  }
+  if (action.kind === "update") {
+    return updatePost(request, action.postId, context);
+  }
+  if (action.kind === "publish") {
+    return publishPost(request, action.postId, context);
+  }
+  if (action.kind === "public" || action.kind === "member-only") {
+    return updatePostVisibility(request, action, context);
+  }
+  if (action.kind === "delete") {
+    return deletePost(request, action.postId, context);
+  }
+
+  return errorResponse("API_ROUTE_NOT_FOUND", 404);
+}
+
+async function getPost(
+  request: Request,
+  postId: string,
+  context: ApiContext,
+): Promise<Response> {
+  const current = await requireMemberOrAdmin(request, context);
+  if (!current.ok) {
+    return current.response;
+  }
+
+  const post = await context.postRepository.findVisiblePostById({
+    postId,
+    userId: current.user.id,
+  });
+  if (!post) {
+    return errorResponse("API_POST_NOT_FOUND", 404);
+  }
+
+  return jsonResponse({ post });
+}
+
+async function updatePost(
+  request: Request,
+  postId: string,
+  context: ApiContext,
+): Promise<Response> {
+  const current = await requireMemberOrAdmin(request, context);
+  if (!current.ok) {
+    return current.response;
+  }
+
+  const json = await readJsonBody(request);
+  if (!json.ok) {
+    return errorResponse("API_VALIDATION_FAILED", 400, {
+      fields: ["body"],
+    });
+  }
+
+  const parsed = parsePostDraftBody(json.value);
+  if (!parsed.ok) {
+    return errorResponse("API_VALIDATION_FAILED", 400, {
+      fields: parsed.fields,
+    });
+  }
+
+  const post = await context.postRepository.updateOwnPost({
+    postId,
+    authorId: current.user.id,
+    title: parsed.value.title,
+    bodyMarkdown: parsed.value.bodyMarkdown,
+    updatedAt: context.now().toISOString(),
+  });
+  if (!post) {
+    return errorResponse("API_POST_NOT_FOUND", 404);
+  }
+
+  return jsonResponse({ post });
+}
+
+async function publishPost(
+  request: Request,
+  postId: string,
+  context: ApiContext,
+): Promise<Response> {
+  const current = await requireMemberOrAdmin(request, context);
+  if (!current.ok) {
+    return current.response;
+  }
+
+  const json = await readJsonBody(request);
+  if (!json.ok) {
+    return errorResponse("API_VALIDATION_FAILED", 400, {
+      fields: ["body"],
+    });
+  }
+
+  const parsed = parsePostPublishBody(json.value);
+  if (!parsed.ok) {
+    return errorResponse("API_VALIDATION_FAILED", 400, {
+      fields: parsed.fields,
+    });
+  }
+
+  if (parsed.value.makePublic && current.user.role !== "admin") {
+    return errorResponse("API_FORBIDDEN", 403);
+  }
+
+  const nowIso = context.now().toISOString();
+  const post = await context.postRepository.publishOwnDraft({
+    postId,
+    authorId: current.user.id,
+    isPublic: parsed.value.makePublic,
+    publishedAt: nowIso,
+  });
+  if (!post) {
+    return errorResponse("API_POST_NOT_FOUND", 404);
+  }
+
+  return jsonResponse({ post });
+}
+
+async function updatePostVisibility(
+  request: Request,
+  action: PostVisibilityAction,
+  context: ApiContext,
+): Promise<Response> {
+  const admin = await requireAdmin(request, context);
+  if (!admin.ok) {
+    return admin.response;
+  }
+
+  const post = await context.postRepository.updatePublicVisibility({
+    postId: action.postId,
+    isPublic: action.kind === "public",
+    updatedAt: context.now().toISOString(),
+  });
+  if (!post) {
+    return errorResponse("API_POST_NOT_FOUND", 404);
+  }
+
+  return jsonResponse({ post });
+}
+
+async function deletePost(
+  request: Request,
+  postId: string,
+  context: ApiContext,
+): Promise<Response> {
+  const current = await requireMemberOrAdmin(request, context);
+  if (!current.ok) {
+    return current.response;
+  }
+
+  const nowIso = context.now().toISOString();
+  const ownPost = await context.postRepository.softDeleteOwnPost({
+    postId,
+    userId: current.user.id,
+    deletedAt: nowIso,
+  });
+  if (ownPost) {
+    return jsonResponse({ post: ownPost });
+  }
+
+  if (current.user.role === "admin") {
+    const adminDeleted = await context.postRepository.softDeletePublishedPost({
+      postId,
+      deletedBy: current.user.id,
+      deletedAt: nowIso,
+    });
+    if (adminDeleted) {
+      return jsonResponse({ post: adminDeleted });
+    }
+  }
+
+  return errorResponse("API_POST_NOT_FOUND", 404);
 }
 
 async function listAdminUsers(
@@ -249,6 +531,64 @@ async function requireAdmin(
   };
 }
 
+async function requireMemberOrAdmin(
+  request: Request,
+  context: ApiContext,
+): Promise<
+  | {
+      ok: true;
+      user: CurrentUserLookup;
+    }
+  | {
+      ok: false;
+      response: Response;
+    }
+> {
+  const accessToken = readCookie(request, ACCESS_TOKEN_COOKIE);
+  if (!accessToken) {
+    return {
+      ok: false,
+      response: errorResponse("API_AUTH_REQUIRED", 401),
+    };
+  }
+
+  const verified = await verifyAccessJwt(accessToken, {
+    secret: context.jwtSigningSecret,
+    now: context.now(),
+  });
+  if (!verified.ok) {
+    return {
+      ok: false,
+      response: errorResponse("API_AUTH_INVALID", 401),
+    };
+  }
+
+  const user = await context.repository.findCurrentUserById(verified.userId);
+  if (!user) {
+    return {
+      ok: false,
+      response: errorResponse("API_AUTH_INVALID", 401),
+    };
+  }
+
+  if (
+    user.accountStatus !== "active" ||
+    !user.emailVerified ||
+    !user.emailVerifiedAt ||
+    (user.role !== "admin" && user.membershipStatus !== "member")
+  ) {
+    return {
+      ok: false,
+      response: errorResponse("API_FORBIDDEN", 403),
+    };
+  }
+
+  return {
+    ok: true,
+    user,
+  };
+}
+
 type AdminUserAction =
   | {
       kind: "membership";
@@ -307,6 +647,64 @@ function parseAdminUserAction(pathname: string): AdminUserAction | undefined {
   return undefined;
 }
 
+type PostReadWriteAction = {
+  kind: "get" | "update" | "delete";
+  postId: string;
+};
+
+type PostPublishAction = {
+  kind: "publish";
+  postId: string;
+};
+
+type PostVisibilityAction = {
+  kind: "public" | "member-only";
+  postId: string;
+};
+
+type PostAction = PostReadWriteAction | PostPublishAction | PostVisibilityAction;
+
+function parsePostAction(
+  pathname: string,
+  method: string,
+): PostAction | undefined {
+  const segments = pathname.split("/").filter(Boolean);
+  if (segments.length < 3 || segments[0] !== "api" || segments[1] !== "posts") {
+    return undefined;
+  }
+
+  const postId = decodeURIComponent(segments[2] ?? "");
+  if (!postId) {
+    return undefined;
+  }
+
+  if (segments.length === 3) {
+    if (method === "GET") {
+      return { kind: "get", postId };
+    }
+    if (method === "PUT") {
+      return { kind: "update", postId };
+    }
+    if (method === "DELETE") {
+      return { kind: "delete", postId };
+    }
+  }
+
+  if (segments.length === 4 && method === "POST") {
+    if (segments[3] === "publish") {
+      return { kind: "publish", postId };
+    }
+    if (segments[3] === "public") {
+      return { kind: "public", postId };
+    }
+    if (segments[3] === "member-only") {
+      return { kind: "member-only", postId };
+    }
+  }
+
+  return undefined;
+}
+
 function parseAdminUserFilters(
   url: URL,
 ):
@@ -359,6 +757,37 @@ function parseAdminUserFilters(
   };
 }
 
+async function readJsonBody(
+  request: Request,
+): Promise<
+  | {
+      ok: true;
+      value: unknown;
+    }
+  | {
+      ok: false;
+    }
+> {
+  const text = await request.text();
+  if (text.trim().length === 0) {
+    return {
+      ok: true,
+      value: undefined,
+    };
+  }
+
+  try {
+    return {
+      ok: true,
+      value: JSON.parse(text),
+    };
+  } catch {
+    return {
+      ok: false,
+    };
+  }
+}
+
 function isMembershipStatus(value: string): value is MembershipStatus {
   return MEMBERSHIP_STATUSES.includes(value as MembershipStatus);
 }
@@ -390,8 +819,10 @@ function errorResponse(
 function createDefaultApiContext(): ApiContext {
   return {
     repository: createD1AuthRepository(Resource.Database),
+    postRepository: createD1PostRepository(Resource.Database),
     jwtSigningSecret: Resource.JwtSigningSecret.value,
     now: () => new Date(),
+    newId: () => crypto.randomUUID(),
   };
 }
 
