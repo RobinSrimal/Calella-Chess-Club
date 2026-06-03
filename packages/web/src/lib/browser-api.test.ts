@@ -9,6 +9,7 @@ import {
   registerUser,
   updatePost,
 } from "./browser-api";
+import type { PostEditorDocument } from "./post-body";
 
 test("registerUser posts registration data with same-origin credentials", async () => {
   const requests: Array<{ input: RequestInfo | URL; init?: RequestInit }> = [];
@@ -286,7 +287,7 @@ function memberPost(overrides: Record<string, unknown> = {}) {
   };
 }
 
-function postBodyJson(text = "First paragraph.") {
+function postBodyJson(text = "First paragraph."): PostEditorDocument {
   return [
     {
       type: "paragraph",
