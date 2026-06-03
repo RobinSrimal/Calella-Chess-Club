@@ -47,6 +47,8 @@ export const ca = {
     submittingLogin: "Entrant...",
     submittingRegister: "Registrant...",
     registerSuccess: "Compte creat. Revisa el correu per verificar-lo.",
+    verifySuccess: "Correu verificat.",
+    verifyPending: "La teva sol-licitud d'alta queda pendent d'aprovacio.",
   },
   member: {
     dashboardTitle: "Zona de socis",

@@ -956,3 +956,12 @@ Direct Resend smoke test returned 403 because verify.raim.app is not verified in
 Dev registration through the Web origin still returns AUTH_EMAIL_SEND_FAILED until Resend marks verify.raim.app verified.
 Temporary registration smoke-test data cleanup was verified: zero resendsmoke users and zero matching email_verification_tokens.
 ```
+
+## 2026-06-03 - Email Verification Page Fix
+
+```txt
+Root cause: /{locale}/verify-email rendered a placeholder and did not call AuthApi /auth/verify-email.
+Observed dev D1 state for robin.srimal@icloud.com: email_verified_at null, membership_status none, verification token unused and expiring 2026-06-04T15:11:13.076Z.
+Added packages/web/src/lib/email-verification.ts to call AuthApi and normalize success, missing-token, stable error-code, and binding-failure states.
+Updated packages/web/src/pages/[locale]/verify-email.astro to verify the token server-side and render success/pending-membership or an English-only verification error.
+```

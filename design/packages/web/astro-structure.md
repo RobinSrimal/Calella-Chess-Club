@@ -47,6 +47,7 @@ packages/web/src/
     en.ts
   lib/
     browser-api.ts
+    email-verification.ts
     locale.ts
     proxy.ts
     public-feed.ts

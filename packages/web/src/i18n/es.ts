@@ -47,6 +47,8 @@ export const es = {
     submittingLogin: "Entrando...",
     submittingRegister: "Registrando...",
     registerSuccess: "Cuenta creada. Revisa el correo para verificarla.",
+    verifySuccess: "Correo verificado.",
+    verifyPending: "Tu solicitud de alta queda pendiente de aprobacion.",
   },
   member: {
     dashboardTitle: "Zona de socios",

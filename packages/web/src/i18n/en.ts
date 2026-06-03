@@ -47,6 +47,8 @@ export const en = {
     submittingLogin: "Logging in...",
     submittingRegister: "Registering...",
     registerSuccess: "Account created. Check your email to verify it.",
+    verifySuccess: "Email verified.",
+    verifyPending: "Your membership request is pending admin approval.",
   },
   member: {
     dashboardTitle: "Member area",
