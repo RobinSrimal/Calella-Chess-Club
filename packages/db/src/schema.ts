@@ -19,6 +19,11 @@ export const migrations = [
     path: "migrations/0004_posts.sql",
     description: "Create member posts.",
   },
+  {
+    id: "0005_events",
+    path: "migrations/0005_events.sql",
+    description: "Create member events.",
+  },
 ] as const;
 
 export type Migration = (typeof migrations)[number];
