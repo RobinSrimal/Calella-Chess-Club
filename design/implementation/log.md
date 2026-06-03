@@ -815,7 +815,9 @@ Astro build exited 0.
 deployment note
 An initial deploy without --stage targeted the local default stage robinsrimal and failed because that stage has no SST secrets.
 The successful deploy explicitly targeted --stage dev.
-The failed default-stage deploy created a partial robinsrimal D1 resource with no app tables; remove it only with explicit approval because stage removal is destructive.
+The failed default-stage deploy created a partial robinsrimal D1 resource with no app tables.
+That accidental robinsrimal stage was removed with `npx sst remove --stage robinsrimal` on 2026-06-03 after explicit approval.
+Post-cleanup verification showed only the dev D1 database remains, and the dev Web/API endpoints still returned 200.
 
 remaining note
 The landing page renders Markdown source as escaped plain text previews. Rich Markdown rendering remains intentionally deferred.
