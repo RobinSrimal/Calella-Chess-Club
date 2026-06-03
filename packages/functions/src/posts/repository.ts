@@ -1,4 +1,5 @@
 import type { D1Database } from "@cloudflare/workers-types";
+import type { PostBodyJson } from "./body-json";
 
 export type PostStatus = "draft" | "published" | "deleted";
 
@@ -7,7 +8,7 @@ export type Post = {
   authorId: string;
   authorUsername: string;
   title: string;
-  bodyMarkdown: string;
+  bodyJson: PostBodyJson;
   status: PostStatus;
   isPublic: boolean;
   publishedAt: string | null;
@@ -21,7 +22,7 @@ export type CreatePostDraftInput = {
   id: string;
   authorId: string;
   title: string;
-  bodyMarkdown: string;
+  bodyJsonSerialized: string;
   createdAt: string;
 };
 
@@ -29,7 +30,7 @@ export type UpdateOwnPostInput = {
   postId: string;
   authorId: string;
   title: string;
-  bodyMarkdown: string;
+  bodyJsonSerialized: string;
   updatedAt: string;
 };
 
@@ -75,7 +76,7 @@ type PostRow = {
   authorId: string;
   authorUsername: string;
   title: string;
-  bodyMarkdown: string;
+  bodyJson: string;
   status: PostStatus;
   isPublic: number | boolean;
   publishedAt: string | null;
@@ -140,7 +141,7 @@ export function createD1PostRepository(database: D1Database): PostRepository {
         .prepare(
           [
             "INSERT INTO posts (",
-            "id, author_id, title, body_markdown, status, is_public, published_at,",
+            "id, author_id, title, body_json, status, is_public, published_at,",
             "created_at, updated_at, deleted_at, deleted_by",
             ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
           ].join(" "),
@@ -149,7 +150,7 @@ export function createD1PostRepository(database: D1Database): PostRepository {
           input.id,
           input.authorId,
           input.title,
-          input.bodyMarkdown,
+          input.bodyJsonSerialized,
           "draft",
           0,
           null,
@@ -168,13 +169,13 @@ export function createD1PostRepository(database: D1Database): PostRepository {
         .prepare(
           [
             "UPDATE posts",
-            "SET title = ?, body_markdown = ?, updated_at = ?",
+            "SET title = ?, body_json = ?, updated_at = ?",
             "WHERE id = ? AND author_id = ? AND status <> 'deleted'",
           ].join(" "),
         )
         .bind(
           input.title,
-          input.bodyMarkdown,
+          input.bodyJsonSerialized,
           input.updatedAt,
           input.postId,
           input.authorId,
@@ -323,7 +324,7 @@ function postSelect(): string {
   return [
     "SELECT",
     "posts.id, posts.author_id as authorId, users.username as authorUsername,",
-    "posts.title, posts.body_markdown as bodyMarkdown, posts.status,",
+    "posts.title, posts.body_json as bodyJson, posts.status,",
     "posts.is_public as isPublic, posts.published_at as publishedAt,",
     "posts.created_at as createdAt, posts.updated_at as updatedAt,",
     "posts.deleted_at as deletedAt, posts.deleted_by as deletedBy",
@@ -336,7 +337,7 @@ function mapPost(row: PostRow): Post {
     authorId: row.authorId,
     authorUsername: row.authorUsername,
     title: row.title,
-    bodyMarkdown: row.bodyMarkdown,
+    bodyJson: parseStoredBodyJson(row.bodyJson),
     status: row.status,
     isPublic: row.isPublic === 1 || row.isPublic === true,
     publishedAt: row.publishedAt,
@@ -345,4 +346,13 @@ function mapPost(row: PostRow): Post {
     deletedAt: row.deletedAt,
     deletedBy: row.deletedBy,
   };
+}
+
+function parseStoredBodyJson(value: string): PostBodyJson {
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return Array.isArray(parsed) ? (parsed as PostBodyJson) : [];
+  } catch {
+    return [];
+  }
 }

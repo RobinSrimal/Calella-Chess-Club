@@ -89,7 +89,7 @@ test("creates draft posts as member-only content", async () => {
     id: "post-1",
     authorId: "user-1",
     title: "Club night results",
-    bodyMarkdown: "**Round 1** starts at 19:00.",
+    bodyJsonSerialized: POST_BODY_JSON_SERIALIZED,
     createdAt: "2026-06-03T09:00:00.000Z",
   });
 
@@ -98,7 +98,7 @@ test("creates draft posts as member-only content", async () => {
     "post-1",
     "user-1",
     "Club night results",
-    "**Round 1** starts at 19:00.",
+    POST_BODY_JSON_SERIALIZED,
     "draft",
     0,
     null,
@@ -121,7 +121,7 @@ test("edits only the author's non-deleted posts", async () => {
     postId: "post-1",
     authorId: "user-1",
     title: "Updated title",
-    bodyMarkdown: "_Updated body_",
+    bodyJsonSerialized: UPDATED_POST_BODY_JSON_SERIALIZED,
     updatedAt: "2026-06-03T10:00:00.000Z",
   });
 
@@ -130,7 +130,7 @@ test("edits only the author's non-deleted posts", async () => {
   expect(queries[0].sql).toContain("status <> 'deleted'");
   expect(queries[0].params).toEqual([
     "Updated title",
-    "_Updated body_",
+    UPDATED_POST_BODY_JSON_SERIALIZED,
     "2026-06-03T10:00:00.000Z",
     "post-1",
     "user-1",
@@ -276,7 +276,7 @@ function postRow(overrides: Record<string, unknown> = {}) {
     authorId: "user-1",
     authorUsername: "RobinSrimal",
     title: "Club night results",
-    bodyMarkdown: "**Round 1** starts at 19:00.",
+    bodyJson: POST_BODY_JSON_SERIALIZED,
     status: "draft",
     isPublic: 0,
     publishedAt: null,
@@ -294,7 +294,7 @@ function post(overrides: Record<string, unknown> = {}) {
     authorId: "user-1",
     authorUsername: "RobinSrimal",
     title: "Club night results",
-    bodyMarkdown: "**Round 1** starts at 19:00.",
+    bodyJson: POST_BODY_JSON,
     status: "draft",
     isPublic: false,
     publishedAt: null,
@@ -305,3 +305,31 @@ function post(overrides: Record<string, unknown> = {}) {
     ...overrides,
   };
 }
+
+const POST_BODY_JSON = [
+  {
+    type: "paragraph",
+    content: [
+      {
+        type: "text",
+        text: "Round 1 starts at 19:00.",
+        styles: {},
+      },
+    ],
+  },
+];
+
+const POST_BODY_JSON_SERIALIZED = JSON.stringify(POST_BODY_JSON);
+
+const UPDATED_POST_BODY_JSON_SERIALIZED = JSON.stringify([
+  {
+    type: "paragraph",
+    content: [
+      {
+        type: "text",
+        text: "Updated body",
+        styles: { italic: true },
+      },
+    ],
+  },
+]);

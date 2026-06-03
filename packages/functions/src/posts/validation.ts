@@ -54,6 +54,9 @@ export function parsePostDraftBody(body: unknown): PostDraftBodyResult {
   if (fields.length > 0) {
     return { ok: false, fields };
   }
+  if (!bodyJson.ok) {
+    return { ok: false, fields: ["bodyJson"] };
+  }
 
   return {
     ok: true,

@@ -367,7 +367,7 @@ test("POST /api/posts creates member-only drafts", async () => {
       },
       body: JSON.stringify({
         title: "  Club night results  ",
-        bodyMarkdown: "  **Round 1** starts at 19:00.  ",
+        bodyJson: POST_BODY_JSON_INPUT,
       }),
     }),
     context,
@@ -381,7 +381,7 @@ test("POST /api/posts creates member-only drafts", async () => {
     id: "post-1",
     authorId: "user-1",
     title: "Club night results",
-    bodyMarkdown: "**Round 1** starts at 19:00.",
+    bodyJsonSerialized: POST_BODY_JSON_SERIALIZED,
     createdAt: "2026-06-03T09:00:00.000Z",
   });
 });
@@ -396,7 +396,7 @@ test("POST /api/posts rejects invalid draft bodies", async () => {
       },
       body: JSON.stringify({
         title: "",
-        bodyMarkdown: "",
+        bodyJson: [],
       }),
     }),
     createApiTestContext({
@@ -408,7 +408,7 @@ test("POST /api/posts rejects invalid draft bodies", async () => {
   await expect(response.json()).resolves.toEqual({
     error: {
       code: "API_VALIDATION_FAILED",
-      fields: ["title", "bodyMarkdown"],
+      fields: ["title", "bodyJson"],
     },
   });
 });
@@ -458,7 +458,7 @@ test("GET /api/posts/:id returns visible posts or a stable not-found error", asy
 test("PUT /api/posts/:id edits the caller's own post", async () => {
   const context = createApiTestContext({
     currentUser: memberCurrentUser(),
-    postResult: post({ title: "Updated title", bodyMarkdown: "_Updated body_" }),
+    postResult: post({ title: "Updated title", bodyJson: UPDATED_POST_BODY_JSON }),
   });
 
   const response = await handleApiRequest(
@@ -470,7 +470,7 @@ test("PUT /api/posts/:id edits the caller's own post", async () => {
       },
       body: JSON.stringify({
         title: "Updated title",
-        bodyMarkdown: "_Updated body_",
+        bodyJson: UPDATED_POST_BODY_JSON_INPUT,
       }),
     }),
     context,
@@ -478,13 +478,13 @@ test("PUT /api/posts/:id edits the caller's own post", async () => {
 
   expect(response.status).toBe(200);
   await expect(response.json()).resolves.toEqual({
-    post: post({ title: "Updated title", bodyMarkdown: "_Updated body_" }),
+    post: post({ title: "Updated title", bodyJson: UPDATED_POST_BODY_JSON }),
   });
   expect(context.postRepository.updateOwnPost).toHaveBeenCalledWith({
     postId: "post-1",
     authorId: "user-1",
     title: "Updated title",
-    bodyMarkdown: "_Updated body_",
+    bodyJsonSerialized: UPDATED_POST_BODY_JSON_SERIALIZED,
     updatedAt: "2026-06-03T09:00:00.000Z",
   });
 });
@@ -1211,7 +1211,7 @@ function post(overrides: Record<string, unknown> = {}) {
     authorId: "user-1",
     authorUsername: "RobinSrimal",
     title: "Club night results",
-    bodyMarkdown: "**Round 1** starts at 19:00.",
+    bodyJson: POST_BODY_JSON,
     status: "draft",
     isPublic: false,
     publishedAt: null,
@@ -1222,6 +1222,44 @@ function post(overrides: Record<string, unknown> = {}) {
     ...overrides,
   };
 }
+
+const POST_BODY_JSON_INPUT = [
+  {
+    type: "paragraph",
+    content: "Round 1 starts at 19:00.",
+  },
+];
+
+const POST_BODY_JSON = [
+  {
+    type: "paragraph",
+    content: [
+      {
+        type: "text",
+        text: "Round 1 starts at 19:00.",
+        styles: {},
+      },
+    ],
+  },
+];
+
+const POST_BODY_JSON_SERIALIZED = JSON.stringify(POST_BODY_JSON);
+
+const UPDATED_POST_BODY_JSON_INPUT = [
+  {
+    type: "paragraph",
+    content: [
+      {
+        type: "text",
+        text: "Updated body",
+        styles: { italic: true },
+      },
+    ],
+  },
+];
+
+const UPDATED_POST_BODY_JSON = UPDATED_POST_BODY_JSON_INPUT;
+const UPDATED_POST_BODY_JSON_SERIALIZED = JSON.stringify(UPDATED_POST_BODY_JSON);
 
 function event(overrides: Record<string, unknown> = {}) {
   return {

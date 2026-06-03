@@ -301,7 +301,7 @@ async function createPost(
     id: context.newId(),
     authorId: current.user.id,
     title: parsed.value.title,
-    bodyMarkdown: parsed.value.bodyMarkdown,
+    bodyJsonSerialized: parsed.value.bodyJsonSerialized,
     createdAt: nowIso,
   });
   if (!post) {
@@ -384,7 +384,7 @@ async function updatePost(
     postId,
     authorId: current.user.id,
     title: parsed.value.title,
-    bodyMarkdown: parsed.value.bodyMarkdown,
+    bodyJsonSerialized: parsed.value.bodyJsonSerialized,
     updatedAt: context.now().toISOString(),
   });
   if (!post) {
