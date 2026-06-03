@@ -10,7 +10,10 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^13.6.1",
+    "@astrojs/react": "^5.0.7",
     "astro": "^6.4.2",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
     "sst": "*"
   },
   "devDependencies": {
