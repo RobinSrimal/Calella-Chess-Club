@@ -12,6 +12,12 @@ import {
   createD1AuthRepository,
 } from "./auth/repository";
 import {
+  type ClubEvent,
+  type EventRepository,
+  createD1EventRepository,
+} from "./events/repository";
+import { parseEventDraftBody, parseEventPublishBody } from "./events/validation";
+import {
   type Post,
   type PostRepository,
   createD1PostRepository,
@@ -26,6 +32,7 @@ export type ApiHealthResponse = {
 export type ApiErrorCode =
   | "API_AUTH_INVALID"
   | "API_AUTH_REQUIRED"
+  | "API_EVENT_NOT_FOUND"
   | "API_FORBIDDEN"
   | "API_POST_NOT_FOUND"
   | "API_USER_NOT_FOUND"
@@ -59,6 +66,14 @@ export type PostResponse = {
   post: Post;
 };
 
+export type EventsResponse = {
+  events: ClubEvent[];
+};
+
+export type EventResponse = {
+  event: ClubEvent;
+};
+
 export type ApiContext = {
   repository: Pick<
     AuthRepository,
@@ -79,6 +94,17 @@ export type ApiContext = {
     | "softDeleteOwnPost"
     | "softDeletePublishedPost"
   >;
+  eventRepository: Pick<
+    EventRepository,
+    | "listVisibleEvents"
+    | "findVisibleEventById"
+    | "createEventDraft"
+    | "updateOwnEvent"
+    | "publishOwnDraft"
+    | "updatePublicVisibility"
+    | "softDeleteOwnEvent"
+    | "softDeletePublishedEvent"
+  >;
   jwtSigningSecret: string;
   now: () => Date;
   newId: () => string;
@@ -91,7 +117,9 @@ type JsonBody =
   | AdminUsersResponse
   | AdminUserResponse
   | PostsResponse
-  | PostResponse;
+  | PostResponse
+  | EventsResponse
+  | EventResponse;
 
 const MEMBERSHIP_STATUSES = ["none", "pending", "member", "rejected"] as const;
 const USER_ROLES = ["user", "admin"] as const;
@@ -128,11 +156,29 @@ export async function handleApiRequest(
     }
   }
 
+  if (url.pathname === "/api/events") {
+    if (request.method === "GET") {
+      return listEvents(request, context ?? createDefaultApiContext());
+    }
+    if (request.method === "POST") {
+      return createEvent(request, context ?? createDefaultApiContext());
+    }
+  }
+
   const postAction = parsePostAction(url.pathname, request.method);
   if (postAction) {
     return handlePostAction(
       request,
       postAction,
+      context ?? createDefaultApiContext(),
+    );
+  }
+
+  const eventAction = parseEventAction(url.pathname, request.method);
+  if (eventAction) {
+    return handleEventAction(
+      request,
+      eventAction,
       context ?? createDefaultApiContext(),
     );
   }
@@ -416,6 +462,247 @@ async function deletePost(
   }
 
   return errorResponse("API_POST_NOT_FOUND", 404);
+}
+
+async function listEvents(
+  request: Request,
+  context: ApiContext,
+): Promise<Response> {
+  const current = await requireMemberOrAdmin(request, context);
+  if (!current.ok) {
+    return current.response;
+  }
+
+  return jsonResponse({
+    events: await context.eventRepository.listVisibleEvents({
+      userId: current.user.id,
+    }),
+  });
+}
+
+async function createEvent(
+  request: Request,
+  context: ApiContext,
+): Promise<Response> {
+  const current = await requireMemberOrAdmin(request, context);
+  if (!current.ok) {
+    return current.response;
+  }
+
+  const json = await readJsonBody(request);
+  if (!json.ok) {
+    return errorResponse("API_VALIDATION_FAILED", 400, {
+      fields: ["body"],
+    });
+  }
+
+  const parsed = parseEventDraftBody(json.value);
+  if (!parsed.ok) {
+    return errorResponse("API_VALIDATION_FAILED", 400, {
+      fields: parsed.fields,
+    });
+  }
+
+  const nowIso = context.now().toISOString();
+  const event = await context.eventRepository.createEventDraft({
+    id: context.newId(),
+    authorId: current.user.id,
+    title: parsed.value.title,
+    descriptionMarkdown: parsed.value.descriptionMarkdown,
+    location: parsed.value.location,
+    startsAt: parsed.value.startsAt,
+    endsAt: parsed.value.endsAt,
+    createdAt: nowIso,
+  });
+  if (!event) {
+    return errorResponse("API_EVENT_NOT_FOUND", 404);
+  }
+
+  return jsonResponse({ event }, { status: 201 });
+}
+
+async function handleEventAction(
+  request: Request,
+  action: EventAction,
+  context: ApiContext,
+): Promise<Response> {
+  if (action.kind === "get") {
+    return getEvent(request, action.eventId, context);
+  }
+  if (action.kind === "update") {
+    return updateEvent(request, action.eventId, context);
+  }
+  if (action.kind === "publish") {
+    return publishEvent(request, action.eventId, context);
+  }
+  if (action.kind === "public" || action.kind === "member-only") {
+    return updateEventVisibility(request, action, context);
+  }
+  if (action.kind === "delete") {
+    return deleteEvent(request, action.eventId, context);
+  }
+
+  return errorResponse("API_ROUTE_NOT_FOUND", 404);
+}
+
+async function getEvent(
+  request: Request,
+  eventId: string,
+  context: ApiContext,
+): Promise<Response> {
+  const current = await requireMemberOrAdmin(request, context);
+  if (!current.ok) {
+    return current.response;
+  }
+
+  const event = await context.eventRepository.findVisibleEventById({
+    eventId,
+    userId: current.user.id,
+  });
+  if (!event) {
+    return errorResponse("API_EVENT_NOT_FOUND", 404);
+  }
+
+  return jsonResponse({ event });
+}
+
+async function updateEvent(
+  request: Request,
+  eventId: string,
+  context: ApiContext,
+): Promise<Response> {
+  const current = await requireMemberOrAdmin(request, context);
+  if (!current.ok) {
+    return current.response;
+  }
+
+  const json = await readJsonBody(request);
+  if (!json.ok) {
+    return errorResponse("API_VALIDATION_FAILED", 400, {
+      fields: ["body"],
+    });
+  }
+
+  const parsed = parseEventDraftBody(json.value);
+  if (!parsed.ok) {
+    return errorResponse("API_VALIDATION_FAILED", 400, {
+      fields: parsed.fields,
+    });
+  }
+
+  const event = await context.eventRepository.updateOwnEvent({
+    eventId,
+    authorId: current.user.id,
+    title: parsed.value.title,
+    descriptionMarkdown: parsed.value.descriptionMarkdown,
+    location: parsed.value.location,
+    startsAt: parsed.value.startsAt,
+    endsAt: parsed.value.endsAt,
+    updatedAt: context.now().toISOString(),
+  });
+  if (!event) {
+    return errorResponse("API_EVENT_NOT_FOUND", 404);
+  }
+
+  return jsonResponse({ event });
+}
+
+async function publishEvent(
+  request: Request,
+  eventId: string,
+  context: ApiContext,
+): Promise<Response> {
+  const current = await requireMemberOrAdmin(request, context);
+  if (!current.ok) {
+    return current.response;
+  }
+
+  const json = await readJsonBody(request);
+  if (!json.ok) {
+    return errorResponse("API_VALIDATION_FAILED", 400, {
+      fields: ["body"],
+    });
+  }
+
+  const parsed = parseEventPublishBody(json.value);
+  if (!parsed.ok) {
+    return errorResponse("API_VALIDATION_FAILED", 400, {
+      fields: parsed.fields,
+    });
+  }
+
+  if (parsed.value.makePublic && current.user.role !== "admin") {
+    return errorResponse("API_FORBIDDEN", 403);
+  }
+
+  const nowIso = context.now().toISOString();
+  const event = await context.eventRepository.publishOwnDraft({
+    eventId,
+    authorId: current.user.id,
+    isPublic: parsed.value.makePublic,
+    publishedAt: nowIso,
+  });
+  if (!event) {
+    return errorResponse("API_EVENT_NOT_FOUND", 404);
+  }
+
+  return jsonResponse({ event });
+}
+
+async function updateEventVisibility(
+  request: Request,
+  action: EventVisibilityAction,
+  context: ApiContext,
+): Promise<Response> {
+  const admin = await requireAdmin(request, context);
+  if (!admin.ok) {
+    return admin.response;
+  }
+
+  const event = await context.eventRepository.updatePublicVisibility({
+    eventId: action.eventId,
+    isPublic: action.kind === "public",
+    updatedAt: context.now().toISOString(),
+  });
+  if (!event) {
+    return errorResponse("API_EVENT_NOT_FOUND", 404);
+  }
+
+  return jsonResponse({ event });
+}
+
+async function deleteEvent(
+  request: Request,
+  eventId: string,
+  context: ApiContext,
+): Promise<Response> {
+  const current = await requireMemberOrAdmin(request, context);
+  if (!current.ok) {
+    return current.response;
+  }
+
+  const nowIso = context.now().toISOString();
+  const ownEvent = await context.eventRepository.softDeleteOwnEvent({
+    eventId,
+    userId: current.user.id,
+    deletedAt: nowIso,
+  });
+  if (ownEvent) {
+    return jsonResponse({ event: ownEvent });
+  }
+
+  if (current.user.role === "admin") {
+    const adminDeleted = await context.eventRepository.softDeletePublishedEvent({
+      eventId,
+      deletedBy: current.user.id,
+      deletedAt: nowIso,
+    });
+    if (adminDeleted) {
+      return jsonResponse({ event: adminDeleted });
+    }
+  }
+
+  return errorResponse("API_EVENT_NOT_FOUND", 404);
 }
 
 async function listAdminUsers(
@@ -705,6 +992,71 @@ function parsePostAction(
   return undefined;
 }
 
+type EventReadWriteAction = {
+  kind: "get" | "update" | "delete";
+  eventId: string;
+};
+
+type EventPublishAction = {
+  kind: "publish";
+  eventId: string;
+};
+
+type EventVisibilityAction = {
+  kind: "public" | "member-only";
+  eventId: string;
+};
+
+type EventAction =
+  | EventReadWriteAction
+  | EventPublishAction
+  | EventVisibilityAction;
+
+function parseEventAction(
+  pathname: string,
+  method: string,
+): EventAction | undefined {
+  const segments = pathname.split("/").filter(Boolean);
+  if (
+    segments.length < 3 ||
+    segments[0] !== "api" ||
+    segments[1] !== "events"
+  ) {
+    return undefined;
+  }
+
+  const eventId = decodeURIComponent(segments[2] ?? "");
+  if (!eventId) {
+    return undefined;
+  }
+
+  if (segments.length === 3) {
+    if (method === "GET") {
+      return { kind: "get", eventId };
+    }
+    if (method === "PUT") {
+      return { kind: "update", eventId };
+    }
+    if (method === "DELETE") {
+      return { kind: "delete", eventId };
+    }
+  }
+
+  if (segments.length === 4 && method === "POST") {
+    if (segments[3] === "publish") {
+      return { kind: "publish", eventId };
+    }
+    if (segments[3] === "public") {
+      return { kind: "public", eventId };
+    }
+    if (segments[3] === "member-only") {
+      return { kind: "member-only", eventId };
+    }
+  }
+
+  return undefined;
+}
+
 function parseAdminUserFilters(
   url: URL,
 ):
@@ -820,6 +1172,7 @@ function createDefaultApiContext(): ApiContext {
   return {
     repository: createD1AuthRepository(Resource.Database),
     postRepository: createD1PostRepository(Resource.Database),
+    eventRepository: createD1EventRepository(Resource.Database),
     jwtSigningSecret: Resource.JwtSigningSecret.value,
     now: () => new Date(),
     newId: () => crypto.randomUUID(),

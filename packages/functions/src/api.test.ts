@@ -648,6 +648,375 @@ test("DELETE /api/posts/:id soft deletes owner posts and admin-visible published
   });
 });
 
+test("event routes require a valid approved member or admin user", async () => {
+  const missingResponse = await handleApiRequest(
+    new Request("https://calella-chess-club.test/api/events"),
+    createApiTestContext(),
+  );
+
+  expect(missingResponse.status).toBe(401);
+  await expect(missingResponse.json()).resolves.toEqual({
+    error: { code: "API_AUTH_REQUIRED" },
+  });
+
+  const pendingResponse = await handleApiRequest(
+    new Request("https://calella-chess-club.test/api/events", {
+      headers: {
+        cookie: `${ACCESS_TOKEN_COOKIE}=${await accessTokenFor("user-1")}`,
+      },
+    }),
+    createApiTestContext({
+      currentUser: currentUser(),
+    }),
+  );
+
+  expect(pendingResponse.status).toBe(403);
+  await expect(pendingResponse.json()).resolves.toEqual({
+    error: { code: "API_FORBIDDEN" },
+  });
+});
+
+test("GET /api/events returns visible events for members", async () => {
+  const context = createApiTestContext({
+    currentUser: memberCurrentUser(),
+    events: [event()],
+  });
+
+  const response = await handleApiRequest(
+    new Request("https://calella-chess-club.test/api/events", {
+      headers: {
+        cookie: `${ACCESS_TOKEN_COOKIE}=${await accessTokenFor("user-1")}`,
+      },
+    }),
+    context,
+  );
+
+  expect(response.status).toBe(200);
+  await expect(response.json()).resolves.toEqual({
+    events: [event()],
+  });
+  expect(context.eventRepository.listVisibleEvents).toHaveBeenCalledWith({
+    userId: "user-1",
+  });
+});
+
+test("POST /api/events creates member-only drafts", async () => {
+  const context = createApiTestContext({
+    currentUser: memberCurrentUser(),
+    eventResult: event(),
+    newId: "event-1",
+  });
+
+  const response = await handleApiRequest(
+    new Request("https://calella-chess-club.test/api/events", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        cookie: `${ACCESS_TOKEN_COOKIE}=${await accessTokenFor("user-1")}`,
+      },
+      body: JSON.stringify({
+        title: "  Club rapid night  ",
+        descriptionMarkdown: "  **Round 1** starts at 19:00.  ",
+        location: "  Calella Chess Club  ",
+        startsAt: "2026-06-10T17:00:00.000Z",
+        endsAt: "2026-06-10T19:00:00.000Z",
+      }),
+    }),
+    context,
+  );
+
+  expect(response.status).toBe(201);
+  await expect(response.json()).resolves.toEqual({
+    event: event(),
+  });
+  expect(context.eventRepository.createEventDraft).toHaveBeenCalledWith({
+    id: "event-1",
+    authorId: "user-1",
+    title: "Club rapid night",
+    descriptionMarkdown: "**Round 1** starts at 19:00.",
+    location: "Calella Chess Club",
+    startsAt: "2026-06-10T17:00:00.000Z",
+    endsAt: "2026-06-10T19:00:00.000Z",
+    createdAt: "2026-06-03T09:00:00.000Z",
+  });
+});
+
+test("POST /api/events rejects invalid draft bodies", async () => {
+  const response = await handleApiRequest(
+    new Request("https://calella-chess-club.test/api/events", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        cookie: `${ACCESS_TOKEN_COOKIE}=${await accessTokenFor("user-1")}`,
+      },
+      body: JSON.stringify({
+        title: "",
+        descriptionMarkdown: "",
+        startsAt: "bad",
+        endsAt: "bad",
+      }),
+    }),
+    createApiTestContext({
+      currentUser: memberCurrentUser(),
+    }),
+  );
+
+  expect(response.status).toBe(400);
+  await expect(response.json()).resolves.toEqual({
+    error: {
+      code: "API_VALIDATION_FAILED",
+      fields: ["title", "descriptionMarkdown", "startsAt", "endsAt"],
+    },
+  });
+});
+
+test("GET /api/events/:id returns visible events or a stable not-found error", async () => {
+  const context = createApiTestContext({
+    currentUser: memberCurrentUser(),
+    eventResult: event(),
+  });
+
+  const response = await handleApiRequest(
+    new Request("https://calella-chess-club.test/api/events/event-1", {
+      headers: {
+        cookie: `${ACCESS_TOKEN_COOKIE}=${await accessTokenFor("user-1")}`,
+      },
+    }),
+    context,
+  );
+
+  expect(response.status).toBe(200);
+  await expect(response.json()).resolves.toEqual({
+    event: event(),
+  });
+  expect(context.eventRepository.findVisibleEventById).toHaveBeenCalledWith({
+    eventId: "event-1",
+    userId: "user-1",
+  });
+
+  const notFoundResponse = await handleApiRequest(
+    new Request("https://calella-chess-club.test/api/events/missing", {
+      headers: {
+        cookie: `${ACCESS_TOKEN_COOKIE}=${await accessTokenFor("user-1")}`,
+      },
+    }),
+    createApiTestContext({
+      currentUser: memberCurrentUser(),
+      eventResult: null,
+    }),
+  );
+
+  expect(notFoundResponse.status).toBe(404);
+  await expect(notFoundResponse.json()).resolves.toEqual({
+    error: { code: "API_EVENT_NOT_FOUND" },
+  });
+});
+
+test("PUT /api/events/:id edits the caller's own event", async () => {
+  const context = createApiTestContext({
+    currentUser: memberCurrentUser(),
+    eventResult: event({
+      title: "Updated event",
+      descriptionMarkdown: "_Updated body_",
+    }),
+  });
+
+  const response = await handleApiRequest(
+    new Request("https://calella-chess-club.test/api/events/event-1", {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+        cookie: `${ACCESS_TOKEN_COOKIE}=${await accessTokenFor("user-1")}`,
+      },
+      body: JSON.stringify({
+        title: "Updated event",
+        descriptionMarkdown: "_Updated body_",
+        location: "",
+        startsAt: "2026-06-10T18:00:00.000Z",
+        endsAt: "2026-06-10T20:00:00.000Z",
+      }),
+    }),
+    context,
+  );
+
+  expect(response.status).toBe(200);
+  await expect(response.json()).resolves.toEqual({
+    event: event({
+      title: "Updated event",
+      descriptionMarkdown: "_Updated body_",
+    }),
+  });
+  expect(context.eventRepository.updateOwnEvent).toHaveBeenCalledWith({
+    eventId: "event-1",
+    authorId: "user-1",
+    title: "Updated event",
+    descriptionMarkdown: "_Updated body_",
+    location: null,
+    startsAt: "2026-06-10T18:00:00.000Z",
+    endsAt: "2026-06-10T20:00:00.000Z",
+    updatedAt: "2026-06-03T09:00:00.000Z",
+  });
+});
+
+test("POST /api/events/:id/publish publishes drafts but rejects member public visibility", async () => {
+  const memberPublicResponse = await handleApiRequest(
+    new Request("https://calella-chess-club.test/api/events/event-1/publish", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        cookie: `${ACCESS_TOKEN_COOKIE}=${await accessTokenFor("user-1")}`,
+      },
+      body: JSON.stringify({ makePublic: true }),
+    }),
+    createApiTestContext({
+      currentUser: memberCurrentUser(),
+    }),
+  );
+
+  expect(memberPublicResponse.status).toBe(403);
+  await expect(memberPublicResponse.json()).resolves.toEqual({
+    error: { code: "API_FORBIDDEN" },
+  });
+
+  const adminContext = createApiTestContext({
+    currentUser: adminCurrentUser(),
+    eventResult: event({
+      authorId: "admin-1",
+      status: "published",
+      isPublic: true,
+      publishedAt: "2026-06-03T09:00:00.000Z",
+    }),
+  });
+
+  const adminResponse = await handleApiRequest(
+    new Request("https://calella-chess-club.test/api/events/event-1/publish", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        cookie: `${ACCESS_TOKEN_COOKIE}=${await accessTokenFor("admin-1")}`,
+      },
+      body: JSON.stringify({ makePublic: true }),
+    }),
+    adminContext,
+  );
+
+  expect(adminResponse.status).toBe(200);
+  await expect(adminResponse.json()).resolves.toEqual({
+    event: event({
+      authorId: "admin-1",
+      status: "published",
+      isPublic: true,
+      publishedAt: "2026-06-03T09:00:00.000Z",
+    }),
+  });
+  expect(adminContext.eventRepository.publishOwnDraft).toHaveBeenCalledWith({
+    eventId: "event-1",
+    authorId: "admin-1",
+    isPublic: true,
+    publishedAt: "2026-06-03T09:00:00.000Z",
+  });
+});
+
+test("admin event visibility routes toggle public visibility", async () => {
+  const token = await accessTokenFor("admin-1");
+  const transitions = [
+    {
+      path: "/api/events/event-1/public",
+      isPublic: true,
+    },
+    {
+      path: "/api/events/event-1/member-only",
+      isPublic: false,
+    },
+  ] as const;
+
+  for (const transition of transitions) {
+    const context = createApiTestContext({
+      currentUser: adminCurrentUser(),
+      eventResult: event({
+        status: "published",
+        isPublic: transition.isPublic,
+      }),
+    });
+
+    const response = await handleApiRequest(
+      new Request(`https://calella-chess-club.test${transition.path}`, {
+        method: "POST",
+        headers: {
+          cookie: `${ACCESS_TOKEN_COOKIE}=${token}`,
+        },
+      }),
+      context,
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      event: event({
+        status: "published",
+        isPublic: transition.isPublic,
+      }),
+    });
+    expect(context.eventRepository.updatePublicVisibility).toHaveBeenCalledWith({
+      eventId: "event-1",
+      isPublic: transition.isPublic,
+      updatedAt: "2026-06-03T09:00:00.000Z",
+    });
+  }
+});
+
+test("DELETE /api/events/:id soft deletes owner events and admin-visible published events", async () => {
+  const ownerContext = createApiTestContext({
+    currentUser: memberCurrentUser(),
+    eventResult: event({ status: "deleted", deletedBy: "user-1" }),
+  });
+
+  const ownerResponse = await handleApiRequest(
+    new Request("https://calella-chess-club.test/api/events/event-1", {
+      method: "DELETE",
+      headers: {
+        cookie: `${ACCESS_TOKEN_COOKIE}=${await accessTokenFor("user-1")}`,
+      },
+    }),
+    ownerContext,
+  );
+
+  expect(ownerResponse.status).toBe(200);
+  await expect(ownerResponse.json()).resolves.toEqual({
+    event: event({ status: "deleted", deletedBy: "user-1" }),
+  });
+  expect(ownerContext.eventRepository.softDeleteOwnEvent).toHaveBeenCalledWith({
+    eventId: "event-1",
+    userId: "user-1",
+    deletedAt: "2026-06-03T09:00:00.000Z",
+  });
+
+  const adminContext = createApiTestContext({
+    currentUser: adminCurrentUser(),
+    eventResult: null,
+    adminEventResult: event({ status: "deleted", deletedBy: "admin-1" }),
+  });
+
+  const adminResponse = await handleApiRequest(
+    new Request("https://calella-chess-club.test/api/events/event-1", {
+      method: "DELETE",
+      headers: {
+        cookie: `${ACCESS_TOKEN_COOKIE}=${await accessTokenFor("admin-1")}`,
+      },
+    }),
+    adminContext,
+  );
+
+  expect(adminResponse.status).toBe(200);
+  await expect(adminResponse.json()).resolves.toEqual({
+    event: event({ status: "deleted", deletedBy: "admin-1" }),
+  });
+  expect(adminContext.eventRepository.softDeletePublishedEvent).toHaveBeenCalledWith({
+    eventId: "event-1",
+    deletedBy: "admin-1",
+    deletedAt: "2026-06-03T09:00:00.000Z",
+  });
+});
+
 test("unsupported api routes return a stable error code", async () => {
   const response = await handleApiRequest(
     new Request("https://calella-chess-club.test/api/missing"),
@@ -673,6 +1042,10 @@ function createApiTestContext(options: {
   posts?: unknown[];
   postResult?: unknown;
   adminPostResult?: unknown;
+  events?: unknown[];
+  eventResult?: unknown;
+  adminEventResult?: unknown;
+  newId?: string;
 } = {}) {
   return {
     repository: {
@@ -692,9 +1065,19 @@ function createApiTestContext(options: {
       softDeleteOwnPost: vi.fn().mockResolvedValue(options.postResult),
       softDeletePublishedPost: vi.fn().mockResolvedValue(options.adminPostResult),
     },
+    eventRepository: {
+      listVisibleEvents: vi.fn().mockResolvedValue(options.events ?? []),
+      findVisibleEventById: vi.fn().mockResolvedValue(options.eventResult),
+      createEventDraft: vi.fn().mockResolvedValue(options.eventResult),
+      updateOwnEvent: vi.fn().mockResolvedValue(options.eventResult),
+      publishOwnDraft: vi.fn().mockResolvedValue(options.eventResult),
+      updatePublicVisibility: vi.fn().mockResolvedValue(options.eventResult),
+      softDeleteOwnEvent: vi.fn().mockResolvedValue(options.eventResult),
+      softDeletePublishedEvent: vi.fn().mockResolvedValue(options.adminEventResult),
+    },
     jwtSigningSecret: "jwt-secret",
     now: () => new Date("2026-06-03T09:00:00.000Z"),
-    newId: () => "post-1",
+    newId: () => options.newId ?? "post-1",
   };
 }
 
@@ -760,6 +1143,27 @@ function post(overrides: Record<string, unknown> = {}) {
     authorUsername: "RobinSrimal",
     title: "Club night results",
     bodyMarkdown: "**Round 1** starts at 19:00.",
+    status: "draft",
+    isPublic: false,
+    publishedAt: null,
+    createdAt: "2026-06-03T09:00:00.000Z",
+    updatedAt: "2026-06-03T09:00:00.000Z",
+    deletedAt: null,
+    deletedBy: null,
+    ...overrides,
+  };
+}
+
+function event(overrides: Record<string, unknown> = {}) {
+  return {
+    id: "event-1",
+    authorId: "user-1",
+    authorUsername: "RobinSrimal",
+    title: "Club rapid night",
+    descriptionMarkdown: "**Round 1** starts at 19:00.",
+    location: "Calella Chess Club",
+    startsAt: "2026-06-10T17:00:00.000Z",
+    endsAt: "2026-06-10T19:00:00.000Z",
     status: "draft",
     isPublic: false,
     publishedAt: null,
