@@ -1,6 +1,11 @@
 ---
+import { Resource } from "sst/resource/cloudflare";
 import PublicLayout from "../../layouts/PublicLayout.astro";
 import { getTranslations } from "../../i18n";
+import {
+  getPublicLandingData,
+  type PublicLandingData,
+} from "../../lib/public-feed";
 import { getLocaleFromParam, writeLocaleCookie } from "../../lib/locale";
 
 const locale = getLocaleFromParam(Astro.params.locale);
@@ -10,6 +15,28 @@ if (!locale) {
 
 writeLocaleCookie(Astro.cookies, locale);
 const t = getTranslations(locale);
+const publicData = await loadPublicLandingData();
+const dateTimeFormatter = new Intl.DateTimeFormat(locale, {
+  dateStyle: "medium",
+  timeStyle: "short",
+});
+
+async function loadPublicLandingData(): Promise<PublicLandingData> {
+  try {
+    return await getPublicLandingData(Resource.Api);
+  } catch {
+    return { posts: [], events: [] };
+  }
+}
+
+function formatDateTime(value: string) {
+  return dateTimeFormatter.format(new Date(value));
+}
+
+function preview(value: string) {
+  const trimmed = value.trim();
+  return trimmed.length > 180 ? `${trimmed.slice(0, 177).trim()}...` : trimmed;
+}
 ---
 
 <PublicLayout locale={locale} title={t.landing.title} currentPath={Astro.url.pathname}>
@@ -27,11 +54,49 @@ const t = getTranslations(locale);
     <div class="shell-inner section-grid">
       <article class="panel">
         <h2>{t.landing.postsTitle}</h2>
-        <p>{t.landing.postsEmpty}</p>
+        {
+          publicData.posts.length > 0 ? (
+            <ul class="feed-list">
+              {publicData.posts.map((post) => (
+                <li class="feed-item">
+                  <h3 class="feed-title">{post.title}</h3>
+                  <p class="feed-meta">
+                    <time datetime={post.publishedAt}>
+                      {formatDateTime(post.publishedAt)}
+                    </time>
+                    <span>{post.authorUsername}</span>
+                  </p>
+                  <p class="feed-body">{preview(post.bodyMarkdown)}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>{t.landing.postsEmpty}</p>
+          )
+        }
       </article>
       <article class="panel">
         <h2>{t.landing.eventsTitle}</h2>
-        <p>{t.landing.eventsEmpty}</p>
+        {
+          publicData.events.length > 0 ? (
+            <ul class="feed-list">
+              {publicData.events.map((event) => (
+                <li class="feed-item">
+                  <h3 class="feed-title">{event.title}</h3>
+                  <p class="feed-meta">
+                    <time datetime={event.startsAt}>
+                      {formatDateTime(event.startsAt)}
+                    </time>
+                    {event.location ? <span>{event.location}</span> : null}
+                  </p>
+                  <p class="feed-body">{preview(event.descriptionMarkdown)}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>{t.landing.eventsEmpty}</p>
+          )
+        }
       </article>
     </div>
   </section>

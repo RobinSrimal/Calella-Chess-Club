@@ -237,6 +237,57 @@ input {
   line-height: 1.55;
 }
 
+.feed-list {
+  display: grid;
+  gap: 0;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.feed-item {
+  display: grid;
+  gap: 8px;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+}
+
+.feed-item:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.feed-title {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.feed-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.feed-meta span {
+  color: var(--muted);
+}
+
+.feed-body {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: var(--muted);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
 .page-intro {
   padding: 42px 0 22px;
 }
