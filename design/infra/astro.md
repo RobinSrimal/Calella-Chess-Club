@@ -36,6 +36,18 @@ adapter: cloudflare({
 })
 ```
 
+## React Islands
+
+Astro can render React components through the Astro React integration. This does not require a separate Cloudflare resource.
+
+The project should add React only when the first interactive island is implemented:
+
+```bash
+npx astro add react
+```
+
+Interactive auth forms, post/event editors, calendar controls, and admin tables can then be written as `.tsx` components and hydrated from `.astro` pages with explicit `client:*` directives. Non-interactive layout and content should remain `.astro`.
+
 ## Links And Environment
 
 The website should receive public API route configuration through environment variables. Secrets remain server-side and must not be exposed with a `PUBLIC_` prefix.

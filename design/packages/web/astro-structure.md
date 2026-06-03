@@ -29,6 +29,14 @@ packages/web/src/
   components/
     LanguageSwitcher.astro
     MarkdownRenderer.astro
+    forms/
+      RegistrationForm.tsx
+      LoginForm.tsx
+    admin/
+      MembershipQueue.tsx
+    editor/
+      PostEditor.tsx
+      EventEditor.tsx
   i18n/
     ca.ts
     es.ts
@@ -53,3 +61,31 @@ en
 ```
 
 Invalid locale paths should render a not-found response or redirect to `/ca`.
+
+## Astro And React
+
+The web package is Astro-first. `.astro` files own routes, layouts, server rendering, static sections, and translated chrome.
+
+React is available as the intended client-side island framework, but it should not be installed until the first interactive island is implemented. Expected React islands include auth forms, member editors, calendar interactions, and admin review tables.
+
+React islands must be embedded from Astro with explicit hydration directives:
+
+```astro
+<RegistrationForm client:load />
+<MembershipQueue client:visible />
+```
+
+Use the least aggressive hydration mode that fits the workflow:
+
+```txt
+client:load
+  For forms or controls needed immediately.
+
+client:idle
+  For secondary interactions that can wait until the browser is idle.
+
+client:visible
+  For below-the-fold panels and tables.
+```
+
+Do not hydrate static navigation, headings, translated copy, or other UI that does not need browser-side state.

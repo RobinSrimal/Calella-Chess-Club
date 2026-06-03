@@ -23,6 +23,29 @@ packages/web/
 
 Astro routes are created from files in `src/pages`. Shared page shells live in `src/layouts`. Reusable UI lives in `src/components`.
 
+## Rendering Strategy
+
+Astro is the page, routing, layout, and deployment framework. React can be added later as Astro islands for interactive UI that needs browser state.
+
+```txt
+Use .astro for:
+  pages
+  layouts
+  static content sections
+  mostly-static translated UI
+
+Use React .tsx islands for:
+  login and registration forms
+  post and event editors
+  admin approval tables
+  calendar interactions
+  UI with client-side state or optimistic updates
+```
+
+React should be added with the Astro React integration only when the first interactive component is implemented. Until then, the web package intentionally has no React dependency.
+
+When React components are embedded in Astro pages, hydrate them with the narrowest useful `client:*` directive. Static components should not be hydrated.
+
 ## Language Strategy
 
 ```txt
