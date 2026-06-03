@@ -974,3 +974,46 @@ Kept the secure Path=/api access-cookie scope.
 Added packages/web/src/components/navigation/PublicAuthNav.tsx as a hydrated public-nav island.
 The island calls same-origin /api/me and replaces Login/Register with Member or Admin when the session is still valid.
 ```
+
+## 2026-06-03 - Completed Slice 013: Posts JSON Backend
+
+```txt
+commits
+78e7b9f Add posts JSON storage migration
+72e0cb5 Add restricted post JSON validator
+3fa661a Update post draft validation for JSON bodies
+2652ff3 Return post JSON bodies from API
+eee6cc0 Preview public post JSON bodies
+
+schema
+Added packages/db/migrations/0006_posts_body_json.sql.
+Dev D1 posts table now uses body_json TEXT NOT NULL and no longer has body_markdown.
+Existing dev posts count was 0 before migration, so no post content was dropped.
+
+backend
+Post create/edit requests now use bodyJson.
+Post API responses now return parsed bodyJson arrays.
+The backend accepts restricted paragraph-only BlockNote-compatible JSON with text, bold, italic, and links.
+The backend rejects media/file/table/nested/unsupported block shapes and empty or oversized body JSON.
+Events still use descriptionMarkdown.
+
+web
+Public landing feed types now read post bodyJson.
+Landing previews flatten bodyJson to plain text until a BlockNote renderer exists.
+
+deployment
+Applied dev D1 migration via wrangler d1 execute --file packages/db/migrations/0006_posts_body_json.sql.
+Deployed dev with npx sst deploy --stage dev.
+
+live verification
+Temporary admin member created through D1.
+Logged in through Web-origin /auth/login.
+POST /api/posts returned 201 with bodyJson array.
+GET /api/posts returned 200 with bodyJson array.
+POST /api/posts/:id/publish returned 200 with isPublic true.
+GET /api/public/posts returned 200 and included the JSON post shape.
+Temporary post, user, refresh session, and login attempt cleanup counts were all zero.
+
+next slice
+014-member-post-blocknote-ui
+```

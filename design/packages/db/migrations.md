@@ -23,10 +23,13 @@ packages/db/migrations/
   Creates refresh_sessions and login_attempts for login, refresh, and logout.
 
 0004_posts.sql
-  Creates posts for member-created Markdown posts.
+  Creates posts for member-created Markdown posts. Superseded by 0006 for active post body storage.
 
 0005_events.sql
   Creates events for member-created calendar events.
+
+0006_posts_body_json.sql
+  Rebuilds posts with body_json for restricted BlockNote-compatible JSON documents.
 
 Future auth/session migrations
   Create password_reset_tokens.
@@ -67,7 +70,7 @@ The posts migration creates:
 posts
 ```
 
-Post rows store simple Markdown text, draft/published/deleted status, public visibility, timestamps, and soft-delete metadata. Indexes support author draft lookups, published member feeds, and public post feeds.
+Post rows store restricted BlockNote-compatible JSON body documents, draft/published/deleted status, public visibility, timestamps, and soft-delete metadata. Indexes support author draft lookups, published member feeds, and public post feeds.
 
 ## Events Migration Scope
 

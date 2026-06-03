@@ -121,62 +121,62 @@ This avoids leaving `body_markdown` in the active schema. Existing dev post rows
 
 ### Task 1: Add Posts JSON Migration
 
-- [ ] Add `packages/db/migrations/0006_posts_body_json.sql`.
-- [ ] Update `packages/db/src/schema.test.ts` to assert `body_json TEXT NOT NULL` and no active `body_markdown`.
-- [ ] Update `design/packages/db/tables/posts.md`.
-- [ ] Run `npm test --workspace packages/db`.
-- [ ] Commit migration and table-doc changes.
+- [x] Add `packages/db/migrations/0006_posts_body_json.sql`.
+- [x] Update `packages/db/src/schema.test.ts` to assert `body_json TEXT NOT NULL` and no active `body_markdown`.
+- [x] Update `design/packages/db/tables/posts.md`.
+- [x] Run `npm test --workspace packages/db`.
+- [x] Commit migration and table-doc changes.
 
 ### Task 2: Add Restricted Post Body JSON Validator
 
-- [ ] Create `packages/functions/src/posts/body-json.ts`.
-- [ ] Add tests in `packages/functions/src/posts/body-json.test.ts`.
-- [ ] Accept valid paragraph blocks with plain text, bold text, italic text, and links.
-- [ ] Reject empty bodies, invalid JSON, unsupported block types, nested child blocks, unsupported styles, media/file/table blocks, oversized text, oversized serialized JSON, too many blocks, and invalid link hrefs.
-- [ ] Return parsed canonical document, canonical serialized JSON, and flattened text length.
-- [ ] Run `npx vitest --run packages/functions/src/posts/body-json.test.ts`.
-- [ ] Commit validator changes.
+- [x] Create `packages/functions/src/posts/body-json.ts`.
+- [x] Add tests in `packages/functions/src/posts/body-json.test.ts`.
+- [x] Accept valid paragraph blocks with plain text, bold text, italic text, and links.
+- [x] Reject empty bodies, invalid JSON, unsupported block types, nested child blocks, unsupported styles, media/file/table blocks, oversized text, oversized serialized JSON, too many blocks, and invalid link hrefs.
+- [x] Return parsed canonical document, canonical serialized JSON, and flattened text length.
+- [x] Run `npx vitest --run packages/functions/src/posts/body-json.test.ts`.
+- [x] Commit validator changes.
 
 ### Task 3: Update Post Validation Contract
 
-- [ ] Update `packages/functions/src/posts/validation.ts` from `bodyMarkdown` to `bodyJson`.
-- [ ] Update `packages/functions/src/posts/validation.test.ts`.
-- [ ] Keep stable validation field name `bodyJson`.
-- [ ] Confirm create/edit validation trims title and canonicalizes body JSON.
-- [ ] Run `npx vitest --run packages/functions/src/posts/validation.test.ts`.
-- [ ] Commit validation changes.
+- [x] Update `packages/functions/src/posts/validation.ts` from `bodyMarkdown` to `bodyJson`.
+- [x] Update `packages/functions/src/posts/validation.test.ts`.
+- [x] Keep stable validation field name `bodyJson`.
+- [x] Confirm create/edit validation trims title and canonicalizes body JSON.
+- [x] Run `npx vitest --run packages/functions/src/posts/validation.test.ts`.
+- [x] Commit validation changes.
 
 ### Task 4: Update Repository And API
 
-- [ ] Update `packages/functions/src/posts/repository.ts` types and SQL to use `body_json as bodyJson` internally as canonical JSON text.
-- [ ] Update `packages/functions/src/posts/repository.test.ts`.
-- [ ] Update `packages/functions/src/api.ts` post create/edit/public-feed response handling from `bodyMarkdown` to `bodyJson`, returning parsed JSON arrays in API responses.
-- [ ] Update `packages/functions/src/api.test.ts` post fixtures and assertions.
-- [ ] Ensure event routes still use `descriptionMarkdown`; this slice changes posts only.
-- [ ] Run `npm test --workspace packages/functions`.
-- [ ] Run `npm run typecheck --workspace packages/functions`.
-- [ ] Commit repository/API changes.
+- [x] Update `packages/functions/src/posts/repository.ts` types and SQL to use `body_json as bodyJson` internally as canonical JSON text.
+- [x] Update `packages/functions/src/posts/repository.test.ts`.
+- [x] Update `packages/functions/src/api.ts` post create/edit/public-feed response handling from `bodyMarkdown` to `bodyJson`, returning parsed JSON arrays in API responses.
+- [x] Update `packages/functions/src/api.test.ts` post fixtures and assertions.
+- [x] Ensure event routes still use `descriptionMarkdown`; this slice changes posts only.
+- [x] Run `npm test --workspace packages/functions`.
+- [x] Run `npm run typecheck --workspace packages/functions`.
+- [x] Commit repository/API changes.
 
 ### Task 5: Update Web Public Feed Types Only
 
-- [ ] Update `packages/web/src/lib/public-feed.ts` post type from `bodyMarkdown` to parsed-array `bodyJson`.
-- [ ] Update `packages/web/src/lib/public-feed.test.ts`.
-- [ ] Keep the current landing page preview conservative: flatten `bodyJson` text and show a plain text preview.
-- [ ] Add a small helper such as `previewPostBodyText(bodyJson: PostBodyJson): string`.
-- [ ] Run `npm test --workspace packages/web`.
-- [ ] Run `npx tsc --noEmit -p packages/web/tsconfig.json`.
-- [ ] Commit web feed compatibility changes.
+- [x] Update `packages/web/src/lib/public-feed.ts` post type from `bodyMarkdown` to parsed-array `bodyJson`.
+- [x] Update `packages/web/src/lib/public-feed.test.ts`.
+- [x] Keep the current landing page preview conservative: flatten `bodyJson` text and show a plain text preview.
+- [x] Add a small helper such as `previewPostBodyText(bodyJson: PostBodyJson): string`.
+- [x] Run `npm test --workspace packages/web`.
+- [x] Run `npx tsc --noEmit -p packages/web/tsconfig.json`.
+- [x] Commit web feed compatibility changes.
 
 ### Task 6: Apply Migration And Deploy Dev
 
-- [ ] Apply D1 migration to dev with `npx wrangler d1 migrations apply ccc-dev-databasedatabase-budbdcht --remote --migrations-dir packages/db/migrations`.
-- [ ] Deploy with `npx sst deploy --stage dev`.
-- [ ] Smoke-test `POST /api/posts` through the Web origin with a temporary verified member user and a paragraph-only `bodyJson`.
-- [ ] Smoke-test `GET /api/posts` and `GET /api/public/posts` response shape.
-- [ ] Delete temporary post/user/session rows.
-- [ ] Verify D1 cleanup counts are zero for temporary rows.
-- [ ] Update `design/implementation/log.md` and `design/implementation/roadmap.md`.
-- [ ] Commit final docs.
+- [x] Apply D1 migration to dev with `npx wrangler d1 execute ccc-dev-databasedatabase-budbdcht --remote --file packages/db/migrations/0006_posts_body_json.sql`.
+- [x] Deploy with `npx sst deploy --stage dev`.
+- [x] Smoke-test `POST /api/posts` through the Web origin with a temporary verified admin member and a paragraph-only `bodyJson`.
+- [x] Smoke-test `GET /api/posts` and `GET /api/public/posts` response shape.
+- [x] Delete temporary post/user/session rows.
+- [x] Verify D1 cleanup counts are zero for temporary rows.
+- [x] Update `design/implementation/log.md` and `design/implementation/roadmap.md`.
+- [x] Commit final docs.
 
 ## Next Slice
 
