@@ -1,5 +1,6 @@
 import { expect, test, vi } from "vitest";
 import {
+  createCloudflareD1FirstAdminPromotionRepository,
   promoteFirstAdmin,
   type FirstAdminPromotionRepository,
 } from "./promote-first-admin";
@@ -90,6 +91,55 @@ test("rejects missing, unverified, and disabled users with stable script errors"
   ).resolves.toEqual({
     ok: false,
     code: "SCRIPT_USER_DISABLED",
+  });
+});
+
+test("queries Cloudflare D1 through the HTTP API for script runtimes", async () => {
+  const calls: Array<{ url: string; body: unknown }> = [];
+  const fetchD1 = vi.fn(async (url: string | URL | Request, init?: RequestInit) => {
+    calls.push({
+      url: String(url),
+      body: JSON.parse(String(init?.body)),
+    });
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        result: [
+          {
+            success: true,
+            results: [
+              {
+                id: "user-1",
+                username: "RobinSrimal",
+                email: "robin@example.com",
+                accountStatus: "active",
+                emailVerifiedAt: "2026-06-03T08:00:00.000Z",
+                role: "user",
+              },
+            ],
+          },
+        ],
+      }),
+      { status: 200 },
+    );
+  });
+  const repository = createCloudflareD1FirstAdminPromotionRepository({
+    accountId: "account-id",
+    databaseId: "database-id",
+    apiToken: "api-token",
+    fetch: fetchD1 as typeof fetch,
+  });
+
+  const user = await repository.findUserForFirstAdminPromotion("robinsrimal");
+
+  expect(user?.id).toBe("user-1");
+  expect(calls[0].url).toBe(
+    "https://api.cloudflare.com/client/v4/accounts/account-id/d1/database/database-id/query",
+  );
+  expect(calls[0].body).toEqual({
+    sql: expect.stringContaining("FROM users"),
+    params: ["robinsrimal", "robinsrimal"],
   });
 });
 
