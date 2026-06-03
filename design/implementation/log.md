@@ -1017,3 +1017,14 @@ Temporary post, user, refresh session, and login attempt cleanup counts were all
 next slice
 014-member-post-blocknote-ui
 ```
+
+## 2026-06-03 - Defined Slice 014: Member Post BlockNote UI
+
+```txt
+Created design/implementation/slices/014-member-post-blocknote-ui.md.
+The slice installs BlockNote for the Astro React island member post editor.
+The slice includes a narrow backend contract alignment so native BlockNote paragraph blocks with children: [] are accepted while nested children remain rejected.
+The member post workflow is scoped to list, create draft, edit, publish member-only, and delete.
+Admin public visibility toggles, events, uploads, landing rich rendering, and extra block types remain out of scope.
+The roadmap now points current slice 014 at the detailed plan.
+```

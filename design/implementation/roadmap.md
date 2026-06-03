@@ -25,7 +25,7 @@ Goal: install BlockNote and connect member post list/create/edit/publish/delete 
 Detailed plan:
 
 ```txt
-not written yet
+design/implementation/slices/014-member-post-blocknote-ui.md
 ```
 
 ## Future Slices

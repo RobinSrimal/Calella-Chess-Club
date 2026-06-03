@@ -32,17 +32,19 @@ packages/web/src/
     AdminLayout.astro
   components/
     LanguageSwitcher.astro
-    MarkdownRenderer.astro
     forms/
       RegistrationForm.tsx
       LoginForm.tsx
     navigation/
       PublicAuthNav.tsx
       public-auth-nav-state.ts
+    member/
+      MemberPostsPanel.tsx
+      member-posts-state.ts
     admin/
       MembershipQueue.tsx
     editor/
-      PostEditor.tsx
+      PostBlockEditor.tsx
       EventEditor.tsx
   i18n/
     ca.ts
@@ -52,6 +54,7 @@ packages/web/src/
     browser-api.ts
     email-verification.ts
     locale.ts
+    post-body.ts
     proxy.ts
     public-feed.ts
   styles/
