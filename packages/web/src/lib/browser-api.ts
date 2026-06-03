@@ -1,4 +1,9 @@
 import type { Locale } from "./locale";
+import {
+  normalizePostEditorDocument,
+  type PostBodyJson,
+  type PostEditorDocument,
+} from "./post-body";
 
 export type MembershipStatus = "none" | "pending" | "member" | "rejected";
 export type UserRole = "user" | "admin";
@@ -36,6 +41,28 @@ export type LoginInput = {
   password: string;
 };
 
+export type PostStatus = "draft" | "published" | "deleted";
+
+export type MemberPost = {
+  id: string;
+  authorId: string;
+  authorUsername: string;
+  title: string;
+  bodyJson: PostBodyJson;
+  status: PostStatus;
+  isPublic: boolean;
+  publishedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  deletedBy: string | null;
+};
+
+export type PostDraftInput = {
+  title: string;
+  bodyJson: PostEditorDocument;
+};
+
 type FetchFn = typeof fetch;
 
 export function registerUser(
@@ -56,6 +83,66 @@ export function getCurrentUser(
   fetchFn: FetchFn = fetch,
 ): Promise<ApiResult<{ user: PublicUser }>> {
   return requestJson("/api/me", { method: "GET" }, fetchFn);
+}
+
+export function listPosts(
+  fetchFn: FetchFn = fetch,
+): Promise<ApiResult<{ posts: MemberPost[] }>> {
+  return requestJson("/api/posts", { method: "GET" }, fetchFn);
+}
+
+export function createPost(
+  input: PostDraftInput,
+  fetchFn: FetchFn = fetch,
+): Promise<ApiResult<{ post: MemberPost }>> {
+  return postJson("/api/posts", normalizePostDraftInput(input), fetchFn);
+}
+
+export function updatePost(
+  postId: string,
+  input: PostDraftInput,
+  fetchFn: FetchFn = fetch,
+): Promise<ApiResult<{ post: MemberPost }>> {
+  return requestJson(
+    `/api/posts/${encodeURIComponent(postId)}`,
+    {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(normalizePostDraftInput(input)),
+    },
+    fetchFn,
+  );
+}
+
+export function publishPost(
+  postId: string,
+  fetchFn: FetchFn = fetch,
+): Promise<ApiResult<{ post: MemberPost }>> {
+  return postJson(
+    `/api/posts/${encodeURIComponent(postId)}/publish`,
+    { makePublic: false },
+    fetchFn,
+  );
+}
+
+export function deletePost(
+  postId: string,
+  fetchFn: FetchFn = fetch,
+): Promise<ApiResult<{ post: MemberPost }>> {
+  return requestJson(
+    `/api/posts/${encodeURIComponent(postId)}`,
+    { method: "DELETE" },
+    fetchFn,
+  );
+}
+
+function normalizePostDraftInput(input: PostDraftInput) {
+  return {
+    title: input.title,
+    bodyJson: normalizePostEditorDocument(input.bodyJson),
+  };
 }
 
 function postJson<TBody extends object, TResponse>(
