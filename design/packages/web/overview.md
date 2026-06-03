@@ -46,6 +46,8 @@ React should be added with the Astro React integration only when the first inter
 
 When React components are embedded in Astro pages, hydrate them with the narrowest useful `client:*` directive. Static components should not be hydrated.
 
+The localized public landing page fetches public posts and upcoming public events server-side from the linked Api Worker. If the feed request fails, the page renders localized empty states instead of failing the whole page.
+
 ## Language Strategy
 
 ```txt

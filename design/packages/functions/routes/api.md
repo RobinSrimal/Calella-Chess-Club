@@ -8,6 +8,8 @@ App API Worker.
 
 ```txt
 GET /api/health
+GET /api/public/posts
+GET /api/public/events
 GET /api/me
 GET /api/admin/users
 POST /api/admin/users/:id/approve-membership
@@ -30,12 +32,6 @@ POST /api/events/:id/publish
 POST /api/events/:id/public
 POST /api/events/:id/member-only
 DELETE /api/events/:id
-```
-
-## Future Route Groups
-
-```txt
-/api/public/*
 ```
 
 ## Error Format

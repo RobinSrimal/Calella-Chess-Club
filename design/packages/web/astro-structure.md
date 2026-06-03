@@ -44,6 +44,7 @@ packages/web/src/
   lib/
     api.ts
     locale.ts
+    public-feed.ts
   styles/
     global.css
 ```

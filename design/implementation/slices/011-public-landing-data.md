@@ -6,7 +6,7 @@
 
 **Architecture:** Api owns unauthenticated public feed routes. Public routes only return published, non-deleted rows with `is_public = true`. The Astro landing page fetches those routes server-side and renders localized empty states when no public content exists.
 
-**Tech Stack:** Cloudflare Workers, D1, Astro, SST-linked Api URL, simple Markdown text display, stable JSON error codes.
+**Tech Stack:** Cloudflare Workers, D1, Astro, SST-linked Api service binding, simple Markdown text display, stable JSON error codes.
 
 ---
 
@@ -64,40 +64,40 @@ RSS/ICS feeds
 
 ### Task 1: Add Public Feed Repository Methods
 
-- [ ] Add public post list query.
-- [ ] Add public event list query.
-- [ ] Return only published rows with `is_public = true`.
-- [ ] Limit the number of returned rows.
-- [ ] Cover SQL behavior with focused repository tests.
+- [x] Add public post list query.
+- [x] Add public event list query.
+- [x] Return only published rows with `is_public = true`.
+- [x] Limit the number of returned rows.
+- [x] Cover SQL behavior with focused repository tests.
 
 ### Task 2: Add Public API Routes
 
-- [ ] Implement `GET /api/public/posts`.
-- [ ] Implement `GET /api/public/events`.
-- [ ] Return stable response shapes.
-- [ ] Keep routes unauthenticated.
-- [ ] Add route tests proving drafts, deleted, and member-only rows are excluded at repository level.
+- [x] Implement `GET /api/public/posts`.
+- [x] Implement `GET /api/public/events`.
+- [x] Return stable response shapes.
+- [x] Keep routes unauthenticated.
+- [x] Add route tests proving drafts, deleted, and member-only rows are excluded at repository level.
 
 ### Task 3: Add Web API Helper
 
-- [ ] Add a small web data helper for public posts/events.
-- [ ] Read the API base URL from SST-linked resources or a build/runtime-safe fallback.
-- [ ] Return empty arrays if the API fetch fails so the landing page remains renderable.
-- [ ] Add helper tests where practical.
+- [x] Add a small web data helper for public posts/events.
+- [x] Read the API base URL from SST-linked resources or a build/runtime-safe fallback.
+- [x] Return empty arrays if the API fetch fails so the landing page remains renderable.
+- [x] Add helper tests where practical.
 
 ### Task 4: Connect The Landing Page
 
-- [ ] Update `packages/web/src/pages/[locale]/index.astro`.
-- [ ] Render API-backed public posts.
-- [ ] Render API-backed public events.
-- [ ] Preserve Catalan, Spanish, and English localized empty labels.
-- [ ] Avoid client-only loading for the first version.
+- [x] Update `packages/web/src/pages/[locale]/index.astro`.
+- [x] Render API-backed public posts.
+- [x] Render API-backed public events.
+- [x] Preserve Catalan, Spanish, and English localized empty labels.
+- [x] Avoid client-only loading for the first version.
 
 ### Task 5: Deploy And Record
 
-- [ ] Run package tests and typechecks.
-- [ ] Deploy dev.
-- [ ] Create temporary public and member-only post/event rows for live checks.
-- [ ] Live-check public API routes and localized landing page output.
-- [ ] Clean up temporary live-check data.
-- [ ] Update design docs, implementation log, and roadmap.
+- [x] Run package tests and typechecks.
+- [x] Deploy dev.
+- [x] Create temporary public and member-only post/event rows for live checks.
+- [x] Live-check public API routes and localized landing page output.
+- [x] Clean up temporary live-check data.
+- [x] Update design docs, implementation log, and roadmap.

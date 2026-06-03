@@ -17,15 +17,15 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-011-public-landing-data
+012-web-auth-forms-and-proxy
 ```
 
-Goal: expose public post/event feeds and connect the localized landing page to public data.
+Goal: make browser auth work from the website with same-origin proxy routes and functional login/register forms.
 
 Detailed plan:
 
 ```txt
-design/implementation/slices/011-public-landing-data.md
+design/implementation/slices/012-web-auth-forms-and-proxy.md
 ```
 
 ## Future Slices
@@ -33,9 +33,9 @@ design/implementation/slices/011-public-landing-data.md
 Future slices are intentionally high-level until the previous slice has been completed and reviewed.
 
 ```txt
-012-member-content-ui
+013-member-content-ui
   Connect member post/event screens to the authenticated APIs.
 
-013-admin-content-ui
+014-admin-content-ui
   Connect admin user/content screens to the admin APIs.
 ```

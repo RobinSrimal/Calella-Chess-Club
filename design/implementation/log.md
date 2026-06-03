@@ -753,6 +753,74 @@ remaining note
 Frontend event screens are still static route shells. Public landing page feeds are still not connected to public events.
 ```
 
+### Completed Slice: 011-public-landing-data
+
+```txt
+commit hashes
+d8abbb7 Add public feed repository methods
+fe5f825 Add public feed API routes
+33c03cd Add public landing data client
+16a6fda Show public feeds on landing page
+
+files changed
+packages/functions/src/api.ts
+packages/functions/src/api.test.ts
+packages/functions/src/posts/repository.ts
+packages/functions/src/posts/repository.test.ts
+packages/functions/src/events/repository.ts
+packages/functions/src/events/repository.test.ts
+packages/web/src/lib/public-feed.ts
+packages/web/src/lib/public-feed.test.ts
+packages/web/src/pages/[locale]/index.astro
+packages/web/src/styles/global.css
+
+implemented routes
+GET /api/public/posts
+GET /api/public/events
+
+deployment command
+npx sst deploy --stage dev
+
+deployment result
+SST deployed the dev stage and updated the Api and Web workers.
+AuthApiUrl: https://ccc-dev-authapiscript-bdteakex.robin-srimal.workers.dev
+ApiUrl: https://ccc-dev-apiscript-noawkcsx.robin-srimal.workers.dev
+WebUrl: https://ccc-dev-webworkerscript.robin-srimal.workers.dev
+DatabaseId: edf26084-32a2-4d25-b608-ec4ed6a0e763
+
+live verification result
+Temporary public and member-only post/event rows were inserted into dev D1.
+GET /api/public/posts returned 200 and included Live public post 011.
+GET /api/public/posts did not include Live member-only post 011.
+GET /api/public/events returned 200 and included Live public event 011.
+GET /api/public/events did not include Live member-only event 011.
+GET /ca on the dev Web URL rendered the public post and event titles.
+GET /ca on the dev Web URL did not render the member-only post or event titles.
+Temporary live-check rows were deleted after verification.
+
+verification commands
+npm test --workspace packages/functions
+npm test --workspace packages/web
+npm run typecheck --workspace packages/functions
+npx tsc --noEmit -p packages/web/tsconfig.json
+npm run build --workspace packages/web
+
+verification results
+Functions Vitest exited 0 with 90 tests passing.
+Web Vitest exited 0 with 10 tests passing.
+Functions typecheck exited 0.
+Web TypeScript check exited 0.
+Astro build exited 0.
+
+deployment note
+An initial deploy without --stage targeted the local default stage robinsrimal and failed because that stage has no SST secrets.
+The successful deploy explicitly targeted --stage dev.
+The failed default-stage deploy created a partial robinsrimal D1 resource with no app tables; remove it only with explicit approval because stage removal is destructive.
+
+remaining note
+The landing page renders Markdown source as escaped plain text previews. Rich Markdown rendering remains intentionally deferred.
+```
+
 ### Current State
 
 ```txt
@@ -771,9 +839,9 @@ packages/db now owns an applied auth session migration for refresh_sessions and 
 packages/db now owns an applied posts migration.
 packages/db now owns an applied events migration.
 packages/functions now owns an Auth Worker with health, registration, email verification, login, refresh, and logout routes.
-packages/functions now owns an App API Worker with health, /api/me, admin user management routes, post routes, and event routes.
+packages/functions now owns an App API Worker with health, public landing feeds, /api/me, admin user management routes, post routes, and event routes.
 packages/scripts now owns the first-admin promotion script.
-packages/web now owns the Astro shell, localized routes, layout components, i18n dictionaries, and generated hero image.
+packages/web now owns the Astro shell, localized routes, server-rendered public landing feeds, layout components, i18n dictionaries, and generated hero image.
 Design docs mirror intended infra, package, route, page, and table structure.
 No AWS resources are active in SST infra.
 No app-owned AWS scaffold references remain in active source or package metadata.
@@ -782,7 +850,7 @@ No app-owned AWS scaffold references remain in active source or package metadata
 ### Next Slice
 
 ```txt
-011-public-landing-data
+012-web-auth-forms-and-proxy
 ```
 
-The next slice candidate should expose public post/event feeds and connect the localized landing page to public data.
+The next slice candidate should make browser auth work from the website with same-origin proxy routes and functional login/register forms.
