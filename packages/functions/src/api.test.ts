@@ -193,6 +193,113 @@ test("admin routes require a valid active admin user", async () => {
   });
 });
 
+test("admin membership routes update membership states", async () => {
+  const token = await accessTokenFor("admin-1");
+  const transitions = [
+    {
+      path: "/api/admin/users/user-1/approve-membership",
+      membershipStatus: "member",
+    },
+    {
+      path: "/api/admin/users/user-1/reject-membership",
+      membershipStatus: "rejected",
+    },
+    {
+      path: "/api/admin/users/user-1/restore-membership",
+      membershipStatus: "pending",
+    },
+  ] as const;
+
+  for (const transition of transitions) {
+    const context = createApiTestContext({
+      currentUser: adminCurrentUser(),
+      membershipUpdateResult: adminUserSummary({
+        membershipStatus: transition.membershipStatus,
+      }),
+    });
+
+    const response = await handleApiRequest(
+      new Request(`https://calella-chess-club.test${transition.path}`, {
+        method: "POST",
+        headers: {
+          cookie: `${ACCESS_TOKEN_COOKIE}=${token}`,
+        },
+      }),
+      context,
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      user: adminUserSummary({
+        membershipStatus: transition.membershipStatus,
+      }),
+    });
+    expect(context.repository.updateMembershipStatus).toHaveBeenCalledWith({
+      userId: "user-1",
+      membershipStatus: transition.membershipStatus,
+      updatedAt: "2026-06-03T09:00:00.000Z",
+    });
+  }
+});
+
+test("admin membership routes reject unknown users", async () => {
+  const response = await handleApiRequest(
+    new Request(
+      "https://calella-chess-club.test/api/admin/users/missing/approve-membership",
+      {
+        method: "POST",
+        headers: {
+          cookie: `${ACCESS_TOKEN_COOKIE}=${await accessTokenFor("admin-1")}`,
+        },
+      },
+    ),
+    createApiTestContext({
+      currentUser: adminCurrentUser(),
+      membershipUpdateResult: null,
+    }),
+  );
+
+  expect(response.status).toBe(404);
+  await expect(response.json()).resolves.toEqual({
+    error: { code: "API_USER_NOT_FOUND" },
+  });
+});
+
+test("admin disable route disables accounts and revokes sessions", async () => {
+  const context = createApiTestContext({
+    currentUser: adminCurrentUser(),
+    disableResult: adminUserSummary({
+      accountStatus: "disabled",
+      disabledAt: "2026-06-03T09:00:00.000Z",
+      disabledBy: "admin-1",
+    }),
+  });
+
+  const response = await handleApiRequest(
+    new Request("https://calella-chess-club.test/api/admin/users/user-1/disable", {
+      method: "POST",
+      headers: {
+        cookie: `${ACCESS_TOKEN_COOKIE}=${await accessTokenFor("admin-1")}`,
+      },
+    }),
+    context,
+  );
+
+  expect(response.status).toBe(200);
+  await expect(response.json()).resolves.toEqual({
+    user: adminUserSummary({
+      accountStatus: "disabled",
+      disabledAt: "2026-06-03T09:00:00.000Z",
+      disabledBy: "admin-1",
+    }),
+  });
+  expect(context.repository.disableUserAndRevokeSessions).toHaveBeenCalledWith({
+    userId: "user-1",
+    disabledBy: "admin-1",
+    disabledAt: "2026-06-03T09:00:00.000Z",
+  });
+});
+
 test("unsupported api routes return a stable error code", async () => {
   const response = await handleApiRequest(
     new Request("https://calella-chess-club.test/api/missing"),
@@ -213,12 +320,16 @@ function createApiTestContext(options: {
   user?: unknown;
   currentUser?: unknown;
   adminUsers?: unknown[];
+  membershipUpdateResult?: unknown;
+  disableResult?: unknown;
 } = {}) {
   return {
     repository: {
       findPublicUserById: vi.fn().mockResolvedValue(options.user),
       findCurrentUserById: vi.fn().mockResolvedValue(options.currentUser),
       listAdminUsers: vi.fn().mockResolvedValue(options.adminUsers ?? []),
+      updateMembershipStatus: vi.fn().mockResolvedValue(options.membershipUpdateResult),
+      disableUserAndRevokeSessions: vi.fn().mockResolvedValue(options.disableResult),
     },
     jwtSigningSecret: "jwt-secret",
     now: () => new Date("2026-06-03T09:00:00.000Z"),
@@ -261,7 +372,7 @@ function adminCurrentUser() {
   };
 }
 
-function adminUserSummary() {
+function adminUserSummary(overrides: Record<string, unknown> = {}) {
   return {
     ...publicUser(),
     accountStatus: "active",
@@ -269,5 +380,6 @@ function adminUserSummary() {
     updatedAt: "2026-06-03T08:00:00.000Z",
     disabledAt: null,
     disabledBy: null,
+    ...overrides,
   };
 }

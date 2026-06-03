@@ -21,6 +21,7 @@ export type ApiErrorCode =
   | "API_AUTH_INVALID"
   | "API_AUTH_REQUIRED"
   | "API_FORBIDDEN"
+  | "API_USER_NOT_FOUND"
   | "API_VALIDATION_FAILED"
   | "API_ROUTE_NOT_FOUND";
 
@@ -39,10 +40,18 @@ export type AdminUsersResponse = {
   users: AdminUserSummary[];
 };
 
+export type AdminUserResponse = {
+  user: AdminUserSummary;
+};
+
 export type ApiContext = {
   repository: Pick<
     AuthRepository,
-    "findPublicUserById" | "findCurrentUserById" | "listAdminUsers"
+    | "findPublicUserById"
+    | "findCurrentUserById"
+    | "listAdminUsers"
+    | "updateMembershipStatus"
+    | "disableUserAndRevokeSessions"
   >;
   jwtSigningSecret: string;
   now: () => Date;
@@ -52,7 +61,8 @@ type JsonBody =
   | ApiHealthResponse
   | ApiErrorResponse
   | MeResponse
-  | AdminUsersResponse;
+  | AdminUsersResponse
+  | AdminUserResponse;
 
 const MEMBERSHIP_STATUSES = ["none", "pending", "member", "rejected"] as const;
 const USER_ROLES = ["user", "admin"] as const;
@@ -78,6 +88,15 @@ export async function handleApiRequest(
 
   if (request.method === "GET" && url.pathname === "/api/admin/users") {
     return listAdminUsers(request, url, context ?? createDefaultApiContext());
+  }
+
+  const adminUserAction = parseAdminUserAction(url.pathname);
+  if (request.method === "POST" && adminUserAction) {
+    return handleAdminUserAction(
+      request,
+      adminUserAction,
+      context ?? createDefaultApiContext(),
+    );
   }
 
   return errorResponse("API_ROUTE_NOT_FOUND", 404);
@@ -139,6 +158,39 @@ async function listAdminUsers(
   });
 }
 
+async function handleAdminUserAction(
+  request: Request,
+  action: AdminUserAction,
+  context: ApiContext,
+): Promise<Response> {
+  const admin = await requireAdmin(request, context);
+  if (!admin.ok) {
+    return admin.response;
+  }
+
+  const nowIso = context.now().toISOString();
+  const user =
+    action.kind === "disable"
+      ? await context.repository.disableUserAndRevokeSessions({
+          userId: action.userId,
+          disabledBy: admin.user.id,
+          disabledAt: nowIso,
+        })
+      : await context.repository.updateMembershipStatus({
+          userId: action.userId,
+          membershipStatus: action.membershipStatus,
+          updatedAt: nowIso,
+        });
+
+  if (!user) {
+    return errorResponse("API_USER_NOT_FOUND", 404);
+  }
+
+  return jsonResponse({
+    user,
+  });
+}
+
 async function requireAdmin(
   request: Request,
   context: ApiContext,
@@ -195,6 +247,64 @@ async function requireAdmin(
     ok: true,
     user,
   };
+}
+
+type AdminUserAction =
+  | {
+      kind: "membership";
+      userId: string;
+      membershipStatus: MembershipStatus;
+    }
+  | {
+      kind: "disable";
+      userId: string;
+    };
+
+function parseAdminUserAction(pathname: string): AdminUserAction | undefined {
+  const segments = pathname.split("/").filter(Boolean);
+  if (
+    segments.length !== 5 ||
+    segments[0] !== "api" ||
+    segments[1] !== "admin" ||
+    segments[2] !== "users"
+  ) {
+    return undefined;
+  }
+
+  const userId = decodeURIComponent(segments[3] ?? "");
+  if (!userId) {
+    return undefined;
+  }
+
+  if (segments[4] === "approve-membership") {
+    return {
+      kind: "membership",
+      userId,
+      membershipStatus: "member",
+    };
+  }
+  if (segments[4] === "reject-membership") {
+    return {
+      kind: "membership",
+      userId,
+      membershipStatus: "rejected",
+    };
+  }
+  if (segments[4] === "restore-membership") {
+    return {
+      kind: "membership",
+      userId,
+      membershipStatus: "pending",
+    };
+  }
+  if (segments[4] === "disable") {
+    return {
+      kind: "disable",
+      userId,
+    };
+  }
+
+  return undefined;
 }
 
 function parseAdminUserFilters(
