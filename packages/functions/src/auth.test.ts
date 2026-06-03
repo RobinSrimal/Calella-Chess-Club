@@ -172,6 +172,9 @@ test("POST /auth/register rejects invalid request bodies and email send failures
   await expect(emailFailureResponse.json()).resolves.toEqual({
     error: { code: "AUTH_EMAIL_SEND_FAILED" },
   });
+  expect(emailFailureContext.repository.deleteUnverifiedUser).toHaveBeenCalledWith(
+    "id-1",
+  );
 });
 
 test("GET /auth/verify-email marks valid tokens as pending membership", async () => {
@@ -276,6 +279,7 @@ function createAuthTestContext(options: {
     findUserByUsernameNormalized: vi.fn().mockResolvedValue(options.existingUsername),
     findUserByEmailNormalized: vi.fn().mockResolvedValue(options.existingEmail),
     createUserWithVerificationToken: vi.fn().mockResolvedValue(undefined),
+    deleteUnverifiedUser: vi.fn().mockResolvedValue(undefined),
     findVerificationTokenByHash: vi.fn().mockResolvedValue(options.verificationToken),
     markEmailVerified: vi.fn().mockResolvedValue(undefined),
   };

@@ -62,6 +62,7 @@ export type AuthRepository = {
   findUserByUsernameNormalized(usernameNormalized: string): Promise<UserLookup | null>;
   findUserByEmailNormalized(emailNormalized: string): Promise<UserLookup | null>;
   createUserWithVerificationToken(input: CreateUserWithVerificationTokenInput): Promise<void>;
+  deleteUnverifiedUser(userId: string): Promise<void>;
   findVerificationTokenByHash(tokenHash: string): Promise<VerificationTokenLookup | null>;
   markEmailVerified(input: MarkEmailVerifiedInput): Promise<void>;
 };
@@ -127,6 +128,24 @@ export function createD1AuthRepository(database: D1Database): AuthRepository {
             input.token.usedAt,
             input.token.createdAt,
           ),
+      ]);
+    },
+
+    async deleteUnverifiedUser(userId) {
+      await database.batch([
+        database
+          .prepare("DELETE FROM email_verification_tokens WHERE user_id = ?")
+          .bind(userId),
+        database
+          .prepare(
+            [
+              "DELETE FROM users",
+              "WHERE id = ?",
+              "AND email_verified_at IS NULL",
+              "AND membership_status = 'none'",
+            ].join(" "),
+          )
+          .bind(userId),
       ]);
     },
 

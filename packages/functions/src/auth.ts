@@ -182,6 +182,7 @@ async function register(request: Request, context: AuthContext): Promise<Respons
     token: verificationToken.token,
   });
   if (!emailResult.ok) {
+    await context.repository.deleteUnverifiedUser(userId);
     return errorResponse("AUTH_EMAIL_SEND_FAILED", 502);
   }
 
