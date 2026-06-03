@@ -1017,6 +1017,71 @@ test("DELETE /api/events/:id soft deletes owner events and admin-visible publish
   });
 });
 
+test("GET /api/public/posts returns public posts without authentication", async () => {
+  const context = createApiTestContext({
+    publicPosts: [
+      post({
+        status: "published",
+        isPublic: true,
+        publishedAt: "2026-06-03T09:00:00.000Z",
+      }),
+    ],
+  });
+
+  const response = await handleApiRequest(
+    new Request("https://calella-chess-club.test/api/public/posts"),
+    context,
+  );
+
+  expect(response.status).toBe(200);
+  await expect(response.json()).resolves.toEqual({
+    posts: [
+      post({
+        status: "published",
+        isPublic: true,
+        publishedAt: "2026-06-03T09:00:00.000Z",
+      }),
+    ],
+  });
+  expect(context.postRepository.listPublicPosts).toHaveBeenCalledWith({
+    limit: 6,
+  });
+  expect(context.repository.findCurrentUserById).not.toHaveBeenCalled();
+});
+
+test("GET /api/public/events returns upcoming public events without authentication", async () => {
+  const context = createApiTestContext({
+    publicEvents: [
+      event({
+        status: "published",
+        isPublic: true,
+        publishedAt: "2026-06-03T09:00:00.000Z",
+      }),
+    ],
+  });
+
+  const response = await handleApiRequest(
+    new Request("https://calella-chess-club.test/api/public/events"),
+    context,
+  );
+
+  expect(response.status).toBe(200);
+  await expect(response.json()).resolves.toEqual({
+    events: [
+      event({
+        status: "published",
+        isPublic: true,
+        publishedAt: "2026-06-03T09:00:00.000Z",
+      }),
+    ],
+  });
+  expect(context.eventRepository.listPublicEvents).toHaveBeenCalledWith({
+    limit: 6,
+    nowIso: "2026-06-03T09:00:00.000Z",
+  });
+  expect(context.repository.findCurrentUserById).not.toHaveBeenCalled();
+});
+
 test("unsupported api routes return a stable error code", async () => {
   const response = await handleApiRequest(
     new Request("https://calella-chess-club.test/api/missing"),
@@ -1042,9 +1107,11 @@ function createApiTestContext(options: {
   posts?: unknown[];
   postResult?: unknown;
   adminPostResult?: unknown;
+  publicPosts?: unknown[];
   events?: unknown[];
   eventResult?: unknown;
   adminEventResult?: unknown;
+  publicEvents?: unknown[];
   newId?: string;
 } = {}) {
   return {
@@ -1057,6 +1124,7 @@ function createApiTestContext(options: {
     },
     postRepository: {
       listVisiblePosts: vi.fn().mockResolvedValue(options.posts ?? []),
+      listPublicPosts: vi.fn().mockResolvedValue(options.publicPosts ?? []),
       findVisiblePostById: vi.fn().mockResolvedValue(options.postResult),
       createPostDraft: vi.fn().mockResolvedValue(options.postResult),
       updateOwnPost: vi.fn().mockResolvedValue(options.postResult),
@@ -1067,6 +1135,7 @@ function createApiTestContext(options: {
     },
     eventRepository: {
       listVisibleEvents: vi.fn().mockResolvedValue(options.events ?? []),
+      listPublicEvents: vi.fn().mockResolvedValue(options.publicEvents ?? []),
       findVisibleEventById: vi.fn().mockResolvedValue(options.eventResult),
       createEventDraft: vi.fn().mockResolvedValue(options.eventResult),
       updateOwnEvent: vi.fn().mockResolvedValue(options.eventResult),

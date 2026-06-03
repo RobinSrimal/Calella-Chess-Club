@@ -86,6 +86,7 @@ export type ApiContext = {
   postRepository: Pick<
     PostRepository,
     | "listVisiblePosts"
+    | "listPublicPosts"
     | "findVisiblePostById"
     | "createPostDraft"
     | "updateOwnPost"
@@ -97,6 +98,7 @@ export type ApiContext = {
   eventRepository: Pick<
     EventRepository,
     | "listVisibleEvents"
+    | "listPublicEvents"
     | "findVisibleEventById"
     | "createEventDraft"
     | "updateOwnEvent"
@@ -124,6 +126,7 @@ type JsonBody =
 const MEMBERSHIP_STATUSES = ["none", "pending", "member", "rejected"] as const;
 const USER_ROLES = ["user", "admin"] as const;
 const ACCOUNT_STATUSES = ["active", "disabled"] as const;
+const PUBLIC_FEED_LIMIT = 6;
 
 export async function handleApiRequest(
   request: Request,
@@ -145,6 +148,14 @@ export async function handleApiRequest(
 
   if (request.method === "GET" && url.pathname === "/api/admin/users") {
     return listAdminUsers(request, url, context ?? createDefaultApiContext());
+  }
+
+  if (request.method === "GET" && url.pathname === "/api/public/posts") {
+    return listPublicPosts(context ?? createDefaultApiContext());
+  }
+
+  if (request.method === "GET" && url.pathname === "/api/public/events") {
+    return listPublicEvents(context ?? createDefaultApiContext());
   }
 
   if (url.pathname === "/api/posts") {
@@ -226,6 +237,23 @@ async function me(request: Request, context: ApiContext): Promise<Response> {
 
   return jsonResponse({
     user,
+  });
+}
+
+async function listPublicPosts(context: ApiContext): Promise<Response> {
+  return jsonResponse({
+    posts: await context.postRepository.listPublicPosts({
+      limit: PUBLIC_FEED_LIMIT,
+    }),
+  });
+}
+
+async function listPublicEvents(context: ApiContext): Promise<Response> {
+  return jsonResponse({
+    events: await context.eventRepository.listPublicEvents({
+      limit: PUBLIC_FEED_LIMIT,
+      nowIso: context.now().toISOString(),
+    }),
   });
 }
 
