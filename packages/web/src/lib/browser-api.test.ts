@@ -1,12 +1,17 @@
 import { expect, test } from "vitest";
 import {
+  approveMembership,
   createPost,
   deletePost,
+  disableUser,
   getCurrentUser,
+  listAdminUsers,
   listPosts,
   loginUser,
   publishPost,
   registerUser,
+  rejectMembership,
+  restoreMembership,
   updatePost,
 } from "./browser-api";
 import type { PostEditorDocument } from "./post-body";
@@ -257,6 +262,53 @@ test("deletePost soft-deletes a post with same-origin credentials", async () => 
   ]);
 });
 
+test("listAdminUsers reads filtered admin users with same-origin credentials", async () => {
+  const requests: Array<{ input: RequestInfo | URL; init?: RequestInit }> = [];
+
+  const result = await listAdminUsers(
+    {
+      membershipStatus: "pending",
+      role: "user",
+      accountStatus: "active",
+    },
+    async (input: RequestInfo | URL, init?: RequestInit) => {
+      requests.push({ input, init });
+      return Response.json({ users: [adminUser()] });
+    },
+  );
+
+  expect(result.ok).toBe(true);
+  expect(requests).toEqual([
+    {
+      input: "/api/admin/users?membershipStatus=pending&role=user&accountStatus=active",
+      init: {
+        method: "GET",
+        credentials: "same-origin",
+      },
+    },
+  ]);
+});
+
+test("admin membership actions post empty JSON bodies with same-origin credentials", async () => {
+  const requests: Array<{ input: RequestInfo | URL; init?: RequestInit }> = [];
+  const fetchFn = async (input: RequestInfo | URL, init?: RequestInit) => {
+    requests.push({ input, init });
+    return Response.json({ user: adminUser() });
+  };
+
+  await approveMembership("user-1", fetchFn);
+  await rejectMembership("user-2", fetchFn);
+  await restoreMembership("user-3", fetchFn);
+  await disableUser("user-4", fetchFn);
+
+  expect(requests).toEqual([
+    adminActionRequest("/api/admin/users/user-1/approve-membership"),
+    adminActionRequest("/api/admin/users/user-2/reject-membership"),
+    adminActionRequest("/api/admin/users/user-3/restore-membership"),
+    adminActionRequest("/api/admin/users/user-4/disable"),
+  ]);
+});
+
 test("returns a client error when fetch fails before a response is available", async () => {
   const result = await loginUser(
     { usernameOrEmail: "anna", password: "password123" },
@@ -288,6 +340,37 @@ function memberPost(overrides: Record<string, unknown> = {}) {
     deletedAt: null,
     deletedBy: null,
     ...overrides,
+  };
+}
+
+function adminUser(overrides: Record<string, unknown> = {}) {
+  return {
+    id: "user-1",
+    username: "anna",
+    email: "anna@example.com",
+    emailVerified: true,
+    membershipStatus: "pending",
+    role: "user",
+    accountStatus: "active",
+    createdAt: "2026-06-03T09:00:00.000Z",
+    updatedAt: "2026-06-03T09:00:00.000Z",
+    disabledAt: null,
+    disabledBy: null,
+    ...overrides,
+  };
+}
+
+function adminActionRequest(path: string) {
+  return {
+    input: path,
+    init: {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: "{}",
+      credentials: "same-origin",
+    },
   };
 }
 

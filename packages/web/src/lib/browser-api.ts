@@ -7,6 +7,7 @@ import {
 
 export type MembershipStatus = "none" | "pending" | "member" | "rejected";
 export type UserRole = "user" | "admin";
+export type AccountStatus = "active" | "disabled";
 
 export type PublicUser = {
   id: string;
@@ -58,6 +59,20 @@ export type MemberPost = {
   deletedBy: string | null;
 };
 
+export type AdminUserSummary = PublicUser & {
+  accountStatus: AccountStatus;
+  createdAt: string;
+  updatedAt: string;
+  disabledAt: string | null;
+  disabledBy: string | null;
+};
+
+export type AdminUserFilters = {
+  membershipStatus?: MembershipStatus;
+  role?: UserRole;
+  accountStatus?: AccountStatus;
+};
+
 export type PostDraftInput = {
   title: string;
   bodyJson: PostEditorDocument;
@@ -83,6 +98,73 @@ export function getCurrentUser(
   fetchFn: FetchFn = fetch,
 ): Promise<ApiResult<{ user: PublicUser }>> {
   return requestJson("/api/me", { method: "GET" }, fetchFn);
+}
+
+export function listAdminUsers(
+  filters: AdminUserFilters = {},
+  fetchFn: FetchFn = fetch,
+): Promise<ApiResult<{ users: AdminUserSummary[] }>> {
+  const searchParams = new URLSearchParams();
+  if (filters.membershipStatus) {
+    searchParams.set("membershipStatus", filters.membershipStatus);
+  }
+  if (filters.role) {
+    searchParams.set("role", filters.role);
+  }
+  if (filters.accountStatus) {
+    searchParams.set("accountStatus", filters.accountStatus);
+  }
+
+  const query = searchParams.toString();
+  return requestJson(
+    query ? `/api/admin/users?${query}` : "/api/admin/users",
+    { method: "GET" },
+    fetchFn,
+  );
+}
+
+export function approveMembership(
+  userId: string,
+  fetchFn: FetchFn = fetch,
+): Promise<ApiResult<{ user: AdminUserSummary }>> {
+  return postJson(
+    `/api/admin/users/${encodeURIComponent(userId)}/approve-membership`,
+    {},
+    fetchFn,
+  );
+}
+
+export function rejectMembership(
+  userId: string,
+  fetchFn: FetchFn = fetch,
+): Promise<ApiResult<{ user: AdminUserSummary }>> {
+  return postJson(
+    `/api/admin/users/${encodeURIComponent(userId)}/reject-membership`,
+    {},
+    fetchFn,
+  );
+}
+
+export function restoreMembership(
+  userId: string,
+  fetchFn: FetchFn = fetch,
+): Promise<ApiResult<{ user: AdminUserSummary }>> {
+  return postJson(
+    `/api/admin/users/${encodeURIComponent(userId)}/restore-membership`,
+    {},
+    fetchFn,
+  );
+}
+
+export function disableUser(
+  userId: string,
+  fetchFn: FetchFn = fetch,
+): Promise<ApiResult<{ user: AdminUserSummary }>> {
+  return postJson(
+    `/api/admin/users/${encodeURIComponent(userId)}/disable`,
+    {},
+    fetchFn,
+  );
 }
 
 export function listPosts(
