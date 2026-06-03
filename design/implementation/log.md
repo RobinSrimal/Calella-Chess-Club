@@ -942,10 +942,10 @@ No app-owned AWS scaffold references remain in active source or package metadata
 ### Next Slice
 
 ```txt
-013-member-content-ui
+013-posts-json-backend
 ```
 
-The next slice candidate should connect member post and event screens to the authenticated APIs through the website origin.
+The next slice candidate should migrate post storage and API contracts from Markdown text to restricted BlockNote-compatible JSON. Member post UI and member event UI are split into later slices.
 
 ## 2026-06-03 - Resend Sender Domain Update
 

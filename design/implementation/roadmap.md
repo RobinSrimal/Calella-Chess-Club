@@ -17,15 +17,15 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-013-member-content-ui
+013-posts-json-backend
 ```
 
-Goal: connect member post/event screens to the authenticated APIs.
+Goal: migrate the posts backend from Markdown text to restricted BlockNote-compatible JSON storage and API contracts.
 
 Detailed plan:
 
 ```txt
-design/implementation/slices/013-member-content-ui.md
+design/implementation/slices/013-posts-json-backend.md
 ```
 
 ## Future Slices
@@ -33,6 +33,12 @@ design/implementation/slices/013-member-content-ui.md
 Future slices are intentionally high-level until the previous slice has been completed and reviewed.
 
 ```txt
-014-admin-content-ui
+014-member-post-blocknote-ui
+  Install BlockNote and connect member post list/create/edit/publish/delete UI to the JSON post APIs.
+
+015-member-events-ui
+  Connect member event list/create/edit/publish/delete UI to the existing event APIs.
+
+016-admin-content-ui
   Connect admin user/content screens to the admin APIs.
 ```

@@ -10,7 +10,7 @@ Stores member-created posts.
 id
 author_id
 title
-body_markdown
+body_json
 status: draft | published | deleted
 is_public
 published_at
@@ -23,6 +23,8 @@ deleted_by
 ## Rules
 
 Drafts are visible only to the author. Published posts are visible to approved members. Public posts are published posts with `is_public = true`. Deletes are soft deletes.
+
+`body_json` stores a restricted BlockNote-compatible JSON document as text. Version 1 accepts paragraph blocks with plain text, bold text, italic text, and links only. Media, uploads, tables, nested child blocks, and arbitrary block types are rejected by the API.
 
 `is_public` defaults to `false` for every post, including posts authored by admins. Admin-authored posts become public only when the admin explicitly chooses immediate public visibility during publishing or later marks the published post public.
 
