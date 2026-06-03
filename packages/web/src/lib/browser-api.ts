@@ -133,7 +133,13 @@ export function deletePost(
 ): Promise<ApiResult<{ post: MemberPost }>> {
   return requestJson(
     `/api/posts/${encodeURIComponent(postId)}`,
-    { method: "DELETE" },
+    {
+      method: "DELETE",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: "{}",
+    },
     fetchFn,
   );
 }

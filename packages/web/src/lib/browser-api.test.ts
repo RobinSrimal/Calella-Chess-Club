@@ -247,6 +247,10 @@ test("deletePost soft-deletes a post with same-origin credentials", async () => 
       input: "/api/posts/post-1",
       init: {
         method: "DELETE",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: "{}",
         credentials: "same-origin",
       },
     },
