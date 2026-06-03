@@ -24,6 +24,19 @@ export type LoginUserLookup = PublicUser & {
   emailVerifiedAt: string | null;
 };
 
+export type CurrentUserLookup = PublicUser & {
+  accountStatus: AccountStatus;
+  emailVerifiedAt: string | null;
+};
+
+export type AdminUserSummary = PublicUser & {
+  accountStatus: AccountStatus;
+  createdAt: string;
+  updatedAt: string;
+  disabledAt: string | null;
+  disabledBy: string | null;
+};
+
 export type UserInsert = {
   id: string;
   username: string;
@@ -109,11 +122,33 @@ export type LoginAttemptInsert = {
   createdAt: string;
 };
 
+export type AdminUserFilters = {
+  membershipStatus?: MembershipStatus;
+  role?: UserRole;
+  accountStatus?: AccountStatus;
+};
+
+export type UpdateMembershipStatusInput = {
+  userId: string;
+  membershipStatus: MembershipStatus;
+  updatedAt: string;
+};
+
+export type DisableUserInput = {
+  userId: string;
+  disabledBy: string;
+  disabledAt: string;
+};
+
 export type AuthRepository = {
   findUserByUsernameNormalized(usernameNormalized: string): Promise<UserLookup | null>;
   findUserByEmailNormalized(emailNormalized: string): Promise<UserLookup | null>;
   findUserForLogin(usernameOrEmailNormalized: string): Promise<LoginUserLookup | null>;
   findPublicUserById(userId: string): Promise<PublicUser | null>;
+  findCurrentUserById(userId: string): Promise<CurrentUserLookup | null>;
+  listAdminUsers(filters: AdminUserFilters): Promise<AdminUserSummary[]>;
+  updateMembershipStatus(input: UpdateMembershipStatusInput): Promise<AdminUserSummary | null>;
+  disableUserAndRevokeSessions(input: DisableUserInput): Promise<AdminUserSummary | null>;
   createUserWithVerificationToken(input: CreateUserWithVerificationTokenInput): Promise<void>;
   deleteUnverifiedUser(userId: string): Promise<void>;
   findVerificationTokenByHash(tokenHash: string): Promise<VerificationTokenLookup | null>;
@@ -135,6 +170,13 @@ type UserRow = {
   membershipStatus: MembershipStatus;
   role: UserRole;
   emailVerifiedAt: string | null;
+};
+
+type AdminUserRow = UserRow & {
+  createdAt: string;
+  updatedAt: string;
+  disabledAt: string | null;
+  disabledBy: string | null;
 };
 
 type RefreshSessionRow = {
@@ -203,6 +245,98 @@ export function createD1AuthRepository(database: D1Database): AuthRepository {
         .first<UserRow>();
 
       return row ? mapPublicUser(row) : null;
+    },
+
+    async findCurrentUserById(userId) {
+      const row = await database
+        .prepare(
+          [
+            "SELECT",
+            "id, username, email, password_hash as passwordHash,",
+            "password_hash_algorithm as passwordHashAlgorithm,",
+            "account_status as accountStatus, membership_status as membershipStatus,",
+            "role, email_verified_at as emailVerifiedAt",
+            "FROM users",
+            "WHERE id = ?",
+          ].join(" "),
+        )
+        .bind(userId)
+        .first<UserRow>();
+
+      return row ? mapCurrentUser(row) : null;
+    },
+
+    async listAdminUsers(filters) {
+      const where: string[] = [];
+      const params: string[] = [];
+
+      if (filters.membershipStatus) {
+        where.push("membership_status = ?");
+        params.push(filters.membershipStatus);
+      }
+      if (filters.role) {
+        where.push("role = ?");
+        params.push(filters.role);
+      }
+      if (filters.accountStatus) {
+        where.push("account_status = ?");
+        params.push(filters.accountStatus);
+      }
+
+      const query = [
+        adminUserSummarySelect(),
+        "FROM users",
+        where.length > 0 ? `WHERE ${where.join(" AND ")}` : "",
+        "ORDER BY created_at DESC, username_normalized ASC",
+      ]
+        .filter(Boolean)
+        .join(" ");
+      const result = await database
+        .prepare(query)
+        .bind(...params)
+        .all<AdminUserRow>();
+
+      return (result.results ?? []).map(mapAdminUserSummary);
+    },
+
+    async updateMembershipStatus(input) {
+      await database
+        .prepare(
+          [
+            "UPDATE users",
+            "SET membership_status = ?, updated_at = ?",
+            "WHERE id = ?",
+          ].join(" "),
+        )
+        .bind(input.membershipStatus, input.updatedAt, input.userId)
+        .run();
+
+      return findAdminUserSummaryById(database, input.userId);
+    },
+
+    async disableUserAndRevokeSessions(input) {
+      await database.batch([
+        database
+          .prepare(
+            [
+              "UPDATE users",
+              "SET account_status = 'disabled', disabled_at = ?, disabled_by = ?, updated_at = ?",
+              "WHERE id = ?",
+            ].join(" "),
+          )
+          .bind(input.disabledAt, input.disabledBy, input.disabledAt, input.userId),
+        database
+          .prepare(
+            [
+              "UPDATE refresh_sessions",
+              "SET revoked_at = ?",
+              "WHERE user_id = ? AND revoked_at IS NULL",
+            ].join(" "),
+          )
+          .bind(input.disabledAt, input.userId),
+      ]);
+
+      return findAdminUserSummaryById(database, input.userId);
     },
 
     async createUserWithVerificationToken(input) {
@@ -428,6 +562,14 @@ function mapLoginUser(row: UserRow): LoginUserLookup {
   };
 }
 
+function mapCurrentUser(row: UserRow): CurrentUserLookup {
+  return {
+    ...mapPublicUser(row),
+    accountStatus: row.accountStatus,
+    emailVerifiedAt: row.emailVerifiedAt,
+  };
+}
+
 function mapPublicUser(row: UserRow): PublicUser {
   return {
     id: row.id,
@@ -436,6 +578,17 @@ function mapPublicUser(row: UserRow): PublicUser {
     emailVerified: row.emailVerifiedAt !== null,
     membershipStatus: row.membershipStatus,
     role: row.role,
+  };
+}
+
+function mapAdminUserSummary(row: AdminUserRow): AdminUserSummary {
+  return {
+    ...mapPublicUser(row),
+    accountStatus: row.accountStatus,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+    disabledAt: row.disabledAt,
+    disabledBy: row.disabledBy,
   };
 }
 
@@ -455,4 +608,34 @@ function mapRefreshSession(row: RefreshSessionRow): RefreshSessionLookup {
       role: row.role,
     },
   };
+}
+
+async function findAdminUserSummaryById(
+  database: D1Database,
+  userId: string,
+): Promise<AdminUserSummary | null> {
+  const row = await database
+    .prepare(
+      [
+        adminUserSummarySelect(),
+        "FROM users",
+        "WHERE id = ?",
+      ].join(" "),
+    )
+    .bind(userId)
+    .first<AdminUserRow>();
+
+  return row ? mapAdminUserSummary(row) : null;
+}
+
+function adminUserSummarySelect(): string {
+  return [
+    "SELECT",
+    "id, username, email, password_hash as passwordHash,",
+    "password_hash_algorithm as passwordHashAlgorithm,",
+    "account_status as accountStatus, membership_status as membershipStatus,",
+    "role, email_verified_at as emailVerifiedAt,",
+    "created_at as createdAt, updated_at as updatedAt,",
+    "disabled_at as disabledAt, disabled_by as disabledBy",
+  ].join(" ");
 }
