@@ -1,7 +1,14 @@
 const BINDING_ORIGIN = "https://binding.internal";
 
 export type ProxyBinding = {
-  fetch(request: Request): Promise<Response>;
+  fetch(
+    input: URL,
+    init?: {
+      method?: string;
+      headers?: Headers;
+      body?: ArrayBuffer;
+    },
+  ): Promise<unknown>;
 };
 
 export async function forwardToBinding(
@@ -21,13 +28,13 @@ export async function forwardToBinding(
   const targetUrl = new URL(`${sourceUrl.pathname}${sourceUrl.search}`, BINDING_ORIGIN);
   const body = allowsBody(request.method) ? await request.arrayBuffer() : undefined;
 
-  return binding.fetch(
-    new Request(targetUrl, {
-      method: request.method,
-      headers: new Headers(request.headers),
-      body,
-    }),
-  );
+  const response = await binding.fetch(targetUrl, {
+    method: request.method,
+    headers: new Headers(request.headers),
+    body,
+  });
+
+  return response as Response;
 }
 
 function isPathInPrefix(pathname: string, prefix: string) {

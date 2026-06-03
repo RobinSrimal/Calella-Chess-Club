@@ -4,8 +4,8 @@ import { forwardToBinding } from "./proxy";
 test("forwards request method path query headers cookies and body", async () => {
   let forwardedRequest: Request | undefined;
   const binding = {
-    async fetch(request: Request) {
-      forwardedRequest = request;
+    async fetch(input: URL, init?: RequestInit) {
+      forwardedRequest = new Request(input, init);
       return Response.json({ ok: true });
     },
   };
