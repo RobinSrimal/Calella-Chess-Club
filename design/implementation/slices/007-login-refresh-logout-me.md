@@ -113,53 +113,64 @@ multi-device session management UI
 
 ### Task 1: Add Session Migration
 
-- [ ] Create `packages/db/migrations/0003_auth_sessions.sql`.
-- [ ] Create `refresh_sessions` and `login_attempts`.
-- [ ] Add indexes for active refresh sessions and login attempt lookup.
-- [ ] Update DB migration metadata and tests.
-- [ ] Apply the migration to dev D1.
+- [x] Create `packages/db/migrations/0003_auth_sessions.sql`.
+- [x] Create `refresh_sessions` and `login_attempts`.
+- [x] Add indexes for active refresh sessions and login attempt lookup.
+- [x] Update DB migration metadata and tests.
+- [x] Apply the migration to dev D1.
 
 ### Task 2: Add JWT And Cookie Helpers
 
-- [ ] Add HMAC JWT sign/verify helpers with tests.
-- [ ] Add cookie serialization/parsing helpers with tests.
-- [ ] Add refresh token generation/hash helpers with tests.
-- [ ] Keep cookie attributes explicit and covered by tests.
+- [x] Add HMAC JWT sign/verify helpers with tests.
+- [x] Add cookie serialization/parsing helpers with tests.
+- [x] Add refresh token generation/hash helpers with tests.
+- [x] Keep cookie attributes explicit and covered by tests.
 
 ### Task 3: Implement POST /auth/login
 
-- [ ] Parse and validate login body.
-- [ ] Look up user by normalized username or email.
-- [ ] Verify bcrypt password hash with PasswordPepper.
-- [ ] Reject disabled or unverified users with stable error codes.
-- [ ] Create refresh session and login_attempt row.
-- [ ] Set access and refresh cookies.
+- [x] Parse and validate login body.
+- [x] Look up user by normalized username or email.
+- [x] Verify bcrypt password hash with PasswordPepper.
+- [x] Reject disabled or unverified users with stable error codes.
+- [x] Create refresh session and login_attempt row.
+- [x] Set access and refresh cookies.
 
 ### Task 4: Implement POST /auth/refresh
 
-- [ ] Read and hash refresh cookie.
-- [ ] Reject missing, invalid, expired, or revoked sessions.
-- [ ] Rotate refresh session.
-- [ ] Set fresh access and refresh cookies.
+- [x] Read and hash refresh cookie.
+- [x] Reject missing, invalid, expired, or revoked sessions.
+- [x] Rotate refresh session.
+- [x] Set fresh access and refresh cookies.
 
 ### Task 5: Implement POST /auth/logout
 
-- [ ] Revoke the current refresh session when a valid refresh cookie is present.
-- [ ] Clear access and refresh cookies.
-- [ ] Return 204.
+- [x] Revoke the current refresh session when a valid refresh cookie is present.
+- [x] Clear access and refresh cookies.
+- [x] Return 204.
 
 ### Task 6: Implement GET /api/me
 
-- [ ] Verify access JWT from cookie.
-- [ ] Load current user from D1.
-- [ ] Return public user shape.
-- [ ] Reject missing/invalid access tokens with stable API error codes.
+- [x] Verify access JWT from cookie.
+- [x] Load current user from D1.
+- [x] Return public user shape.
+- [x] Reject missing/invalid access tokens with stable API error codes.
 
 ### Task 7: Deploy And Record
 
-- [ ] Link `JwtSigningSecret` to AuthApi and Api.
-- [ ] Link `RefreshTokenSecret` only to AuthApi.
-- [ ] Run package tests and typechecks.
-- [ ] Deploy dev.
-- [ ] Live-check login, refresh, logout, and `/api/me` with a test user.
-- [ ] Update design docs, implementation log, and roadmap.
+- [x] Link `JwtSigningSecret` to AuthApi and Api.
+- [x] Link `RefreshTokenSecret` only to AuthApi.
+- [x] Run package tests and typechecks.
+- [x] Deploy dev.
+- [x] Live-check login, refresh, logout, and `/api/me` with a test user.
+- [x] Update design docs, implementation log, and roadmap.
+
+## Completion Notes
+
+```txt
+Live backend verification passed for login, /api/me, refresh rotation, logout,
+and refresh rejection after logout.
+
+Dev AuthApi and Api currently use different workers.dev hostnames. Browser cookies
+set by AuthApi will not automatically be sent to Api until same-domain routing or
+a website proxy is added.
+```

@@ -15,14 +15,17 @@ Owns application data routes for current user, admin actions, posts, events, and
 ```txt
 GET /api/health
   Returns the App API Worker health status.
+
+GET /api/me
+  Reads the access JWT cookie.
+  Verifies the HMAC JWT with JwtSigningSecret.
+  Loads the current public user from D1.
+  Returns stable API auth errors for missing or invalid tokens.
 ```
 
 ## Future Responsibilities
 
 ```txt
-verify access JWT cookie
-load current user state from D1 for sensitive routes
-serve current user profile
 admin membership decisions
 admin account disablement
 member posts/events

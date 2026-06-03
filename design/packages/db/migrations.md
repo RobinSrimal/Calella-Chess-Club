@@ -19,8 +19,11 @@ packages/db/migrations/
 0002_auth_registration.sql
   Creates users and email_verification_tokens for registration and email verification.
 
+0003_auth_sessions.sql
+  Creates refresh_sessions and login_attempts for login, refresh, and logout.
+
 Future auth/session migrations
-  Create password_reset_tokens, refresh_sessions, and login_attempts.
+  Create password_reset_tokens.
 
 Future content migrations
   Create posts, events, and audit_events.
@@ -36,3 +39,16 @@ email_verification_tokens
 ```
 
 Indexes should support username lookup, email lookup, token lookup, and the admin pending membership queue.
+
+## Auth Session Migration Scope
+
+The session migration creates:
+
+```txt
+refresh_sessions
+login_attempts
+```
+
+Refresh token rows store keyed token hashes only. Login attempts record the submitted
+username/email identifier, normalized lookup value, success flag, optional stable failure code,
+and creation timestamp.

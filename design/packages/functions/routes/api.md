@@ -8,12 +8,12 @@ App API Worker.
 
 ```txt
 GET /api/health
+GET /api/me
 ```
 
 ## Future Route Groups
 
 ```txt
-/api/me
 /api/admin/users/*
 /api/posts/*
 /api/events/*
@@ -35,5 +35,7 @@ All App API routes return stable error codes.
 ## Current Error Codes
 
 ```txt
+API_AUTH_INVALID
+API_AUTH_REQUIRED
 API_ROUTE_NOT_FOUND
 ```

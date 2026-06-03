@@ -10,14 +10,14 @@ Auth Worker.
 GET /auth/health
 POST /auth/register
 GET /auth/verify-email
+POST /auth/login
+POST /auth/refresh
+POST /auth/logout
 ```
 
 ## Future Routes
 
 ```txt
-POST /auth/login
-POST /auth/logout
-POST /auth/refresh
 POST /auth/forgot-password
 POST /auth/reset-password
 ```
@@ -38,8 +38,13 @@ All auth routes return stable error codes.
 
 ```txt
 AUTH_EMAIL_SEND_FAILED
+AUTH_EMAIL_NOT_VERIFIED
 AUTH_EMAIL_TAKEN
+AUTH_ACCOUNT_DISABLED
+AUTH_INVALID_CREDENTIALS
 AUTH_INVALID_JSON
+AUTH_REFRESH_INVALID
+AUTH_REFRESH_REQUIRED
 AUTH_ROUTE_NOT_FOUND
 AUTH_USERNAME_TAKEN
 AUTH_VALIDATION_FAILED

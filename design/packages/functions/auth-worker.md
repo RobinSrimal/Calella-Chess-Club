@@ -28,19 +28,30 @@ GET /auth/verify-email
   Marks the token used.
   Marks the email verified.
   Sets membership_status = pending.
+
+POST /auth/login
+  Validates username/email plus password.
+  Verifies bcrypt-sha256-pepper password hashes.
+  Rejects disabled or email-unverified users with stable error codes.
+  Records login attempts.
+  Issues a 2-hour access JWT cookie and a 14-day refresh cookie.
+
+POST /auth/refresh
+  Reads the refresh cookie.
+  Validates the keyed refresh-token hash from D1.
+  Rotates the refresh session.
+  Issues fresh access and refresh cookies.
+
+POST /auth/logout
+  Revokes the current refresh session when present.
+  Clears access and refresh cookies.
 ```
 
 ## Future Responsibilities
 
 ```txt
-log users in
-issue access JWT cookies
-issue refresh cookies
-refresh access JWTs
-log users out
 send password reset email
 reset passwords
-record failed login attempts
 ```
 
 ## Secrets And Config
@@ -51,6 +62,14 @@ PasswordPepper:
 
 ResendApiKey:
   SST secret linked only to AuthApi.
+
+JwtSigningSecret:
+  SST secret linked to AuthApi and Api.
+  AuthApi signs access JWTs.
+
+RefreshTokenSecret:
+  SST secret linked only to AuthApi.
+  AuthApi stores keyed refresh-token hashes.
 
 EMAIL_FROM:
   Non-secret Worker environment value.
@@ -78,4 +97,15 @@ ccc_refresh_token:
   Secure in production
   SameSite=Lax
   Path=/auth
+```
+
+## Browser Cookie Caveat
+
+```txt
+The current dev Worker URLs are on separate workers.dev hostnames:
+AuthApiUrl and ApiUrl do not share browser cookies automatically.
+
+The backend contract is implemented and live-checked by passing cookies explicitly.
+The browser flow needs same-domain routing or a website proxy before frontend auth forms
+can rely on the cookies across AuthApi and Api.
 ```

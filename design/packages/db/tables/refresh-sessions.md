@@ -10,12 +10,15 @@ Stores hashed refresh tokens for 14-day login sessions.
 id
 user_id
 token_hash
+created_at
 expires_at
 revoked_at
-created_at
-last_used_at
+replaced_by
+user_agent
 ```
 
 ## Rules
 
-Refresh tokens are opaque random values. Only token hashes are stored. Sessions are revoked on logout, password reset, account disablement, or forced re-login.
+Refresh tokens are opaque random values. Only keyed token hashes are stored.
+Sessions are rotated on refresh and revoked on logout, password reset, account disablement,
+or forced re-login.

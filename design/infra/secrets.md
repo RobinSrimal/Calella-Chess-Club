@@ -7,17 +7,17 @@ Secrets are configured through SST and linked only to runtimes that require them
 ## Required Secrets
 
 ```txt
-JWT signing secret or key material:
+JwtSigningSecret:
   auth Worker signs access JWTs
   app API Worker verifies access JWTs
 
-Refresh token secret:
-  used if refresh token hashes need a keyed hash
+RefreshTokenSecret:
+  auth Worker stores keyed refresh-token hashes
 
-Password pepper:
-  optional additional password-hash input
+PasswordPepper:
+  required additional password-hash input
 
-Resend API key:
+ResendApiKey:
   auth Worker sends email verification and password reset messages
 ```
 

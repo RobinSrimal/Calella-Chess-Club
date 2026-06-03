@@ -474,6 +474,91 @@ A successful live registration with email delivery still needs a verified Resend
 Login, access JWTs, refresh sessions, logout, /api/me, admin membership approval, password reset, posts, and events are intentionally not implemented yet.
 ```
 
+### Completed Slice: 007-login-refresh-logout-me
+
+```txt
+commit hashes
+0e2d510 Add auth session migration
+875f7ac Add auth token and cookie helpers
+4f40989 Add login refresh logout and me routes
+44104ff Fix refresh session rotation order
+
+files changed
+packages/db/migrations/0003_auth_sessions.sql
+packages/db/src/schema.ts
+packages/db/src/schema.test.ts
+packages/functions/src/api.ts
+packages/functions/src/api.test.ts
+packages/functions/src/auth.ts
+packages/functions/src/auth.test.ts
+packages/functions/src/auth/cookies.ts
+packages/functions/src/auth/cookies.test.ts
+packages/functions/src/auth/jwt.ts
+packages/functions/src/auth/jwt.test.ts
+packages/functions/src/auth/repository.ts
+packages/functions/src/auth/repository.test.ts
+packages/functions/src/auth/tokens.ts
+packages/functions/src/auth/tokens.test.ts
+packages/functions/src/auth/validation.ts
+packages/functions/src/auth/validation.test.ts
+infra/secrets.ts
+infra/workers.ts
+sst-env.d.ts
+
+implemented routes
+POST /auth/login
+POST /auth/refresh
+POST /auth/logout
+GET /api/me
+
+implemented stable error codes
+AUTH_INVALID_JSON
+AUTH_VALIDATION_FAILED
+AUTH_INVALID_CREDENTIALS
+AUTH_EMAIL_NOT_VERIFIED
+AUTH_ACCOUNT_DISABLED
+AUTH_REFRESH_REQUIRED
+AUTH_REFRESH_INVALID
+API_AUTH_REQUIRED
+API_AUTH_INVALID
+
+D1 migration command
+npx wrangler d1 execute ccc-dev-databasedatabase-budbdcht --remote --file packages/db/migrations/0003_auth_sessions.sql -y
+
+D1 migration result
+Wrangler executed 5 queries successfully.
+Remote D1 now has refresh_sessions and login_attempts tables.
+
+deployment commands
+npx sst deploy --stage dev --print-logs
+npx sst deploy --stage dev --print-logs
+
+deployment result
+SST deployed AuthApi and Api with JwtSigningSecret linked to both Workers and RefreshTokenSecret linked only to AuthApi.
+AuthApiUrl: https://ccc-dev-authapiscript-bdteakex.robin-srimal.workers.dev
+ApiUrl: https://ccc-dev-apiscript-noawkcsx.robin-srimal.workers.dev
+DatabaseId: edf26084-32a2-4d25-b608-ec4ed6a0e763
+
+live verification result
+Using a temporary verified dev-only D1 user:
+POST /auth/login returned 200 and set access and refresh cookies.
+GET /api/me returned 200 when passed the access cookie explicitly.
+POST /auth/refresh returned 200, set fresh cookies, and rotated the refresh token.
+POST /auth/logout returned 204 and clear-cookie headers.
+POST /auth/refresh after logout returned 401 {"error":{"code":"AUTH_REFRESH_INVALID"}}.
+The temporary user, refresh sessions, and login_attempt rows were deleted after verification.
+
+runtime fix found during live verification
+D1 rejected refresh rotation with a foreign-key constraint because the current session was updated
+to reference the replacement session before that replacement row existed. Rotation now inserts the
+replacement row before updating the current row, and a regression test covers the order.
+
+remaining note
+Dev AuthApiUrl and ApiUrl are separate workers.dev hostnames. Browser cookies set by AuthApi will
+not automatically be sent to Api until same-domain routing or a website proxy is added. Backend
+routes are implemented and live-checked with explicit cookie headers.
+```
+
 ### Current State
 
 ```txt
@@ -488,8 +573,9 @@ ApiUrl is https://ccc-dev-apiscript-noawkcsx.robin-srimal.workers.dev.
 WebUrl is https://ccc-dev-webworkerscript.robin-srimal.workers.dev.
 packages/db now owns migration metadata and a comment-only 0001_empty.sql scaffold migration.
 packages/db now owns an applied auth registration migration for users and email_verification_tokens.
-packages/functions now owns an Auth Worker with GET /auth/health, POST /auth/register, and GET /auth/verify-email.
-packages/functions now owns an App API Worker with GET /api/health and stable API_ROUTE_NOT_FOUND handling.
+packages/db now owns an applied auth session migration for refresh_sessions and login_attempts.
+packages/functions now owns an Auth Worker with health, registration, email verification, login, refresh, and logout routes.
+packages/functions now owns an App API Worker with health and /api/me routes.
 packages/web now owns the Astro shell, localized routes, layout components, i18n dictionaries, and generated hero image.
 Design docs mirror intended infra, package, route, page, and table structure.
 No AWS resources are active in SST infra.
@@ -499,7 +585,7 @@ No app-owned AWS scaffold references remain in active source or package metadata
 ### Next Slice
 
 ```txt
-007-login-refresh-logout-me
+008-membership-admin-users
 ```
 
-The next slice candidate should implement login, access JWT cookies, refresh cookies, logout, and /api/me.
+The next slice candidate should implement first-admin promotion, admin user listing, membership approval/rejection/restore, and account disablement.

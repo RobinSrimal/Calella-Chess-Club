@@ -8,11 +8,15 @@ Tracks failed login attempts for throttling.
 
 ```txt
 id
-identifier
-ip_address
-failed_at
+username_or_email
+username_or_email_normalized
+success
+failure_code
+created_at
 ```
 
 ## Rules
 
-The auth Worker records failures by username/email identifier and IP address. Responses stay generic and use stable error codes.
+The auth Worker records parsed login attempts by username/email identifier. Failure codes use
+stable auth error codes so future throttling and admin audit views can be added without changing
+the response contract.

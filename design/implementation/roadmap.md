@@ -17,15 +17,15 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-007-login-refresh-logout-me
+008-membership-admin-users
 ```
 
-Goal: implement login, access JWT cookies, refresh cookies, logout, and /api/me.
+Goal: implement first-admin promotion, admin user listing, membership approval/rejection/restore, and account disablement.
 
 Detailed plan:
 
 ```txt
-design/implementation/slices/007-login-refresh-logout-me.md
+design/implementation/slices/008-membership-admin-users.md
 ```
 
 ## Future Slices
@@ -33,9 +33,6 @@ design/implementation/slices/007-login-refresh-logout-me.md
 Future slices are intentionally high-level until the previous slice has been completed and reviewed.
 
 ```txt
-008-membership-admin-users
-  Implement admin membership approval, rejection, restore, and account disablement.
-
 009-posts-drafts-publish
   Implement member post drafts, publishing, editing, soft delete, and admin public visibility.
 
