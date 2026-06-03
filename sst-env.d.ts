@@ -9,6 +9,14 @@ declare module "sst" {
     "Api": import("@cloudflare/workers-types").Service
     "AuthApi": import("@cloudflare/workers-types").Service
     "Database": import("@cloudflare/workers-types").D1Database
+    "PasswordPepper": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "ResendApiKey": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
     "Web": {
       "type": "sst.cloudflare.Astro"
       "url": string

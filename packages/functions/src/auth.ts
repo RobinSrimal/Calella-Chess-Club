@@ -12,11 +12,6 @@ import {
 import { createVerificationToken, hashToken } from "./auth/tokens";
 import { parseRegisterBody } from "./auth/validation";
 
-type AuthSecretResources = typeof Resource & {
-  PasswordPepper: { value: string };
-  ResendApiKey: { value: string };
-};
-
 export type AuthHealthResponse = {
   service: "auth";
   status: "ok";
@@ -237,12 +232,10 @@ async function verifyEmail(
 }
 
 function createDefaultAuthContext(request: Request): AuthContext {
-  const resource = Resource as AuthSecretResources;
-
   return {
     repository: createD1AuthRepository(Resource.Database),
-    passwordPepper: resource.PasswordPepper.value,
-    resendApiKey: resource.ResendApiKey.value,
+    passwordPepper: Resource.PasswordPepper.value,
+    resendApiKey: Resource.ResendApiKey.value,
     emailFrom: getEnv("EMAIL_FROM") ?? "Calella Chess Club <onboarding@resend.dev>",
     webOrigin: getEnv("WEB_ORIGIN") ?? new URL(request.url).origin,
     fetch,
