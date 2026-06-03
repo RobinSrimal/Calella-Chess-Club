@@ -1,6 +1,6 @@
 # Member Post BlockNote UI Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Build the first usable member post workflow with a restricted BlockNote editor backed by the existing JSON post APIs.
 
@@ -166,13 +166,13 @@ Modify: packages/functions/src/posts/body-json.test.ts
 Modify: design/packages/functions/routes/posts.md
 ```
 
-- [ ] Add tests proving a paragraph block with `children: []` is accepted.
-- [ ] Add tests proving a paragraph block with one or more child blocks is rejected.
-- [ ] Update `parseParagraphBlock` to permit only an empty `children` array.
-- [ ] Keep media, file, table, heading, list, arbitrary style, and non-empty nested child rejection unchanged.
-- [ ] Run `npx vitest --run packages/functions/src/posts/body-json.test.ts`.
-- [ ] Run `npm test --workspace packages/functions`.
-- [ ] Commit backend contract alignment.
+- [x] Add tests proving a paragraph block with `children: []` is accepted.
+- [x] Add tests proving a paragraph block with one or more child blocks is rejected.
+- [x] Update `parseParagraphBlock` to permit only an empty `children` array.
+- [x] Keep media, file, table, heading, list, arbitrary style, and non-empty nested child rejection unchanged.
+- [x] Run `npx vitest --run packages/functions/src/posts/body-json.test.ts`.
+- [x] Run `npm test --workspace packages/functions`.
+- [x] Commit backend contract alignment.
 
 ### Task 2: Install BlockNote
 
@@ -183,10 +183,10 @@ Modify: packages/web/package.json
 Modify: package-lock.json
 ```
 
-- [ ] Add `@blocknote/core`, `@blocknote/react`, `@blocknote/mantine`, `@mantine/core`, `@mantine/hooks`, and `@mantine/utils`.
-- [ ] Run `npm install`.
-- [ ] Run `npm run build --workspace packages/web`.
-- [ ] Commit dependency changes.
+- [x] Add `@blocknote/core`, `@blocknote/react`, `@blocknote/mantine`, `@mantine/core`, `@mantine/hooks`, and `@mantine/utils`.
+- [x] Run `npm install`.
+- [x] Run `npm run build --workspace packages/web`.
+- [x] Commit dependency changes.
 
 ### Task 3: Add Shared Web Post Body Helpers
 
@@ -199,14 +199,14 @@ Modify: packages/web/src/lib/public-feed.ts
 Modify: packages/web/src/lib/public-feed.test.ts
 ```
 
-- [ ] Move the web `PostBodyJson` types out of `public-feed.ts` and into `post-body.ts`.
-- [ ] Add `emptyPostBody(): PostBodyJson` returning one empty paragraph.
-- [ ] Add `previewPostBodyText(bodyJson)` for plain text previews.
-- [ ] Add `postBodyHasText(bodyJson)` for client-side save/publish enablement.
-- [ ] Add `normalizePostEditorDocument(bodyJson)` that preserves empty `children: []` arrays and leaves non-empty children untouched so the backend can reject nested content with `API_VALIDATION_FAILED`.
-- [ ] Test plain text, bold text, italic text, link text, empty paragraphs, and multiple paragraphs.
-- [ ] Run `npx vitest --run packages/web/src/lib/post-body.test.ts packages/web/src/lib/public-feed.test.ts`.
-- [ ] Commit shared post body helpers.
+- [x] Move the web `PostBodyJson` types out of `public-feed.ts` and into `post-body.ts`.
+- [x] Add `emptyPostBody(): PostBodyJson` returning one empty paragraph.
+- [x] Add `previewPostBodyText(bodyJson)` for plain text previews.
+- [x] Add `postBodyHasText(bodyJson)` for client-side save/publish enablement.
+- [x] Add `normalizePostEditorDocument(bodyJson)` that preserves empty `children: []` arrays and leaves non-empty children untouched so the backend can reject nested content with `API_VALIDATION_FAILED`.
+- [x] Test plain text, bold text, italic text, link text, empty paragraphs, and multiple paragraphs.
+- [x] Run `npx vitest --run packages/web/src/lib/post-body.test.ts packages/web/src/lib/public-feed.test.ts`.
+- [x] Commit shared post body helpers.
 
 ### Task 4: Add Browser Post API Helpers
 
@@ -217,15 +217,15 @@ Modify: packages/web/src/lib/browser-api.ts
 Modify: packages/web/src/lib/browser-api.test.ts
 ```
 
-- [ ] Add `MemberPost`, `PostStatus`, and `PostDraftInput` types.
-- [ ] Add `listPosts`, `createPost`, `updatePost`, `publishPost`, and `deletePost`.
-- [ ] Ensure every request uses `credentials: "same-origin"`.
-- [ ] Ensure create/update send `content-type: application/json`.
-- [ ] Ensure publish sends `{ "makePublic": false }`.
-- [ ] Ensure delete uses `DELETE /api/posts/:id`.
-- [ ] Add tests for path, method, body, credentials, stable error normalization, and fetch failure.
-- [ ] Run `npx vitest --run packages/web/src/lib/browser-api.test.ts`.
-- [ ] Commit browser post API helpers.
+- [x] Add `MemberPost`, `PostStatus`, and `PostDraftInput` types.
+- [x] Add `listPosts`, `createPost`, `updatePost`, `publishPost`, and `deletePost`.
+- [x] Ensure every request uses `credentials: "same-origin"`.
+- [x] Ensure create/update send `content-type: application/json`.
+- [x] Ensure publish sends `{ "makePublic": false }`.
+- [x] Ensure delete uses `DELETE /api/posts/:id`.
+- [x] Add tests for path, method, body, credentials, stable error normalization, and fetch failure.
+- [x] Run `npx vitest --run packages/web/src/lib/browser-api.test.ts`.
+- [x] Commit browser post API helpers.
 
 ### Task 5: Add Member Post UI State And Translations
 
@@ -239,12 +239,12 @@ Modify: packages/web/src/i18n/es.ts
 Modify: packages/web/src/i18n/en.ts
 ```
 
-- [ ] Add pure state helpers for filtering draft/published/deleted states shown in the panel.
-- [ ] Add `messageForPostErrorCode(code)` with English-only stable API error-code messages.
-- [ ] Add localized labels for loading, empty list, new draft, title, save draft, saving, publish, publishing, delete, deleting, draft status, published status, member-only visibility, saved success, published success, deleted success, login required, and member approval required.
-- [ ] Test state labels and error-code messages without rendering React.
-- [ ] Run `npx vitest --run packages/web/src/components/member/member-posts-state.test.ts packages/web/src/i18n/translations.test.ts`.
-- [ ] Commit state and translation changes.
+- [x] Add pure state helpers for filtering draft/published/deleted states shown in the panel.
+- [x] Add `messageForPostErrorCode(code)` with English-only stable API error-code messages.
+- [x] Add localized labels for loading, empty list, new draft, title, save draft, saving, publish, publishing, delete, deleting, draft status, published status, member-only visibility, saved success, published success, deleted success, login required, and member approval required.
+- [x] Test state labels and error-code messages without rendering React.
+- [x] Run `npx vitest --run packages/web/src/components/member/member-posts-state.test.ts packages/web/src/i18n/translations.test.ts`.
+- [x] Commit state and translation changes.
 
 ### Task 6: Add Restricted BlockNote Editor Island
 
@@ -255,16 +255,16 @@ Create: packages/web/src/components/editor/PostBlockEditor.tsx
 Modify: packages/web/src/styles/global.css
 ```
 
-- [ ] Create a BlockNote schema from scratch with only `paragraph`, `text`, `link`, `bold`, and `italic`.
-- [ ] Import BlockNote Mantine styles and the included Inter font inside the editor component.
-- [ ] Use `useCreateBlockNote({ schema, initialContent })`.
-- [ ] Render `BlockNoteView` with editing enabled and `onChange` forwarding `editor.document`.
-- [ ] Disable UI surfaces that expose unsupported features: slash menu, side menu, file panel, table handles, emoji picker.
-- [ ] Disable the default formatting toolbar and add a custom toolbar with only bold, italic, and link controls.
-- [ ] Do not configure `uploadFile`.
-- [ ] Add CSS for editor borders, focus, minimum height, and compact mobile layout.
-- [ ] Run `npm run build --workspace packages/web`.
-- [ ] Commit the editor island.
+- [x] Create a BlockNote schema from scratch with only `paragraph`, `text`, `link`, `bold`, and `italic`.
+- [x] Import BlockNote Mantine styles and the included Inter font inside the editor component.
+- [x] Use `useCreateBlockNote({ schema, initialContent })`.
+- [x] Render `BlockNoteView` with editing enabled and `onChange` forwarding `editor.document`.
+- [x] Disable UI surfaces that expose unsupported features: slash menu, side menu, file panel, table handles, emoji picker.
+- [x] Disable the default formatting toolbar and add a custom toolbar with only bold, italic, and link controls.
+- [x] Do not configure `uploadFile`.
+- [x] Add CSS for editor borders, focus, minimum height, and compact mobile layout.
+- [x] Run `npm run build --workspace packages/web`.
+- [x] Commit the editor island.
 
 ### Task 7: Connect The Member Posts Page
 
@@ -276,22 +276,22 @@ Modify: packages/web/src/pages/[locale]/member/posts.astro
 Modify: packages/web/src/styles/global.css
 ```
 
-- [ ] Add a React panel that calls `getCurrentUser()` on load.
-- [ ] If unauthenticated, show the localized login-required state and a link to `/{locale}/login`.
-- [ ] If authenticated but not a member or admin, show the localized member-approval-required state.
-- [ ] If member/admin, call `listPosts()` and render the caller-visible post list.
-- [ ] Add a new draft action that initializes `title` to an empty string and `bodyJson` to `emptyPostBody()`.
-- [ ] Save new drafts with `createPost`.
-- [ ] Save existing drafts or own published posts with `updatePost`.
-- [ ] Publish with `publishPost`, never with `makePublic=true`.
-- [ ] Delete with `deletePost` and remove the deleted post from the visible list.
-- [ ] Disable save/publish while title is blank, body text is blank, or a request is in flight.
-- [ ] Preserve unsaved editor state while a save request is in flight.
-- [ ] Hydrate the panel from `posts.astro` using `client:load`.
-- [ ] Run `npm test --workspace packages/web`.
-- [ ] Run `npx tsc --noEmit -p packages/web/tsconfig.json`.
-- [ ] Run `npm run build --workspace packages/web`.
-- [ ] Commit member posts UI.
+- [x] Add a React panel that calls `getCurrentUser()` on load.
+- [x] If unauthenticated, show the localized login-required state and a link to `/{locale}/login`.
+- [x] If authenticated but not a member or admin, show the localized member-approval-required state.
+- [x] If member/admin, call `listPosts()` and render the caller-visible post list.
+- [x] Add a new draft action that initializes `title` to an empty string and `bodyJson` to `emptyPostBody()`.
+- [x] Save new drafts with `createPost`.
+- [x] Save existing drafts or own published posts with `updatePost`.
+- [x] Publish with `publishPost`, never with `makePublic=true`.
+- [x] Delete with `deletePost` and remove the deleted post from the visible list.
+- [x] Disable save/publish while title is blank, body text is blank, or a request is in flight.
+- [x] Preserve unsaved editor state while a save request is in flight.
+- [x] Hydrate the panel from `posts.astro` using `client:load`.
+- [x] Run `npm test --workspace packages/web`.
+- [x] Run `npx tsc --noEmit -p packages/web/tsconfig.json`.
+- [x] Run `npm run build --workspace packages/web`.
+- [x] Commit member posts UI.
 
 ### Task 8: Verify Dev And Update Docs
 
@@ -304,19 +304,19 @@ Modify: design/implementation/log.md
 Modify: design/implementation/roadmap.md
 ```
 
-- [ ] Deploy with `npx sst deploy --stage dev`.
-- [ ] Log in as a verified accepted member through the dev Web URL.
-- [ ] Open `/{locale}/member/posts`.
-- [ ] Create a draft with two paragraphs.
-- [ ] Save the draft and refresh the page to confirm it reloads.
-- [ ] Edit the draft and save again.
-- [ ] Publish the post and confirm it stays member-only.
-- [ ] Confirm the post does not appear on the public landing page unless an admin later makes it public through API/admin tooling.
-- [ ] Delete the post and confirm it disappears from the member list.
-- [ ] Update web docs with the new member posts component structure.
-- [ ] Update the implementation log with commits, verification, deployment, and any BlockNote-specific decisions.
-- [ ] Update the roadmap so the current slice becomes `015-member-events-ui`.
-- [ ] Commit final docs.
+- [x] Deploy with `npx sst deploy --stage dev`.
+- [x] Log in as a verified accepted member through the dev Web URL.
+- [x] Open `/{locale}/member/posts`.
+- [x] Create a draft with two paragraphs.
+- [x] Save the draft and refresh the page to confirm it reloads.
+- [x] Edit the draft and save again.
+- [x] Publish the post and confirm it stays member-only.
+- [x] Confirm the post does not appear on the public landing page unless an admin later makes it public through API/admin tooling.
+- [x] Delete the post and confirm it disappears from the member list.
+- [x] Update web docs with the new member posts component structure.
+- [x] Update the implementation log with commits, verification, deployment, and any BlockNote-specific decisions.
+- [x] Update the roadmap so the current slice becomes `015-member-events-ui`.
+- [x] Commit final docs.
 
 ## Next Slice
 

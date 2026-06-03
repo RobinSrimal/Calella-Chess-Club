@@ -17,15 +17,15 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-014-member-post-blocknote-ui
+015-member-events-ui
 ```
 
-Goal: install BlockNote and connect member post list/create/edit/publish/delete UI to the JSON post APIs.
+Goal: connect member event list/create/edit/publish/delete UI to the existing event APIs.
 
 Detailed plan:
 
 ```txt
-design/implementation/slices/014-member-post-blocknote-ui.md
+not written yet
 ```
 
 ## Future Slices
@@ -33,9 +33,6 @@ design/implementation/slices/014-member-post-blocknote-ui.md
 Future slices are intentionally high-level until the previous slice has been completed and reviewed.
 
 ```txt
-015-member-events-ui
-  Connect member event list/create/edit/publish/delete UI to the existing event APIs.
-
 016-admin-content-ui
   Connect admin user/content screens to the admin APIs.
 ```

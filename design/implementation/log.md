@@ -1028,3 +1028,57 @@ The member post workflow is scoped to list, create draft, edit, publish member-o
 Admin public visibility toggles, events, uploads, landing rich rendering, and extra block types remain out of scope.
 The roadmap now points current slice 014 at the detailed plan.
 ```
+
+## 2026-06-03 - Completed Slice 014: Member Post BlockNote UI
+
+```txt
+commits
+b3e71ff Accept empty BlockNote children in posts
+de631f6 Install BlockNote editor dependencies
+dd6c650 Add web post body helpers
+2e7d305 Add browser post API helpers
+73ba552 Add member post UI state labels
+a463847 Add restricted BlockNote post editor
+e6d14d3 Connect member posts page
+491829b Send JSON body for post deletes
+
+backend contract
+Post body JSON now accepts native BlockNote paragraph blocks with children: [].
+Non-empty nested children remain rejected by backend validation.
+
+web
+Installed BlockNote and Mantine dependencies.
+Added shared post body helpers in packages/web/src/lib/post-body.ts.
+Added browser API helpers for list/create/update/publish/delete posts.
+Added localized member-post labels in Catalan, Spanish, and English.
+Added PostBlockEditor with paragraph-only schema, links, bold, and italic.
+Added MemberPostsPanel on /{locale}/member/posts.
+Member publish sends makePublic=false, so posts stay member-only by default.
+
+delete proxy finding
+Live Web-origin DELETE initially returned 403 with "Cross-site DELETE form submissions are forbidden".
+Root cause: Astro origin middleware blocks unsafe bodyless methods without a matching Origin header before the proxy route runs.
+Fixed deletePost to send content-type application/json with {} so the same-origin Web proxy can forward DELETE requests.
+
+verification
+npm test --workspace packages/functions: 96 tests passed.
+npm run typecheck --workspace packages/functions: passed.
+npm test --workspace packages/web: 43 tests passed.
+npx tsc --noEmit -p packages/web/tsconfig.json: passed.
+npm run build --workspace packages/web: passed with the expected Vite large-chunk warning from BlockNote.
+npx sst deploy --stage dev: deployed WebUrl https://ccc-dev-webworkerscript.robin-srimal.workers.dev.
+
+live verification
+Temporary verified member inserted through dev D1.
+GET /ca/member/posts through Web origin returned 200 and rendered the posts island loading state.
+POST /auth/login through Web origin returned 200 and an access cookie.
+POST /api/posts through Web origin returned 201 for a two-paragraph BlockNote body.
+PUT /api/posts/:id through Web origin returned 200.
+POST /api/posts/:id/publish through Web origin returned 200 with isPublic=false.
+GET /api/public/posts through Web origin returned 200 and did not include the member-only post.
+DELETE /api/posts/:id through Web origin returned 200 after the JSON DELETE fix.
+Cleanup verification returned zero temporary users, posts, refresh sessions, and login attempts.
+
+next slice
+015-member-events-ui
+```
