@@ -32,7 +32,7 @@ export type RegisterInput = {
 };
 
 export type LoginInput = {
-  username: string;
+  usernameOrEmail: string;
   password: string;
 };
 

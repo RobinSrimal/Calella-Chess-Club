@@ -48,7 +48,7 @@ test("registerUser posts registration data with same-origin credentials", async 
 
 test("loginUser normalizes stable auth error responses", async () => {
   const result = await loginUser(
-    { username: "anna", password: "wrong-password" },
+    { usernameOrEmail: "anna", password: "wrong-password" },
     async () =>
       Response.json(
         { error: { code: "AUTH_INVALID_CREDENTIALS" } },
@@ -61,6 +61,36 @@ test("loginUser normalizes stable auth error responses", async () => {
     status: 401,
     code: "AUTH_INVALID_CREDENTIALS",
     fields: [],
+  });
+});
+
+test("loginUser posts usernameOrEmail with same-origin credentials", async () => {
+  const requests: Array<{ input: RequestInfo | URL; init?: RequestInit }> = [];
+
+  await loginUser(
+    { usernameOrEmail: "anna@example.com", password: "password123" },
+    async (input: RequestInfo | URL, init?: RequestInit) => {
+      requests.push({ input, init });
+      return Response.json({
+        user: {
+          id: "user-1",
+          username: "anna",
+          email: "anna@example.com",
+          emailVerified: true,
+          membershipStatus: "member",
+          role: "user",
+        },
+      });
+    },
+  );
+
+  expect(requests).toHaveLength(1);
+  expect(requests[0].input).toBe("/auth/login");
+  expect(requests[0].init?.method).toBe("POST");
+  expect(requests[0].init?.credentials).toBe("same-origin");
+  expect(JSON.parse(String(requests[0].init?.body))).toEqual({
+    usernameOrEmail: "anna@example.com",
+    password: "password123",
   });
 });
 
@@ -96,7 +126,7 @@ test("getCurrentUser reads /api/me with same-origin credentials", async () => {
 
 test("returns a client error when fetch fails before a response is available", async () => {
   const result = await loginUser(
-    { username: "anna", password: "password123" },
+    { usernameOrEmail: "anna", password: "password123" },
     async () => {
       throw new Error("network failed");
     },
