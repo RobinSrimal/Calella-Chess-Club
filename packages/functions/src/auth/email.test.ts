@@ -51,3 +51,21 @@ test("reports Resend delivery failures", async () => {
 
   expect(result).toEqual({ ok: false });
 });
+
+test("calls fetch without rebinding its this value", async () => {
+  const fetchMock = vi.fn(function (this: unknown) {
+    expect(this).toBeUndefined();
+    return Promise.resolve(new Response("{}", { status: 200 }));
+  });
+
+  await sendVerificationEmail({
+    fetch: fetchMock,
+    apiKey: "resend-secret",
+    from: "Calella Chess Club <noreply@example.com>",
+    to: "robin@example.com",
+    username: "RobinSrimal",
+    locale: "en",
+    webOrigin: "https://club.example",
+    token: "raw-token",
+  });
+});

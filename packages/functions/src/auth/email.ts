@@ -25,7 +25,8 @@ export async function sendVerificationEmail(
   const verificationUrl = new URL(`/${input.locale}/verify-email`, input.webOrigin);
   verificationUrl.searchParams.set("token", input.token);
 
-  const response = await input.fetch("https://api.resend.com/emails", {
+  const fetchEmail = input.fetch;
+  const response = await fetchEmail("https://api.resend.com/emails", {
     method: "POST",
     headers: {
       authorization: `Bearer ${input.apiKey}`,
