@@ -965,3 +965,12 @@ Observed dev D1 state for robin.srimal@icloud.com: email_verified_at null, membe
 Added packages/web/src/lib/email-verification.ts to call AuthApi and normalize success, missing-token, stable error-code, and binding-failure states.
 Updated packages/web/src/pages/[locale]/verify-email.astro to verify the token server-side and render success/pending-membership or an English-only verification error.
 ```
+
+## 2026-06-03 - Public Auth Navigation Fix
+
+```txt
+Root cause: the public home page did not actually clear the session, but PublicLayout always rendered Login/Register. The access cookie intentionally uses Path=/api, so /{locale} cannot server-render auth state from the cookie.
+Kept the secure Path=/api access-cookie scope.
+Added packages/web/src/components/navigation/PublicAuthNav.tsx as a hydrated public-nav island.
+The island calls same-origin /api/me and replaces Login/Register with Member or Admin when the session is still valid.
+```

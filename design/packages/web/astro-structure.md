@@ -36,6 +36,9 @@ packages/web/src/
     forms/
       RegistrationForm.tsx
       LoginForm.tsx
+    navigation/
+      PublicAuthNav.tsx
+      public-auth-nav-state.ts
     admin/
       MembershipQueue.tsx
     editor/
@@ -73,7 +76,7 @@ Invalid locale paths should render a not-found response or redirect to `/ca`.
 
 The web package is Astro-first. `.astro` files own routes, layouts, server rendering, static sections, and translated chrome.
 
-React is available as the intended client-side island framework, but it should not be installed until the first interactive island is implemented. Expected React islands include auth forms, member editors, calendar interactions, and admin review tables.
+React is available as the client-side island framework. Current islands include auth forms and public auth-aware navigation. Expected future islands include member editors, calendar interactions, and admin review tables.
 
 React islands must be embedded from Astro with explicit hydration directives:
 
@@ -95,4 +98,4 @@ client:visible
   For below-the-fold panels and tables.
 ```
 
-Do not hydrate static navigation, headings, translated copy, or other UI that does not need browser-side state.
+Do not hydrate static headings, translated copy, or other UI that does not need browser-side state. Navigation may hydrate when it depends on browser-only auth state, such as checking `/api/me` while the access cookie remains scoped to `/api`.

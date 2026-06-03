@@ -42,9 +42,11 @@ Use React .tsx islands for:
   UI with client-side state or optimistic updates
 ```
 
-React is installed through the Astro React integration for interactive islands. The first islands are the login and registration forms.
+React is installed through the Astro React integration for interactive islands. Current islands include the login form, registration form, and auth-aware public navigation.
 
 When React components are embedded in Astro pages, hydrate them with the narrowest useful `client:*` directive. Static components should not be hydrated.
+
+The public layout keeps its initial server-rendered navigation public. A small React island calls same-origin `/api/me` after hydration and replaces the login/register links with the member or admin link when the browser still has a valid session. This keeps the access cookie scoped to `/api` while avoiding an apparent logout when a signed-in user visits the public landing page.
 
 The localized public landing page fetches public posts and upcoming public events server-side from the linked Api Worker. If the feed request fails, the page renders localized empty states instead of failing the whole page.
 

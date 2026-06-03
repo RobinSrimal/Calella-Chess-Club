@@ -1,5 +1,6 @@
 ---
 import LanguageSwitcher from "../components/LanguageSwitcher.astro";
+import PublicAuthNav from "../components/navigation/PublicAuthNav";
 import { getTranslations } from "../i18n";
 import type { Locale } from "../lib/locale";
 import "../styles/global.css";
@@ -31,8 +32,16 @@ const t = getTranslations(locale);
           </a>
           <nav class="nav-row" aria-label="Primary">
             <a href={`/${locale}`}>{t.nav.home}</a>
-            <a href={`/${locale}/login`}>{t.nav.login}</a>
-            <a href={`/${locale}/register`}>{t.nav.register}</a>
+            <PublicAuthNav
+              client:load
+              locale={locale}
+              labels={{
+                login: t.nav.login,
+                register: t.nav.register,
+                member: t.nav.member,
+                admin: t.nav.admin,
+              }}
+            />
             <LanguageSwitcher locale={locale} currentPath={currentPath} />
           </nav>
         </div>
