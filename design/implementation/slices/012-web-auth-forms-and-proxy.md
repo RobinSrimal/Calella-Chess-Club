@@ -37,6 +37,7 @@ React login form island
 React registration form island
 basic success/error states
 redirect logged-in members/admins to their app area after login
+English-only stable error-code messages
 ```
 
 ## Out Of Scope
@@ -58,11 +59,11 @@ Modify: packages/web/package.json
 Modify: packages/web/astro.config.mjs
 ```
 
-- [ ] Add `@astrojs/react`, `react`, and `react-dom`.
-- [ ] Register the Astro React integration.
-- [ ] Run `npm install`.
-- [ ] Run `npm run build --workspace packages/web`.
-- [ ] Commit.
+- [x] Add `@astrojs/react`, `react`, and `react-dom`.
+- [x] Register the Astro React integration.
+- [x] Run `npm install`.
+- [x] Run `npm run build --workspace packages/web`.
+- [x] Commit.
 
 ### Task 2: Add Same-Origin Proxy Helper
 
@@ -73,11 +74,11 @@ Create: packages/web/src/lib/proxy.ts
 Create: packages/web/src/lib/proxy.test.ts
 ```
 
-- [ ] Write tests for forwarding method, path, query string, body, headers, and cookies.
-- [ ] Write tests proving `Set-Cookie` response headers are preserved.
-- [ ] Implement `forwardToBinding(binding, request, prefix)`.
-- [ ] Run `npx vitest --run packages/web/src/lib/proxy.test.ts`.
-- [ ] Commit.
+- [x] Write tests for forwarding method, path, query string, body, headers, and cookies.
+- [x] Write tests proving `Set-Cookie` response headers are preserved.
+- [x] Implement `forwardToBinding(binding, request, prefix)`.
+- [x] Run `npx vitest --run packages/web/src/lib/proxy.test.ts`.
+- [x] Commit.
 
 ### Task 3: Add Web Proxy Endpoints
 
@@ -88,11 +89,11 @@ Create: packages/web/src/pages/auth/[...path].ts
 Create: packages/web/src/pages/api/[...path].ts
 ```
 
-- [ ] Add an Astro endpoint that forwards `/auth/*` to `Resource.AuthApi`.
-- [ ] Add an Astro endpoint that forwards `/api/*` to `Resource.Api`.
-- [ ] Use `sst/resource/cloudflare` for Cloudflare-safe resource imports.
-- [ ] Run `npm run build --workspace packages/web`.
-- [ ] Commit.
+- [x] Add an Astro endpoint that forwards `/auth/*` to `Resource.AuthApi`.
+- [x] Add an Astro endpoint that forwards `/api/*` to `Resource.Api`.
+- [x] Use `sst/resource/cloudflare` for Cloudflare-safe resource imports.
+- [x] Run `npm run build --workspace packages/web`.
+- [x] Commit.
 
 ### Task 4: Add Browser API Client
 
@@ -102,11 +103,11 @@ Create: packages/web/src/pages/api/[...path].ts
 Create: packages/web/src/lib/browser-api.ts
 ```
 
-- [ ] Add typed helpers for `POST /auth/register`, `POST /auth/login`, and `GET /api/me`.
-- [ ] Always send `credentials: "same-origin"`.
-- [ ] Parse stable `{ error: { code } }` responses into user-facing state.
-- [ ] Add focused tests where browser fetch behavior can be mocked.
-- [ ] Commit.
+- [x] Add typed helpers for `POST /auth/register`, `POST /auth/login`, and `GET /api/me`.
+- [x] Always send `credentials: "same-origin"`.
+- [x] Parse stable `{ error: { code } }` responses into user-facing state.
+- [x] Add focused tests where browser fetch behavior can be mocked.
+- [x] Commit.
 
 ### Task 5: Connect Login And Registration Forms
 
@@ -120,22 +121,22 @@ Modify: packages/web/src/pages/[locale]/register.astro
 Modify: packages/web/src/styles/global.css
 ```
 
-- [ ] Replace static login form markup with a hydrated `LoginForm` island.
-- [ ] Replace static registration form markup with a hydrated `RegistrationForm` island.
-- [ ] Keep translated labels from the current dictionaries.
-- [ ] Show stable error-code driven messages without exposing raw JSON.
-- [ ] After successful login, call `/api/me` and route admins to `/{locale}/admin`, members to `/{locale}/member`, and pending users to `/{locale}/member`.
-- [ ] After successful registration, show the existing email-verification pending state.
-- [ ] Commit.
+- [x] Replace static login form markup with a hydrated `LoginForm` island.
+- [x] Replace static registration form markup with a hydrated `RegistrationForm` island.
+- [x] Keep translated labels from the current dictionaries.
+- [x] Show stable error-code driven messages without exposing raw JSON.
+- [x] After successful login, call `/api/me` and route admins to `/{locale}/admin`, members to `/{locale}/member`, and pending users to `/{locale}/member`.
+- [x] After successful registration, show the existing email-verification pending state.
+- [x] Commit.
 
 ### Task 6: Verify And Deploy
 
-- [ ] Run `npm test --workspace packages/web`.
-- [ ] Run `npx tsc --noEmit -p packages/web/tsconfig.json`.
-- [ ] Run `npm test --workspace packages/functions`.
-- [ ] Run `npm run typecheck --workspace packages/functions`.
-- [ ] Run `npm run build --workspace packages/web`.
-- [ ] Deploy with `npx sst deploy --stage dev`.
-- [ ] Browser-test registration and login on the dev Web URL.
-- [ ] Confirm `/api/me` works through the Web origin after login.
-- [ ] Update implementation log and roadmap.
+- [x] Run `npm test --workspace packages/web`.
+- [x] Run `npx tsc --noEmit -p packages/web/tsconfig.json`.
+- [x] Run `npm test --workspace packages/functions`.
+- [x] Run `npm run typecheck --workspace packages/functions`.
+- [x] Run `npm run build --workspace packages/web`.
+- [x] Deploy with `npx sst deploy --stage dev`.
+- [x] Browser-test registration and login on the dev Web URL.
+- [x] Confirm `/api/me` works through the Web origin after login.
+- [x] Update implementation log and roadmap.

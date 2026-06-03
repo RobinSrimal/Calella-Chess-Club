@@ -823,6 +823,96 @@ remaining note
 The landing page renders Markdown source as escaped plain text previews. Rich Markdown rendering remains intentionally deferred.
 ```
 
+### Completed Slice: 012-web-auth-forms-and-proxy
+
+```txt
+commit hashes
+1eb5671 Add React support to web package
+69f2c4f Add web worker proxy helper
+097a4ea Add web auth and API proxy endpoints
+0995a1f Add browser auth API client
+5506d45 Align browser login client with auth contract
+c398b69 Connect web auth forms
+6c3dbfd Add live web auth check script
+
+files changed
+package-lock.json
+packages/web/package.json
+packages/web/astro.config.mjs
+packages/web/src/lib/proxy.ts
+packages/web/src/lib/proxy.test.ts
+packages/web/src/lib/browser-api.ts
+packages/web/src/lib/browser-api.test.ts
+packages/web/src/components/forms/LoginForm.tsx
+packages/web/src/components/forms/RegistrationForm.tsx
+packages/web/src/components/forms/auth-form-state.ts
+packages/web/src/components/forms/auth-form-state.test.ts
+packages/web/src/pages/auth/[...path].ts
+packages/web/src/pages/api/[...path].ts
+packages/web/src/pages/[locale]/login.astro
+packages/web/src/pages/[locale]/register.astro
+packages/web/src/i18n/ca.ts
+packages/web/src/i18n/es.ts
+packages/web/src/i18n/en.ts
+packages/web/src/styles/global.css
+packages/scripts/package.json
+packages/scripts/src/live-web-auth-check.ts
+packages/scripts/src/live-web-auth-check.test.ts
+
+implemented Web routes
+/auth/* -> AuthApi service binding
+/api/* -> Api service binding
+
+implemented UI
+Hydrated React LoginForm island on /:locale/login.
+Hydrated React RegistrationForm island on /:locale/register.
+Form labels and status text are localized.
+Stable error-code messages are English-only.
+Login posts usernameOrEmail to AuthApi, then reads /api/me through the Web origin and routes admins to /:locale/admin and users to /:locale/member.
+
+deployment command
+npx sst deploy --stage dev
+
+deployment result
+SST deployed the dev stage and updated the Web worker.
+AuthApiUrl: https://ccc-dev-authapiscript-bdteakex.robin-srimal.workers.dev
+ApiUrl: https://ccc-dev-apiscript-noawkcsx.robin-srimal.workers.dev
+WebUrl: https://ccc-dev-webworkerscript.robin-srimal.workers.dev
+DatabaseId: edf26084-32a2-4d25-b608-ec4ed6a0e763
+
+live verification result
+GET /ca/login on the dev Web URL returned 200.
+GET /ca/register on the dev Web URL returned 200.
+GET /auth/health through the dev Web origin returned 200 and AuthApi health JSON.
+GET /api/public/posts through the dev Web origin returned 200.
+Registration through the dev Web origin reached AuthApi but returned 502 AUTH_EMAIL_SEND_FAILED because email delivery is still constrained by the current Resend sender setup.
+The live-web-auth-check script inserted a temporary verified member, logged in through Web-origin /auth/login with status 200, called Web-origin /api/me with status 200, and deleted the temporary user, refresh session, and login attempts.
+Post-check D1 verification showed zero liveweb temporary rows.
+
+verification commands
+npm test --workspace packages/web
+npx tsc --noEmit -p packages/web/tsconfig.json
+npm test --workspace packages/functions
+npm run typecheck --workspace packages/functions
+npm run build --workspace packages/web
+npx vitest --run packages/scripts/src/live-web-auth-check.test.ts
+npx tsc -p packages/scripts/tsconfig.json --noEmit
+npx sst shell --stage dev -- npm run live-web-auth-check --workspace packages/scripts
+
+verification results
+Web Vitest exited 0 with 22 tests passing.
+Web TypeScript check exited 0.
+Functions Vitest exited 0 with 90 tests passing.
+Functions typecheck exited 0.
+Astro build exited 0.
+Scripts live auth check Vitest exited 0 with 2 tests passing.
+Scripts TypeScript check exited 0.
+Live auth check exited 0 with loginStatus=200 and meStatus=200.
+
+remaining note
+End-to-end self-registration in the UI still needs the Resend sender/recipient setup to accept the current dev email flow.
+```
+
 ### Current State
 
 ```txt
@@ -842,8 +932,8 @@ packages/db now owns an applied posts migration.
 packages/db now owns an applied events migration.
 packages/functions now owns an Auth Worker with health, registration, email verification, login, refresh, and logout routes.
 packages/functions now owns an App API Worker with health, public landing feeds, /api/me, admin user management routes, post routes, and event routes.
-packages/scripts now owns the first-admin promotion script.
-packages/web now owns the Astro shell, localized routes, server-rendered public landing feeds, layout components, i18n dictionaries, and generated hero image.
+packages/scripts now owns the first-admin promotion script and live Web auth check script.
+packages/web now owns the Astro shell, localized routes, same-origin auth/API proxy routes, React login/register forms, server-rendered public landing feeds, layout components, i18n dictionaries, and generated hero image.
 Design docs mirror intended infra, package, route, page, and table structure.
 No AWS resources are active in SST infra.
 No app-owned AWS scaffold references remain in active source or package metadata.
@@ -852,7 +942,7 @@ No app-owned AWS scaffold references remain in active source or package metadata
 ### Next Slice
 
 ```txt
-012-web-auth-forms-and-proxy
+013-member-content-ui
 ```
 
-The next slice candidate should make browser auth work from the website with same-origin proxy routes and functional login/register forms.
+The next slice candidate should connect member post and event screens to the authenticated APIs through the website origin.

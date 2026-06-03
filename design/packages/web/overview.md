@@ -42,11 +42,22 @@ Use React .tsx islands for:
   UI with client-side state or optimistic updates
 ```
 
-React should be added with the Astro React integration only when the first interactive component is implemented. Until then, the web package intentionally has no React dependency.
+React is installed through the Astro React integration for interactive islands. The first islands are the login and registration forms.
 
 When React components are embedded in Astro pages, hydrate them with the narrowest useful `client:*` directive. Static components should not be hydrated.
 
 The localized public landing page fetches public posts and upcoming public events server-side from the linked Api Worker. If the feed request fails, the page renders localized empty states instead of failing the whole page.
+
+The Web worker owns same-origin proxy routes:
+
+```txt
+/auth/* -> AuthApi service binding
+/api/*  -> Api service binding
+```
+
+Browser UI must call these same-origin routes with `credentials: "same-origin"` so cookies stay scoped to the website origin.
+
+Form labels and status text follow the selected locale. Stable API error-code messages are intentionally English-only for the first version.
 
 ## Language Strategy
 

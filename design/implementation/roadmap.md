@@ -17,15 +17,15 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-012-web-auth-forms-and-proxy
+013-member-content-ui
 ```
 
-Goal: make browser auth work from the website with same-origin proxy routes and functional login/register forms.
+Goal: connect member post/event screens to the authenticated APIs.
 
 Detailed plan:
 
 ```txt
-design/implementation/slices/012-web-auth-forms-and-proxy.md
+design/implementation/slices/013-member-content-ui.md
 ```
 
 ## Future Slices
@@ -33,9 +33,6 @@ design/implementation/slices/012-web-auth-forms-and-proxy.md
 Future slices are intentionally high-level until the previous slice has been completed and reviewed.
 
 ```txt
-013-member-content-ui
-  Connect member post/event screens to the authenticated APIs.
-
 014-admin-content-ui
   Connect admin user/content screens to the admin APIs.
 ```

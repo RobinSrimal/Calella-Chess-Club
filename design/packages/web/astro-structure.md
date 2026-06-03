@@ -6,6 +6,10 @@
 packages/web/src/
   pages/
     index.astro
+    auth/
+      [...path].ts
+    api/
+      [...path].ts
     [locale]/
       index.astro
       login.astro
@@ -42,8 +46,9 @@ packages/web/src/
     es.ts
     en.ts
   lib/
-    api.ts
+    browser-api.ts
     locale.ts
+    proxy.ts
     public-feed.ts
   styles/
     global.css
