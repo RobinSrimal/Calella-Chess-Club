@@ -16,7 +16,7 @@ export const authApi = new sst.cloudflare.Worker("AuthApi", {
     refreshTokenSecret,
   ],
   environment: {
-    EMAIL_FROM: "Calella Chess Club <onboarding@resend.dev>",
+    EMAIL_FROM: "Calella Chess Club <no-reply@verify.raim.app>",
     WEB_ORIGIN:
       $app.stage === "production"
         ? "https://calellachessclub.com"

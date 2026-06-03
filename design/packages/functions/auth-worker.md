@@ -73,7 +73,7 @@ RefreshTokenSecret:
 
 EMAIL_FROM:
   Non-secret Worker environment value.
-  Current dev default is Calella Chess Club <onboarding@resend.dev>.
+  Current dev sender is Calella Chess Club <no-reply@verify.raim.app>.
 
 WEB_ORIGIN:
   Non-secret Worker environment value used to build email verification links.

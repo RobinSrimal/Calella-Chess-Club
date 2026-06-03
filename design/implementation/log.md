@@ -470,7 +470,7 @@ Cloudflare passes env as the second fetch argument. AuthApi now wraps the defaul
 Cloudflare fetch requires the correct this binding. The Resend helper now calls the injected fetch function unbound.
 
 remaining note
-A successful live registration with email delivery still needs a verified Resend sender/recipient configuration. Current dev EMAIL_FROM is Calella Chess Club <onboarding@resend.dev>.
+A successful live registration with email delivery requires a verified Resend sender domain. Current dev EMAIL_FROM is Calella Chess Club <no-reply@verify.raim.app>.
 Login, access JWTs, refresh sessions, logout, /api/me, admin membership approval, password reset, posts, and events are intentionally not implemented yet.
 ```
 
@@ -885,7 +885,7 @@ GET /ca/login on the dev Web URL returned 200.
 GET /ca/register on the dev Web URL returned 200.
 GET /auth/health through the dev Web origin returned 200 and AuthApi health JSON.
 GET /api/public/posts through the dev Web origin returned 200.
-Registration through the dev Web origin reached AuthApi but returned 502 AUTH_EMAIL_SEND_FAILED because email delivery is still constrained by the current Resend sender setup.
+Registration through the dev Web origin reached AuthApi but returned 502 AUTH_EMAIL_SEND_FAILED while the app still used the Resend test sender.
 The live-web-auth-check script inserted a temporary verified member, logged in through Web-origin /auth/login with status 200, called Web-origin /api/me with status 200, and deleted the temporary user, refresh session, and login attempts.
 Post-check D1 verification showed zero liveweb temporary rows.
 
@@ -910,7 +910,7 @@ Scripts TypeScript check exited 0.
 Live auth check exited 0 with loginStatus=200 and meStatus=200.
 
 remaining note
-End-to-end self-registration in the UI still needs the Resend sender/recipient setup to accept the current dev email flow.
+End-to-end self-registration in the UI depends on the verified Resend sender domain accepting the current dev email flow.
 ```
 
 ### Current State
@@ -946,3 +946,13 @@ No app-owned AWS scaffold references remain in active source or package metadata
 ```
 
 The next slice candidate should connect member post and event screens to the authenticated APIs through the website origin.
+
+## 2026-06-03 - Resend Sender Domain Update
+
+```txt
+Updated AuthApi EMAIL_FROM to Calella Chess Club <no-reply@verify.raim.app>.
+Deployed the dev stage so AuthApi uses the new sender.
+Direct Resend smoke test returned 403 because verify.raim.app is not verified in Resend yet.
+Dev registration through the Web origin still returns AUTH_EMAIL_SEND_FAILED until Resend marks verify.raim.app verified.
+Temporary registration smoke-test data cleanup was verified: zero resendsmoke users and zero matching email_verification_tokens.
+```
