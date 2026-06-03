@@ -13,7 +13,7 @@ test("falls back to an English generic message for unknown error codes", () => {
   );
 });
 
-test("routes admins to the admin area after login", () => {
+test("routes admins to the member area after login", () => {
   expect(
     redirectPathForUser(
       {
@@ -26,7 +26,7 @@ test("routes admins to the admin area after login", () => {
       },
       "ca",
     ),
-  ).toBe("/ca/admin");
+  ).toBe("/ca/member");
 });
 
 test("routes non-admin users to the member area after login", () => {

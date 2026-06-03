@@ -26,7 +26,10 @@ export function publicAuthNavLinks(
   }
 
   if (user.role === "admin") {
-    return [{ href: `/${locale}/admin`, label: labels.admin }];
+    return [
+      { href: `/${locale}/member`, label: labels.member },
+      { href: `/${locale}/admin`, label: labels.admin },
+    ];
   }
 
   return [{ href: `/${locale}/member`, label: labels.member }];

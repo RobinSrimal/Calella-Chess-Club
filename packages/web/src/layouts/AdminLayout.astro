@@ -30,6 +30,7 @@ const t = getTranslations(locale);
             <span>{t.site.name}</span>
           </a>
           <nav class="nav-row" aria-label="Admin">
+            <a href={`/${locale}/member`}>{t.nav.member}</a>
             <a href={`/${locale}/admin`}>{t.nav.admin}</a>
             <a href={`/${locale}/admin/users`}>{t.nav.users}</a>
             <a href={`/${locale}/admin/posts`}>{t.nav.posts}</a>

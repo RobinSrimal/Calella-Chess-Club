@@ -32,7 +32,7 @@ test("returns the member link for a logged-in non-admin user", () => {
   ).toEqual([{ href: "/en/member", label: "Members" }]);
 });
 
-test("returns the admin link for a logged-in admin user", () => {
+test("returns member and admin links for a logged-in admin user", () => {
   expect(
     publicAuthNavLinks(
       {
@@ -46,5 +46,8 @@ test("returns the admin link for a logged-in admin user", () => {
       "es",
       labels,
     ),
-  ).toEqual([{ href: "/es/admin", label: "Admin" }]);
+  ).toEqual([
+    { href: "/es/member", label: "Members" },
+    { href: "/es/admin", label: "Admin" },
+  ]);
 });

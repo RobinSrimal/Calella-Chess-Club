@@ -1,5 +1,6 @@
 ---
 import LanguageSwitcher from "../components/LanguageSwitcher.astro";
+import MemberAdminNavLink from "../components/navigation/MemberAdminNavLink";
 import { getTranslations } from "../i18n";
 import type { Locale } from "../lib/locale";
 import "../styles/global.css";
@@ -33,6 +34,7 @@ const t = getTranslations(locale);
             <a href={`/${locale}/member`}>{t.nav.member}</a>
             <a href={`/${locale}/member/posts`}>{t.nav.posts}</a>
             <a href={`/${locale}/member/events`}>{t.nav.events}</a>
+            <MemberAdminNavLink client:load locale={locale} labels={{ admin: t.nav.admin }} />
             <a href={`/${locale}`}>{t.nav.home}</a>
             <LanguageSwitcher locale={locale} currentPath={currentPath} />
           </nav>

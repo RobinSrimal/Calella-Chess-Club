@@ -48,6 +48,8 @@ When React components are embedded in Astro pages, hydrate them with the narrowe
 
 The public layout keeps its initial server-rendered navigation public. A small React island calls same-origin `/api/me` after hydration and replaces the login/register links with the member or admin link when the browser still has a valid session. This keeps the access cookie scoped to `/api` while avoiding an apparent logout when a signed-in user visits the public landing page.
 
+Admins are treated as members with extra admin capability in the website UX. After login, admins land in the member area by default. Public signed-in navigation shows both member and admin links for admins, the admin layout includes a member link, and the member layout hydrates a small admin-only link back to the admin area.
+
 The localized public landing page fetches public posts and upcoming public events server-side from the linked Api Worker. Public posts use parsed `bodyJson` arrays; the landing page flattens them into plain text previews until the richer BlockNote renderer is added. If the feed request fails, the page renders localized empty states instead of failing the whole page.
 
 The member posts page mounts `MemberPostsPanel` with `client:load`. The panel calls same-origin `/api/me`, requires approved member or admin access, lists caller-visible posts, and supports draft creation, editing, explicit member-only publish, and soft delete. It uses `PostBlockEditor`, a restricted BlockNote editor with paragraph blocks, links, bold, and italic only. The editor sends native BlockNote JSON with empty `children: []` arrays; the backend remains the final validator.

@@ -21,5 +21,5 @@ export function messageForErrorCode(code: string): string {
 }
 
 export function redirectPathForUser(user: PublicUser, locale: Locale): string {
-  return user.role === "admin" ? `/${locale}/admin` : `/${locale}/member`;
+  return `/${locale}/member`;
 }
