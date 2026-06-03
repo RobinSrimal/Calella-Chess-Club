@@ -17,15 +17,15 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-015-member-events-ui
+015-admin-users-ui
 ```
 
-Goal: connect member event list/create/edit/publish/delete UI to the existing event APIs.
+Goal: connect the admin users page to the existing admin APIs for membership approval, rejection, restore, and account disablement.
 
 Detailed plan:
 
 ```txt
-not written yet
+design/implementation/slices/015-admin-users-ui.md
 ```
 
 ## Future Slices
@@ -33,6 +33,9 @@ not written yet
 Future slices are intentionally high-level until the previous slice has been completed and reviewed.
 
 ```txt
-016-admin-content-ui
-  Connect admin user/content screens to the admin APIs.
+016-member-events-ui
+  Connect member event list/create/edit/publish/delete UI to the existing event APIs.
+
+017-admin-content-ui
+  Connect admin post/event content screens to public/member-only visibility toggles and delete actions.
 ```

@@ -1082,3 +1082,18 @@ Cleanup verification returned zero temporary users, posts, refresh sessions, and
 next slice
 015-member-events-ui
 ```
+
+## 2026-06-03 - Defined Slice 015: Admin Users UI
+
+```txt
+Created design/implementation/slices/015-admin-users-ui.md.
+The slice connects /{locale}/admin/users to the existing admin user APIs.
+The admin users UI is scoped to list/filter users, approve membership, reject membership, restore rejected membership to pending, and disable accounts.
+Rejected membership keeps the account active.
+Disable is an account action and remains separate from membership rejection.
+The slice explicitly excludes user deletion, role management, admin content moderation, public visibility toggles, and email notifications.
+The UI must not offer disable for the currently signed-in admin.
+Admin action POST requests must send JSON bodies through the Web proxy.
+The roadmap now points current slice 015 at the detailed admin users plan.
+Member events moved to future slice 016.
+```

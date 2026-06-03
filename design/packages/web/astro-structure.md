@@ -42,7 +42,8 @@ packages/web/src/
       MemberPostsPanel.tsx
       member-posts-state.ts
     admin/
-      MembershipQueue.tsx
+      AdminUsersPanel.tsx
+      admin-users-state.ts
     editor/
       PostBlockEditor.tsx
       EventEditor.tsx
@@ -85,7 +86,7 @@ React islands must be embedded from Astro with explicit hydration directives:
 
 ```astro
 <RegistrationForm client:load />
-<MembershipQueue client:visible />
+<AdminUsersPanel client:load />
 ```
 
 Use the least aggressive hydration mode that fits the workflow:
@@ -102,3 +103,5 @@ client:visible
 ```
 
 Do not hydrate static headings, translated copy, or other UI that does not need browser-side state. Navigation may hydrate when it depends on browser-only auth state, such as checking `/api/me` while the access cookie remains scoped to `/api`.
+
+The admin users page mounts an admin React island. It checks `/api/me` in the browser, requires `role = admin`, lists users through `/api/admin/users`, and calls the same-origin admin membership/account actions with JSON POST requests.
