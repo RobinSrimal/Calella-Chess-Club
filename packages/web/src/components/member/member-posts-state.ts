@@ -36,3 +36,10 @@ export function postStatusLabel(
 export function messageForPostErrorCode(code: string): string {
   return ENGLISH_ERROR_MESSAGES[code] ?? GENERIC_ERROR_MESSAGE;
 }
+
+export function withMemberPostTitle<TState extends { title: string }>(
+  state: TState | undefined,
+  title: string,
+): TState | undefined {
+  return state ? { ...state, title } : state;
+}

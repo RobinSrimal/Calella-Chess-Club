@@ -6,6 +6,7 @@ import {
   canUseMemberPosts,
   messageForPostErrorCode,
   postStatusLabel,
+  withMemberPostTitle,
   visibleMemberPosts,
 } from "./member-posts-state";
 
@@ -56,6 +57,19 @@ test("messageForPostErrorCode returns stable English-only messages", () => {
     "Could not find that post.",
   );
   expect(messageForPostErrorCode("UNKNOWN")).toBe("Could not complete the request.");
+});
+
+test("withMemberPostTitle updates title from a captured value", () => {
+  const state = {
+    title: "Old title",
+    bodyJson: [],
+  };
+
+  expect(withMemberPostTitle(state, "New title")).toEqual({
+    title: "New title",
+    bodyJson: [],
+  });
+  expect(withMemberPostTitle(undefined, "New title")).toBeUndefined();
 });
 
 function memberPost(overrides: Partial<MemberPost> = {}): MemberPost {

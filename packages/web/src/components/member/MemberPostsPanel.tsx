@@ -21,6 +21,7 @@ import {
   messageForPostErrorCode,
   postStatusLabel,
   visibleMemberPosts,
+  withMemberPostTitle,
 } from "./member-posts-state";
 
 type MemberPostsLabels = {
@@ -361,13 +362,10 @@ export function MemberPostsPanel({ locale, labels }: MemberPostsPanelProps) {
                   value={editorState.title}
                   placeholder={labels.titlePlaceholder}
                   maxLength={120}
-                  onChange={(event) =>
-                    setEditorState((current) =>
-                      current
-                        ? { ...current, title: event.currentTarget.value }
-                        : current,
-                    )
-                  }
+                  onChange={(event) => {
+                    const title = event.currentTarget.value;
+                    setEditorState((current) => withMemberPostTitle(current, title));
+                  }}
                   required
                 />
               </label>
