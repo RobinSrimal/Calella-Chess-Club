@@ -1,6 +1,6 @@
 # Admin Users UI Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Build the first functional admin user-management screen so admins can review membership requests and disable accounts from the website.
 
@@ -172,13 +172,13 @@ Modify: packages/web/src/lib/browser-api.ts
 Modify: packages/web/src/lib/browser-api.test.ts
 ```
 
-- [ ] Add `AccountStatus`, `AdminUserSummary`, and `AdminUserFilters` types.
-- [ ] Add `listAdminUsers` with optional `membershipStatus`, `role`, and `accountStatus` query params.
-- [ ] Add `approveMembership`, `rejectMembership`, `restoreMembership`, and `disableUser`.
-- [ ] Ensure every request uses `credentials: "same-origin"`.
-- [ ] Ensure every admin action POST sends `content-type: application/json` with body `{}`.
-- [ ] Test paths, query params, methods, credentials, JSON bodies, stable error normalization, and fetch failure.
-- [ ] Run `npx vitest --run packages/web/src/lib/browser-api.test.ts`.
+- [x] Add `AccountStatus`, `AdminUserSummary`, and `AdminUserFilters` types.
+- [x] Add `listAdminUsers` with optional `membershipStatus`, `role`, and `accountStatus` query params.
+- [x] Add `approveMembership`, `rejectMembership`, `restoreMembership`, and `disableUser`.
+- [x] Ensure every request uses `credentials: "same-origin"`.
+- [x] Ensure every admin action POST sends `content-type: application/json` with body `{}`.
+- [x] Test paths, query params, methods, credentials, JSON bodies, stable error normalization, and fetch failure.
+- [x] Run `npx vitest --run packages/web/src/lib/browser-api.test.ts`.
 
 ### Task 2: Add Admin User UI State Helpers
 
@@ -189,13 +189,13 @@ Create: packages/web/src/components/admin/admin-users-state.ts
 Create: packages/web/src/components/admin/admin-users-state.test.ts
 ```
 
-- [ ] Add sort helper that puts active pending requests first, then active non-members, active members/admins, and disabled users last.
-- [ ] Add action helper for approve, reject, restore, and disable visibility.
-- [ ] Hide membership actions for disabled users.
-- [ ] Hide disable action for the current signed-in admin.
-- [ ] Add `messageForAdminUserErrorCode(code)` with English-only stable API error-code messages.
-- [ ] Test sorting, action visibility, self-disable prevention, and error-code messages.
-- [ ] Run `npx vitest --run packages/web/src/components/admin/admin-users-state.test.ts`.
+- [x] Add sort helper that puts active pending requests first, then active non-members, active members/admins, and disabled users last.
+- [x] Add action helper for approve, reject, restore, and disable visibility.
+- [x] Hide membership actions for disabled users.
+- [x] Hide disable action for the current signed-in admin.
+- [x] Add `messageForAdminUserErrorCode(code)` with English-only stable API error-code messages.
+- [x] Test sorting, action visibility, self-disable prevention, and error-code messages.
+- [x] Run `npx vitest --run packages/web/src/components/admin/admin-users-state.test.ts`.
 
 ### Task 3: Add Admin User Translations
 
@@ -208,10 +208,10 @@ Modify: packages/web/src/i18n/en.ts
 Modify: packages/web/src/i18n/translations.test.ts
 ```
 
-- [ ] Add localized labels for loading, empty list, filters, status badges, role badges, approve, reject, restore, disable, disabled account, current admin, success messages, login required, and forbidden state.
-- [ ] Keep API error-code messages English-only in the state helper.
-- [ ] Keep Catalan as the primary UX language.
-- [ ] Run `npx vitest --run packages/web/src/i18n/translations.test.ts`.
+- [x] Add localized labels for loading, empty list, filters, status badges, role badges, approve, reject, restore, disable, disabled account, current admin, success messages, login required, and forbidden state.
+- [x] Keep API error-code messages English-only in the state helper.
+- [x] Keep Catalan as the primary UX language.
+- [x] Run `npx vitest --run packages/web/src/i18n/translations.test.ts`.
 
 ### Task 4: Add Admin Users Panel
 
@@ -222,16 +222,16 @@ Create: packages/web/src/components/admin/AdminUsersPanel.tsx
 Modify: packages/web/src/styles/global.css
 ```
 
-- [ ] On mount, call `getCurrentUser`.
-- [ ] Show login-required state for `API_AUTH_REQUIRED` or `API_AUTH_INVALID`.
-- [ ] Show forbidden state when the current user is not an admin.
-- [ ] Load admin users with `listAdminUsers`.
-- [ ] Render a dense, scannable admin table or list with username, email, email verification, membership status, role, account status, created date, and actions.
-- [ ] Add filters for membership status, role, and account status.
-- [ ] Implement approve, reject, restore, and disable actions with per-row pending state.
-- [ ] Replace the changed row from the action response without forcing a full reload.
-- [ ] Show success and error messages without optimistic destructive changes.
-- [ ] Keep layout usable on mobile with stacked rows or horizontally safe controls.
+- [x] On mount, call `getCurrentUser`.
+- [x] Show login-required state for `API_AUTH_REQUIRED` or `API_AUTH_INVALID`.
+- [x] Show forbidden state when the current user is not an admin.
+- [x] Load admin users with `listAdminUsers`.
+- [x] Render a dense, scannable admin table or list with username, email, email verification, membership status, role, account status, created date, and actions.
+- [x] Add filters for membership status, role, and account status.
+- [x] Implement approve, reject, restore, and disable actions with per-row pending state.
+- [x] Replace the changed row from the action response without forcing a full reload.
+- [x] Show success and error messages without optimistic destructive changes.
+- [x] Keep layout usable on mobile with stacked rows or horizontally safe controls.
 
 ### Task 5: Wire The Admin Users Page
 
@@ -243,11 +243,11 @@ Modify: design/packages/web/astro-structure.md
 Modify: design/packages/web/overview.md
 ```
 
-- [ ] Import `AdminUsersPanel`.
-- [ ] Pass localized labels from Astro to the React island.
-- [ ] Hydrate with `client:load` because admin actions are the page's primary workflow.
-- [ ] Keep `AdminLayout` and localized page intro.
-- [ ] Update web design docs to list the new admin island.
+- [x] Import `AdminUsersPanel`.
+- [x] Pass localized labels from Astro to the React island.
+- [x] Hydrate with `client:load` because admin actions are the page's primary workflow.
+- [x] Keep `AdminLayout` and localized page intro.
+- [x] Update web design docs to list the new admin island.
 
 ### Task 6: Verify, Deploy, And Record
 
@@ -258,16 +258,24 @@ Modify: design/implementation/log.md
 Modify: design/implementation/roadmap.md
 ```
 
-- [ ] Run `npm test --workspace packages/web`.
-- [ ] Run `npx tsc --noEmit -p packages/web/tsconfig.json`.
-- [ ] Run `npm run build --workspace packages/web`.
-- [ ] Deploy dev with `npx sst deploy --stage dev`.
-- [ ] Live-smoke through the Web origin as an admin.
-- [ ] Confirm a pending user can be approved.
-- [ ] Confirm a pending user can be rejected and remains an active user.
-- [ ] Confirm a rejected user can be restored to pending.
-- [ ] Confirm a user can be disabled and cannot log in afterward.
-- [ ] Confirm the UI does not offer delete or role-management actions.
-- [ ] Clean up temporary live-smoke users and sessions.
-- [ ] Update the implementation log with commits, verification, deployment, and live-smoke results.
-- [ ] Move the roadmap to the next slice.
+- [x] Run `npm test --workspace packages/web`.
+- [x] Run `npx tsc --noEmit -p packages/web/tsconfig.json`.
+- [x] Run `npm run build --workspace packages/web`.
+- [x] Deploy dev with `npx sst deploy --stage dev`.
+- [x] Live-smoke through the Web origin as an admin.
+- [x] Confirm a pending user can be approved.
+- [x] Confirm a pending user can be rejected and remains an active user.
+- [x] Confirm a rejected user can be restored to pending.
+- [x] Confirm a user can be disabled and cannot log in afterward.
+- [x] Confirm the UI does not offer delete or role-management actions.
+- [x] Clean up temporary live-smoke users and sessions.
+- [x] Update the implementation log with commits, verification, deployment, and live-smoke results.
+- [x] Move the roadmap to the next slice.
+
+## Completion Notes
+
+The admin users page now mounts `AdminUsersPanel` on `/[locale]/admin/users`. It checks `/api/me`, requires an admin role in the browser before showing controls, and uses the existing same-origin admin API routes for listing, filtering, approve, reject, restore, and disable actions.
+
+The UI intentionally does not expose user deletion, role changes, account re-enable, bulk actions, email notifications, or admin post/event moderation.
+
+Live smoke initially proved the admin actions worked but exposed a cleanup ordering issue in the temporary D1 test data: a disabled user references the admin through `disabled_by`, so cleanup must null `disabled_by` or delete referenced users in a safe order. The rerun used the corrected cleanup order and left zero temporary users.

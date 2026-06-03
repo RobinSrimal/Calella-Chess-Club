@@ -42,7 +42,7 @@ Use React .tsx islands for:
   UI with client-side state or optimistic updates
 ```
 
-React is installed through the Astro React integration for interactive islands. Current islands include the login form, registration form, auth-aware public navigation, and the member posts panel. The next admin island is the admin users panel.
+React is installed through the Astro React integration for interactive islands. Current islands include the login form, registration form, auth-aware public navigation, member posts panel, and admin users panel.
 
 When React components are embedded in Astro pages, hydrate them with the narrowest useful `client:*` directive. Static components should not be hydrated.
 
@@ -52,7 +52,7 @@ The localized public landing page fetches public posts and upcoming public event
 
 The member posts page mounts `MemberPostsPanel` with `client:load`. The panel calls same-origin `/api/me`, requires approved member or admin access, lists caller-visible posts, and supports draft creation, editing, explicit member-only publish, and soft delete. It uses `PostBlockEditor`, a restricted BlockNote editor with paragraph blocks, links, bold, and italic only. The editor sends native BlockNote JSON with empty `children: []` arrays; the backend remains the final validator.
 
-The admin users page will mount `AdminUsersPanel` with `client:load`. The panel checks `/api/me`, requires admin access, lists users through `/api/admin/users`, and supports membership approval, rejection, restore, and account disablement. It must not expose user deletion or role-management actions.
+The admin users page mounts `AdminUsersPanel` with `client:load`. The panel checks `/api/me`, requires admin access, lists users through `/api/admin/users`, and supports membership approval, rejection, restore, and account disablement. It does not expose user deletion or role-management actions.
 
 The Web worker owns same-origin proxy routes:
 

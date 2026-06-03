@@ -1097,3 +1097,50 @@ Admin action POST requests must send JSON bodies through the Web proxy.
 The roadmap now points current slice 015 at the detailed admin users plan.
 Member events moved to future slice 016.
 ```
+
+## 2026-06-03 - Completed Slice 015: Admin Users UI
+
+```txt
+commits
+2051a99 Add admin user browser API helpers
+076fc46 Add admin user UI state helpers
+e53817a Connect admin users page
+
+web
+Added admin user browser API helpers for list, approve, reject, restore, and disable.
+Admin action helpers send content-type application/json with {} through the Web proxy.
+Added admin user state helpers for sorting, action visibility, self-disable prevention, and English-only stable API error messages.
+Added Catalan, Spanish, and English labels for the admin users UI.
+Added AdminUsersPanel on /{locale}/admin/users with filters, dense user table, status badges, row actions, success/error states, and mobile layout.
+The UI does not expose user deletion or role-management actions.
+
+verification
+npx vitest --run packages/web/src/lib/browser-api.test.ts: 12 tests passed.
+npx vitest --run packages/web/src/components/admin/admin-users-state.test.ts: 5 tests passed.
+npx vitest --run packages/web/src/i18n/translations.test.ts: 3 tests passed.
+npm test --workspace packages/web: 51 tests passed.
+npx tsc --noEmit -p packages/web/tsconfig.json: passed.
+npm run build --workspace packages/web: passed with the expected Vite large-chunk warning.
+npx sst deploy --stage dev: deployed WebUrl https://ccc-dev-webworkerscript.robin-srimal.workers.dev.
+
+live verification
+Temporary verified admin and target users inserted through dev D1.
+GET /ca/admin/users through Web origin returned 200 and rendered the admin users island labels.
+POST /auth/login through Web origin returned 200 for the temporary admin and included an access cookie.
+GET /api/me through Web origin returned role=admin for the temporary admin.
+GET /api/admin/users?membershipStatus=pending&role=user&accountStatus=active through Web origin returned 200 and included the pending user.
+POST /api/admin/users/:id/approve-membership returned membershipStatus=member.
+POST /api/admin/users/:id/reject-membership returned membershipStatus=rejected and accountStatus=active.
+POST /api/admin/users/:id/restore-membership returned membershipStatus=pending.
+POST /api/admin/users/:id/disable returned accountStatus=disabled and disabledBy set to the temporary admin.
+POST /auth/login for the disabled target user returned 403 AUTH_ACCOUNT_DISABLED.
+Cleanup verification returned zero temporary smoke users.
+
+cleanup finding
+The first live-smoke cleanup tried to delete the temporary admin before clearing a disabled target user's disabled_by reference.
+That failed with a D1 foreign-key constraint.
+Cleanup now nulls disabled_by for temporary smoke users before deleting users.
+
+next slice
+016-member-events-ui
+```
