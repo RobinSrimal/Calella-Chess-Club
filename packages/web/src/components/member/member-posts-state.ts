@@ -27,7 +27,7 @@ export function canUseMemberPosts(user: PublicUser | undefined): boolean {
 }
 
 export function postStatusLabel(
-  post: MemberPost,
+  post: Pick<MemberPost, "status">,
   labels: MemberPostStatusLabels,
 ): string {
   return post.status === "published" ? labels.publishedStatus : labels.draftStatus;

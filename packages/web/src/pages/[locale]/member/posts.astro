@@ -1,5 +1,6 @@
 ---
 import PageIntro from "../../../components/PageIntro.astro";
+import { MemberPostsPanel } from "../../../components/member/MemberPostsPanel";
 import { getTranslations } from "../../../i18n";
 import AppLayout from "../../../layouts/AppLayout.astro";
 import { getLocaleFromParam, writeLocaleCookie } from "../../../lib/locale";
@@ -16,9 +17,6 @@ const t = getTranslations(locale);
 <AppLayout locale={locale} title={t.member.postsTitle} currentPath={Astro.url.pathname}>
   <PageIntro title={t.member.postsTitle} />
   <div class="shell-inner content-stack">
-    <article class="panel">
-      <h2>{t.member.draftStatus}</h2>
-      <p>{t.member.postsTitle}</p>
-    </article>
+    <MemberPostsPanel client:load locale={locale} labels={t.member.posts} />
   </div>
 </AppLayout>
