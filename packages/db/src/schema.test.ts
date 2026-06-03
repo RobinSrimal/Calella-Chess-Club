@@ -13,6 +13,11 @@ test("declares the initial scaffold migration", () => {
       path: "migrations/0001_empty.sql",
       description: "Scaffold migration with no schema changes.",
     },
+    {
+      id: "0002_auth_registration",
+      path: "migrations/0002_auth_registration.sql",
+      description: "Create users and email verification tokens.",
+    },
   ]);
 });
 
@@ -25,4 +30,20 @@ test("keeps the scaffold migration free of schema statements", () => {
   expect(sql).not.toMatch(/\bALTER\b/i);
   expect(sql).not.toMatch(/\bDROP\b/i);
   expect(sql).not.toMatch(/\bINSERT\b/i);
+});
+
+test("creates auth registration tables and lookup indexes", () => {
+  const migration = migrations[1];
+  const sql = readFileSync(resolve(packageRoot, migration.path), "utf8");
+
+  expect(sql).toMatch(/CREATE TABLE users/i);
+  expect(sql).toMatch(/CREATE TABLE email_verification_tokens/i);
+  expect(sql).toMatch(/username_normalized TEXT NOT NULL UNIQUE/i);
+  expect(sql).toMatch(/email_normalized TEXT NOT NULL UNIQUE/i);
+  expect(sql).toMatch(/password_hash TEXT NOT NULL/i);
+  expect(sql).toMatch(/membership_status TEXT NOT NULL/i);
+  expect(sql).toMatch(/token_hash TEXT NOT NULL UNIQUE/i);
+  expect(sql).toMatch(/idx_users_membership_status/i);
+  expect(sql).toMatch(/idx_email_verification_tokens_user_id/i);
+  expect(sql).toMatch(/idx_email_verification_tokens_expires_at/i);
 });

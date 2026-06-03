@@ -4,6 +4,11 @@ export const migrations = [
     path: "migrations/0001_empty.sql",
     description: "Scaffold migration with no schema changes.",
   },
+  {
+    id: "0002_auth_registration",
+    path: "migrations/0002_auth_registration.sql",
+    description: "Create users and email verification tokens.",
+  },
 ] as const;
 
 export type Migration = (typeof migrations)[number];
