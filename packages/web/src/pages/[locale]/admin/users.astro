@@ -1,4 +1,5 @@
 ---
+import { AdminUsersPanel } from "../../../components/admin/AdminUsersPanel";
 import PageIntro from "../../../components/PageIntro.astro";
 import { getTranslations } from "../../../i18n";
 import AdminLayout from "../../../layouts/AdminLayout.astro";
@@ -15,4 +16,7 @@ const t = getTranslations(locale);
 
 <AdminLayout locale={locale} title={t.admin.usersTitle} currentPath={Astro.url.pathname}>
   <PageIntro title={t.admin.usersTitle} />
+  <div class="shell-inner content-stack">
+    <AdminUsersPanel client:load locale={locale} labels={t.admin.users} />
+  </div>
 </AdminLayout>

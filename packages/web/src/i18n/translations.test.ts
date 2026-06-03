@@ -27,3 +27,9 @@ test("returns translations by locale", () => {
   expect(getTranslations("es").nav.login).toBe("Iniciar sesion");
   expect(getTranslations("en").nav.login).toBe("Log in");
 });
+
+test("admin users labels are available in each locale", () => {
+  expect(getTranslations("ca").admin.users.loading).toBe("Carregant usuaris...");
+  expect(getTranslations("es").admin.users.approve).toBe("Aprobar alta");
+  expect(getTranslations("en").admin.users.disable).toBe("Disable account");
+});

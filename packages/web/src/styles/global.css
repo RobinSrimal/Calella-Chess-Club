@@ -34,7 +34,8 @@ a {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -196,6 +197,12 @@ input {
   background: var(--accent);
   color: #fff;
   font-weight: 700;
+}
+
+.button-link.compact {
+  min-height: 34px;
+  padding: 0 10px;
+  font-size: 0.86rem;
 }
 
 .button-link:disabled {
@@ -453,6 +460,120 @@ input {
   gap: 8px;
 }
 
+.admin-users-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-users-filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.admin-users-filters label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.admin-users-filters select {
+  min-height: 42px;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  padding: 0 10px;
+  color: var(--ink);
+}
+
+.admin-users-filters select:focus {
+  border-color: var(--focus);
+  outline: 2px solid color-mix(in srgb, var(--focus) 20%, transparent);
+}
+
+.admin-users-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-users-table {
+  width: 100%;
+  min-width: 860px;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.admin-users-table th,
+.admin-users-table td {
+  border-bottom: 1px solid var(--line);
+  padding: 12px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.admin-users-table th {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.admin-users-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.admin-user-email,
+.admin-user-note {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.admin-user-note {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.status-pill {
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 9px;
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status-pill.membership-pending,
+.status-pill.account-active {
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--line));
+  background: color-mix(in srgb, var(--accent) 8%, #fff);
+  color: var(--accent-strong);
+}
+
+.status-pill.membership-rejected,
+.status-pill.account-disabled {
+  border-color: color-mix(in srgb, var(--danger) 28%, var(--line));
+  background: color-mix(in srgb, var(--danger) 8%, #fff);
+  color: var(--danger);
+}
+
+.status-pill.role-admin {
+  border-color: color-mix(in srgb, var(--focus) 26%, var(--line));
+  background: color-mix(in srgb, var(--focus) 7%, #fff);
+  color: #1d4ed8;
+}
+
+.admin-users-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-width: 180px;
+}
+
 .footer-content {
   min-height: 72px;
   display: flex;
@@ -477,6 +598,49 @@ input {
 
   .member-posts-grid {
     grid-template-columns: 1fr;
+  }
+
+  .admin-users-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-users-table {
+    min-width: 0;
+  }
+
+  .admin-users-table thead {
+    display: none;
+  }
+
+  .admin-users-table,
+  .admin-users-table tbody,
+  .admin-users-table tr,
+  .admin-users-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .admin-users-table tr {
+    border-bottom: 1px solid var(--line);
+    padding: 10px 0;
+  }
+
+  .admin-users-table tbody tr:last-child {
+    border-bottom: 0;
+  }
+
+  .admin-users-table td {
+    display: grid;
+    grid-template-columns: minmax(120px, 38%) minmax(0, 1fr);
+    gap: 10px;
+    border-bottom: 0;
+    padding: 7px 0;
+  }
+
+  .admin-users-table td::before {
+    content: attr(data-label);
+    color: var(--muted);
+    font-weight: 700;
   }
 
   .hero-content {
