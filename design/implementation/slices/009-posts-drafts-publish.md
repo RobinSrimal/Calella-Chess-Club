@@ -103,73 +103,79 @@ full Markdown rendering
 
 ### Task 1: Add Posts Migration And Schema Metadata
 
-- [ ] Add `packages/db/migrations/0004_posts.sql`.
-- [ ] Add posts schema metadata in `packages/db/src/schema.ts`.
-- [ ] Include a foreign key from `posts.author_id` to `users.id`.
-- [ ] Include a foreign key from `posts.deleted_by` to `users.id`.
-- [ ] Add useful indexes for author drafts, published posts, and public posts.
-- [ ] Cover schema metadata with db tests.
+- [x] Add `packages/db/migrations/0004_posts.sql`.
+- [x] Add posts schema metadata in `packages/db/src/schema.ts`.
+- [x] Include a foreign key from `posts.author_id` to `users.id`.
+- [x] Include a foreign key from `posts.deleted_by` to `users.id`.
+- [x] Add useful indexes for author drafts, published posts, and public posts.
+- [x] Cover schema metadata with db tests.
 
 ### Task 2: Add Post Validation Helpers
 
-- [ ] Add title validation.
-- [ ] Add body Markdown validation.
-- [ ] Keep Markdown as text storage in this slice.
-- [ ] Reject empty or oversized payloads with stable field errors.
-- [ ] Add focused validation tests.
+- [x] Add title validation.
+- [x] Add body Markdown validation.
+- [x] Keep Markdown as text storage in this slice.
+- [x] Reject empty or oversized payloads with stable field errors.
+- [x] Add focused validation tests.
 
 ### Task 3: Add Post Repository Methods
 
-- [ ] Add row mapping helpers.
-- [ ] Add list query for published member-visible posts plus own drafts.
-- [ ] Add create draft method.
-- [ ] Add find-visible method for route access checks.
-- [ ] Add owner edit method.
-- [ ] Add publish method.
-- [ ] Add admin visibility toggle methods.
-- [ ] Add soft-delete method.
-- [ ] Cover SQL behavior with focused repository tests.
+- [x] Add row mapping helpers.
+- [x] Add list query for published member-visible posts plus own drafts.
+- [x] Add create draft method.
+- [x] Add find-visible method for route access checks.
+- [x] Add owner edit method.
+- [x] Add publish method.
+- [x] Add admin visibility toggle methods.
+- [x] Add soft-delete method.
+- [x] Cover SQL behavior with focused repository tests.
 
 ### Task 4: Add Member/Admin Route Guards
 
-- [ ] Load current user from D1 for post routes.
-- [ ] Require active, verified users.
-- [ ] Require `membership_status = member` or `role = admin`.
-- [ ] Reuse admin guard for public visibility routes.
-- [ ] Add guard tests for missing token, invalid token, pending user, rejected user, disabled user, member, and admin.
+- [x] Load current user from D1 for post routes.
+- [x] Require active, verified users.
+- [x] Require `membership_status = member` or `role = admin`.
+- [x] Reuse admin guard for public visibility routes.
+- [x] Add guard tests for missing token, invalid token, pending user, rejected user, disabled user, member, and admin.
 
 ### Task 5: Implement Draft CRUD Routes
 
-- [ ] Implement `GET /api/posts`.
-- [ ] Implement `POST /api/posts`.
-- [ ] Implement `GET /api/posts/:id`.
-- [ ] Implement `PUT /api/posts/:id`.
-- [ ] Reject non-visible or deleted posts with `API_POST_NOT_FOUND`.
-- [ ] Add route tests.
+- [x] Implement `GET /api/posts`.
+- [x] Implement `POST /api/posts`.
+- [x] Implement `GET /api/posts/:id`.
+- [x] Implement `PUT /api/posts/:id`.
+- [x] Reject non-visible or deleted posts with `API_POST_NOT_FOUND`.
+- [x] Add route tests.
 
 ### Task 6: Implement Publish And Visibility Routes
 
-- [ ] Implement `POST /api/posts/:id/publish`.
-- [ ] Keep published posts member-only by default.
-- [ ] Allow admin-authored publish requests to explicitly set public visibility.
-- [ ] Reject immediate-public publish requests from non-admin users.
-- [ ] Implement `POST /api/posts/:id/public`.
-- [ ] Implement `POST /api/posts/:id/member-only`.
-- [ ] Add route tests.
+- [x] Implement `POST /api/posts/:id/publish`.
+- [x] Keep published posts member-only by default.
+- [x] Allow admin-authored publish requests to explicitly set public visibility.
+- [x] Reject immediate-public publish requests from non-admin users.
+- [x] Implement `POST /api/posts/:id/public`.
+- [x] Implement `POST /api/posts/:id/member-only`.
+- [x] Add route tests.
 
 ### Task 7: Implement Soft Delete
 
-- [ ] Implement `DELETE /api/posts/:id`.
-- [ ] Allow owners to soft-delete their own posts.
-- [ ] Allow admins to soft-delete published posts.
-- [ ] Set `status = deleted`, `deleted_at`, `deleted_by`, and `updated_at`.
-- [ ] Add route tests.
+- [x] Implement `DELETE /api/posts/:id`.
+- [x] Allow owners to soft-delete their own posts.
+- [x] Allow admins to soft-delete published posts.
+- [x] Set `status = deleted`, `deleted_at`, `deleted_by`, and `updated_at`.
+- [x] Add route tests.
 
 ### Task 8: Deploy And Record
 
-- [ ] Run package tests and typechecks.
-- [ ] Apply the posts migration to dev D1.
-- [ ] Deploy dev.
-- [ ] Live-check draft create, publish, admin public toggle, and soft delete with temporary data.
-- [ ] Clean up temporary live-check data.
-- [ ] Update design docs, implementation log, and roadmap.
+- [x] Run package tests and typechecks.
+- [x] Apply the posts migration to dev D1.
+- [x] Deploy dev.
+- [x] Live-check draft create, publish, admin public toggle, and soft delete with temporary data.
+- [x] Clean up temporary live-check data.
+- [x] Update design docs, implementation log, and roadmap.
+
+## Completion Notes
+
+The posts API was deployed to the dev stage and live-checked with temporary D1 users. New posts start as drafts and member-only. Member attempts to publish directly as public are rejected with `API_FORBIDDEN`. Admins can toggle published posts public/member-only and soft-delete published posts.
+
+Temporary live-check users and posts were removed after verification. Frontend post screens and public landing feeds remain out of scope.

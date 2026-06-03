@@ -34,12 +34,26 @@ POST /api/admin/users/:id/disable
   Requires an active, verified admin account.
   Changes membership state or disables an account.
   Account disablement revokes active refresh sessions.
+
+GET /api/posts
+POST /api/posts
+GET /api/posts/:id
+PUT /api/posts/:id
+POST /api/posts/:id/publish
+POST /api/posts/:id/public
+POST /api/posts/:id/member-only
+DELETE /api/posts/:id
+  Requires an active, verified approved member or admin account.
+  Drafts are visible only to their author.
+  Published posts are visible to approved members and admins.
+  Admins can toggle public visibility on published posts.
+  Deletes are soft deletes.
 ```
 
 ## Future Responsibilities
 
 ```txt
-member posts/events
+member events
 public posts/events
 stable error-code responses
 ```

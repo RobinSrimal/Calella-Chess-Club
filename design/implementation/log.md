@@ -621,6 +621,72 @@ remaining note
 Frontend admin screens are still static route shells. The audit_events table was intentionally not implemented in this slice.
 ```
 
+### Completed Slice: 009-posts-drafts-publish
+
+```txt
+commit hashes
+13c3630 Add posts migration
+fcdc12a Add post validation helpers
+442ed71 Add post repository
+f07a83e Add post API routes
+
+files changed
+packages/db/migrations/0004_posts.sql
+packages/db/src/schema.ts
+packages/db/src/schema.test.ts
+packages/functions/src/api.ts
+packages/functions/src/api.test.ts
+packages/functions/src/posts/repository.ts
+packages/functions/src/posts/repository.test.ts
+packages/functions/src/posts/validation.ts
+packages/functions/src/posts/validation.test.ts
+
+implemented routes
+GET /api/posts
+POST /api/posts
+GET /api/posts/:id
+PUT /api/posts/:id
+POST /api/posts/:id/publish
+POST /api/posts/:id/public
+POST /api/posts/:id/member-only
+DELETE /api/posts/:id
+
+implemented stable error codes
+API_POST_NOT_FOUND
+
+D1 migration command
+npx wrangler d1 execute ccc-dev-databasedatabase-budbdcht --remote --file packages/db/migrations/0004_posts.sql -y
+
+D1 migration result
+Wrangler executed 4 queries successfully.
+Remote D1 now has the posts table and indexes.
+
+deployment command
+npx sst deploy --stage dev --print-logs
+
+deployment result
+SST deployed the dev stage and updated the Api Worker.
+AuthApiUrl: https://ccc-dev-authapiscript-bdteakex.robin-srimal.workers.dev
+ApiUrl: https://ccc-dev-apiscript-noawkcsx.robin-srimal.workers.dev
+WebUrl: https://ccc-dev-webworkerscript.robin-srimal.workers.dev
+DatabaseId: edf26084-32a2-4d25-b608-ec4ed6a0e763
+
+live verification result
+Temporary verified member and admin users were inserted into dev D1.
+POST /api/posts returned 201 with a draft post and isPublic=false.
+GET /api/posts returned 200 and included the creator's draft.
+POST /api/posts/:id/publish with makePublic=true as a member returned 403 API_FORBIDDEN.
+POST /api/posts/:id/publish as a member with default visibility returned 200 with status=published and isPublic=false.
+POST /api/posts/:id/public as an admin returned 200 with isPublic=true.
+POST /api/posts/:id/member-only as an admin returned 200 with isPublic=false.
+DELETE /api/posts/:id as an admin returned 200 with status=deleted and deletedBy set to the admin id.
+GET /api/posts/:id after delete returned 404 API_POST_NOT_FOUND.
+Temporary live-check users and posts were deleted after verification.
+
+remaining note
+Frontend post screens are still static route shells. Public landing page feeds are still not connected to public posts.
+```
+
 ### Current State
 
 ```txt
@@ -636,8 +702,9 @@ WebUrl is https://ccc-dev-webworkerscript.robin-srimal.workers.dev.
 packages/db now owns migration metadata and a comment-only 0001_empty.sql scaffold migration.
 packages/db now owns an applied auth registration migration for users and email_verification_tokens.
 packages/db now owns an applied auth session migration for refresh_sessions and login_attempts.
+packages/db now owns an applied posts migration.
 packages/functions now owns an Auth Worker with health, registration, email verification, login, refresh, and logout routes.
-packages/functions now owns an App API Worker with health, /api/me, and admin user management routes.
+packages/functions now owns an App API Worker with health, /api/me, admin user management routes, and post routes.
 packages/scripts now owns the first-admin promotion script.
 packages/web now owns the Astro shell, localized routes, layout components, i18n dictionaries, and generated hero image.
 Design docs mirror intended infra, package, route, page, and table structure.
@@ -648,7 +715,7 @@ No app-owned AWS scaffold references remain in active source or package metadata
 ### Next Slice
 
 ```txt
-009-posts-drafts-publish
+010-events-drafts-publish
 ```
 
-The next slice candidate should implement member post drafts, publishing, editing, soft delete, and admin public visibility.
+The next slice candidate should implement member event drafts, publishing, editing, soft delete, and admin public visibility.

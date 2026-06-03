@@ -17,15 +17,15 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-009-posts-drafts-publish
+010-events-drafts-publish
 ```
 
-Goal: implement member post drafts, publishing, editing, soft delete, and admin public visibility.
+Goal: implement member event drafts, publishing, editing, soft delete, and admin public visibility.
 
 Detailed plan:
 
 ```txt
-design/implementation/slices/009-posts-drafts-publish.md
+design/implementation/slices/010-events-drafts-publish.md
 ```
 
 ## Future Slices
@@ -33,9 +33,6 @@ design/implementation/slices/009-posts-drafts-publish.md
 Future slices are intentionally high-level until the previous slice has been completed and reviewed.
 
 ```txt
-010-events-drafts-publish
-  Implement member event drafts, publishing, editing, soft delete, and admin public visibility.
-
 011-public-landing-data
   Connect public landing page feeds to public posts and events.
 ```

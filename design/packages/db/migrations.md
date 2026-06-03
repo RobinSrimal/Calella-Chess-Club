@@ -22,11 +22,14 @@ packages/db/migrations/
 0003_auth_sessions.sql
   Creates refresh_sessions and login_attempts for login, refresh, and logout.
 
+0004_posts.sql
+  Creates posts for member-created Markdown posts.
+
 Future auth/session migrations
   Create password_reset_tokens.
 
 Future content migrations
-  Create posts, events, and audit_events.
+  Create events and audit_events.
 ```
 
 ## Auth Registration Migration Scope
@@ -52,3 +55,13 @@ login_attempts
 Refresh token rows store keyed token hashes only. Login attempts record the submitted
 username/email identifier, normalized lookup value, success flag, optional stable failure code,
 and creation timestamp.
+
+## Posts Migration Scope
+
+The posts migration creates:
+
+```txt
+posts
+```
+
+Post rows store simple Markdown text, draft/published/deleted status, public visibility, timestamps, and soft-delete metadata. Indexes support author draft lookups, published member feeds, and public post feeds.
