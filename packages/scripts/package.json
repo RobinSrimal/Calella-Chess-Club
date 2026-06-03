@@ -4,9 +4,11 @@
   "type": "module",
   "dependencies": {
     "@CCC/core": "*",
+    "bcryptjs": "^3.0.3",
     "sst": "*"
   },
   "scripts": {
+    "live-web-auth-check": "tsx src/live-web-auth-check.ts",
     "shell": "sst shell tsx"
   },
   "devDependencies": {
