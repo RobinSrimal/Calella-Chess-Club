@@ -33,6 +33,11 @@ test("declares the initial scaffold migration", () => {
       path: "migrations/0005_events.sql",
       description: "Create member events.",
     },
+    {
+      id: "0006_posts_body_json",
+      path: "migrations/0006_posts_body_json.sql",
+      description: "Migrate posts from Markdown text to JSON documents.",
+    },
   ]);
 });
 
@@ -118,4 +123,18 @@ test("creates events table and lookup indexes", () => {
   expect(sql).toMatch(/idx_events_author_status/i);
   expect(sql).toMatch(/idx_events_published_starts_at/i);
   expect(sql).toMatch(/idx_events_public_starts_at/i);
+});
+
+test("migrates posts to JSON body storage", () => {
+  const migration = migrations[5];
+  const sql = readFileSync(resolve(packageRoot, migration.path), "utf8");
+
+  expect(sql).toMatch(/CREATE TABLE posts_new/i);
+  expect(sql).toMatch(/body_json TEXT NOT NULL/i);
+  expect(sql).not.toMatch(/body_markdown/i);
+  expect(sql).toMatch(/DROP TABLE posts/i);
+  expect(sql).toMatch(/ALTER TABLE posts_new RENAME TO posts/i);
+  expect(sql).toMatch(/idx_posts_author_status/i);
+  expect(sql).toMatch(/idx_posts_published/i);
+  expect(sql).toMatch(/idx_posts_public/i);
 });

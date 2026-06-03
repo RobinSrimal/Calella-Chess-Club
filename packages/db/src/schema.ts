@@ -24,6 +24,11 @@ export const migrations = [
     path: "migrations/0005_events.sql",
     description: "Create member events.",
   },
+  {
+    id: "0006_posts_body_json",
+    path: "migrations/0006_posts_body_json.sql",
+    description: "Migrate posts from Markdown text to JSON documents.",
+  },
 ] as const;
 
 export type Migration = (typeof migrations)[number];

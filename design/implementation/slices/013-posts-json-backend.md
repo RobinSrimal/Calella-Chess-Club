@@ -49,7 +49,7 @@ admin content UI
 rendering BlockNote JSON in Astro/React
 uploads
 support for headings/lists/quotes/tables/media
-converting existing production content beyond a safe dev-compatible migration
+preserving existing Markdown post content
 ```
 
 ## Data Contract
@@ -107,27 +107,15 @@ max link href length: 2000
 
 ## Migration Rules
 
-The migration should be safe for existing dev rows:
+The migration intentionally does not preserve existing Markdown post rows:
 
 ```sql
-ALTER TABLE posts ADD COLUMN body_json TEXT;
-UPDATE posts
-SET body_json = json_array(
-  json_object(
-    'type', 'paragraph',
-    'content', json_array(
-      json_object(
-        'type', 'text',
-        'text', body_markdown,
-        'styles', json_object()
-      )
-    )
-  )
-)
-WHERE body_json IS NULL;
+CREATE TABLE posts_new (... body_json TEXT NOT NULL ...);
+DROP TABLE posts;
+ALTER TABLE posts_new RENAME TO posts;
 ```
 
-Then create a new `posts_new` table with `body_json TEXT NOT NULL`, copy rows, drop old `posts`, rename, and recreate indexes. This avoids leaving `body_markdown` in the active schema.
+This avoids leaving `body_markdown` in the active schema. Existing dev post rows are disposable for this migration.
 
 ## Tasks
 
