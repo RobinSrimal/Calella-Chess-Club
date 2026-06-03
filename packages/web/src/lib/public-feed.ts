@@ -5,7 +5,7 @@ export type PublicPost = {
   authorId: string;
   authorUsername: string;
   title: string;
-  bodyMarkdown: string;
+  bodyJson: PostBodyJson;
   status: "published";
   isPublic: true;
   publishedAt: string;
@@ -14,6 +14,27 @@ export type PublicPost = {
   deletedAt: null;
   deletedBy: null;
 };
+
+export type PostBodyJson = PostBodyBlock[];
+
+export type PostBodyBlock = {
+  type: "paragraph";
+  content?: string | PostInlineContent[];
+};
+
+export type PostInlineText = {
+  type: "text";
+  text: string;
+  styles?: Record<string, unknown>;
+};
+
+export type PostInlineLink = {
+  type: "link";
+  href: string;
+  content: PostInlineText[];
+};
+
+export type PostInlineContent = PostInlineText | PostInlineLink;
 
 export type PublicEvent = {
   id: string;
@@ -86,4 +107,32 @@ async function fetchJson(
 function getArray<T>(body: JsonObject | undefined, key: string): T[] {
   const value = body?.[key];
   return Array.isArray(value) ? (value as T[]) : [];
+}
+
+export function previewPostBodyText(bodyJson: PostBodyJson): string {
+  return bodyJson
+    .map((block) => flattenBlockText(block))
+    .filter((text) => text.length > 0)
+    .join("\n\n");
+}
+
+function flattenBlockText(block: PostBodyBlock): string {
+  if (typeof block.content === "string") {
+    return block.content.trim();
+  }
+
+  if (!Array.isArray(block.content)) {
+    return "";
+  }
+
+  return block.content
+    .map((inline) => {
+      if (inline.type === "text") {
+        return inline.text;
+      }
+
+      return inline.content.map((text) => text.text).join("");
+    })
+    .join("")
+    .trim();
 }

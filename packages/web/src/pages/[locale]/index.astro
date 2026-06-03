@@ -4,6 +4,7 @@ import PublicLayout from "../../layouts/PublicLayout.astro";
 import { getTranslations } from "../../i18n";
 import {
   getPublicLandingData,
+  previewPostBodyText,
   type PublicLandingData,
 } from "../../lib/public-feed";
 import { getLocaleFromParam, writeLocaleCookie } from "../../lib/locale";
@@ -66,7 +67,7 @@ function preview(value: string) {
                     </time>
                     <span>{post.authorUsername}</span>
                   </p>
-                  <p class="feed-body">{preview(post.bodyMarkdown)}</p>
+                  <p class="feed-body">{preview(previewPostBodyText(post.bodyJson))}</p>
                 </li>
               ))}
             </ul>
