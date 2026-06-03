@@ -9,7 +9,15 @@ declare module "sst" {
     "Api": import("@cloudflare/workers-types").Service
     "AuthApi": import("@cloudflare/workers-types").Service
     "Database": import("@cloudflare/workers-types").D1Database
+    "JwtSigningSecret": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
     "PasswordPepper": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "RefreshTokenSecret": {
       "type": "sst.sst.Secret"
       "value": string
     }

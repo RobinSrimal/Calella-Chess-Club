@@ -20,6 +20,22 @@ export type RegisterBodyResult =
       fields: string[];
     };
 
+export type LoginBody = {
+  usernameOrEmail: string;
+  usernameOrEmailNormalized: string;
+  password: string;
+};
+
+export type LoginBodyResult =
+  | {
+      ok: true;
+      value: LoginBody;
+    }
+  | {
+      ok: false;
+      fields: string[];
+    };
+
 export function normalizeUsername(username: string): string {
   return username.trim().toLowerCase();
 }
@@ -66,6 +82,39 @@ export function parseRegisterBody(body: unknown): RegisterBodyResult {
       emailNormalized: email,
       password,
       locale: locale ?? "ca",
+    },
+  };
+}
+
+export function parseLoginBody(body: unknown): LoginBodyResult {
+  if (!isRecord(body)) {
+    return { ok: false, fields: ["body"] };
+  }
+
+  const fields: string[] = [];
+  const usernameOrEmail =
+    typeof body.usernameOrEmail === "string" ? body.usernameOrEmail.trim() : "";
+  const password = typeof body.password === "string" ? body.password : "";
+
+  if (usernameOrEmail.length === 0) {
+    fields.push("usernameOrEmail");
+  }
+  if (password.length === 0) {
+    fields.push("password");
+  }
+
+  if (fields.length > 0) {
+    return { ok: false, fields };
+  }
+
+  return {
+    ok: true,
+    value: {
+      usernameOrEmail,
+      usernameOrEmailNormalized: usernameOrEmail.includes("@")
+        ? normalizeEmail(usernameOrEmail)
+        : normalizeUsername(usernameOrEmail),
+      password,
     },
   };
 }

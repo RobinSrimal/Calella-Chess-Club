@@ -2,6 +2,7 @@ import { expect, test } from "vitest";
 import {
   normalizeEmail,
   normalizeUsername,
+  parseLoginBody,
   parseRegisterBody,
 } from "./validation";
 
@@ -41,5 +42,33 @@ test("rejects invalid register bodies with field errors", () => {
   expect(result).toEqual({
     ok: false,
     fields: ["username", "email", "password", "locale"],
+  });
+});
+
+test("accepts and normalizes a valid login body", () => {
+  const result = parseLoginBody({
+    usernameOrEmail: "  ROBIN@example.COM  ",
+    password: "correct horse battery staple",
+  });
+
+  expect(result).toEqual({
+    ok: true,
+    value: {
+      usernameOrEmail: "ROBIN@example.COM",
+      usernameOrEmailNormalized: "robin@example.com",
+      password: "correct horse battery staple",
+    },
+  });
+});
+
+test("rejects invalid login bodies with field errors", () => {
+  const result = parseLoginBody({
+    usernameOrEmail: "",
+    password: "",
+  });
+
+  expect(result).toEqual({
+    ok: false,
+    fields: ["usernameOrEmail", "password"],
   });
 });

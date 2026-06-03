@@ -1,9 +1,20 @@
 import { database } from "./db";
-import { passwordPepper, resendApiKey } from "./secrets";
+import {
+  jwtSigningSecret,
+  passwordPepper,
+  refreshTokenSecret,
+  resendApiKey,
+} from "./secrets";
 
 export const authApi = new sst.cloudflare.Worker("AuthApi", {
   handler: "packages/functions/src/auth.ts",
-  link: [database, passwordPepper, resendApiKey],
+  link: [
+    database,
+    passwordPepper,
+    resendApiKey,
+    jwtSigningSecret,
+    refreshTokenSecret,
+  ],
   environment: {
     EMAIL_FROM: "Calella Chess Club <onboarding@resend.dev>",
     WEB_ORIGIN:
@@ -16,6 +27,6 @@ export const authApi = new sst.cloudflare.Worker("AuthApi", {
 
 export const api = new sst.cloudflare.Worker("Api", {
   handler: "packages/functions/src/api.ts",
-  link: [database],
+  link: [database, jwtSigningSecret],
   url: true,
 });
