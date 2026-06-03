@@ -79,6 +79,44 @@ test("accepts string paragraph content and canonicalizes it", () => {
   });
 });
 
+test("accepts native BlockNote paragraph blocks with empty children", () => {
+  const result = parsePostBodyJson([
+    {
+      id: "block-1",
+      type: "paragraph",
+      props: {
+        backgroundColor: "default",
+        textColor: "default",
+        textAlignment: "left",
+      },
+      content: [{ type: "text", text: "Native BlockNote.", styles: {} }],
+      children: [],
+    },
+  ]);
+
+  expect(result).toEqual({
+    ok: true,
+    value: {
+      document: [
+        {
+          id: "block-1",
+          type: "paragraph",
+          props: {
+            backgroundColor: "default",
+            textColor: "default",
+            textAlignment: "left",
+          },
+          content: [{ type: "text", text: "Native BlockNote.", styles: {} }],
+          children: [],
+        },
+      ],
+      serialized:
+        '[{"id":"block-1","type":"paragraph","props":{"backgroundColor":"default","textColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Native BlockNote.","styles":{}}],"children":[]}]',
+      textLength: 17,
+    },
+  });
+});
+
 test("rejects empty and oversized documents", () => {
   expect(parsePostBodyJson([])).toEqual({ ok: false });
   expect(parsePostBodyJson([{ type: "paragraph", content: "   " }])).toEqual({

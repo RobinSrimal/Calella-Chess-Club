@@ -28,6 +28,7 @@ export type PostBodyBlock = {
   type: "paragraph";
   props?: PostParagraphProps;
   content: PostInlineContent[];
+  children?: [];
 };
 
 export type PostBodyJson = PostBodyBlock[];
@@ -110,7 +111,8 @@ function parseParagraphBlock(
   if (!isRecord(value) || value.type !== "paragraph") {
     return { ok: false };
   }
-  if ("children" in value) {
+  const children = parseChildren(value.children);
+  if (!children.ok) {
     return { ok: false };
   }
 
@@ -138,8 +140,32 @@ function parseParagraphBlock(
   }
 
   block.content = content.content;
+  if (children.children !== undefined) {
+    block.children = children.children;
+  }
 
   return { ok: true, block };
+}
+
+function parseChildren(
+  value: unknown,
+):
+  | {
+      ok: true;
+      children?: [];
+    }
+  | {
+      ok: false;
+    } {
+  if (value === undefined) {
+    return { ok: true };
+  }
+
+  if (Array.isArray(value) && value.length === 0) {
+    return { ok: true, children: [] };
+  }
+
+  return { ok: false };
 }
 
 function parseBlockContent(

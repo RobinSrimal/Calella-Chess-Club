@@ -21,7 +21,7 @@ DELETE /api/posts/:id
 
 Members can create drafts, publish drafts, edit their own posts, and soft-delete their own posts. Admins can toggle public visibility and soft-delete published posts. Admins cannot edit member-authored content and cannot see another user's drafts.
 
-Post create/edit bodies use `bodyJson`, a restricted BlockNote-compatible JSON document stored as text in D1. The backend accepts paragraph blocks with plain text, bold text, italic text, and links only. Unsupported block types, uploads, media, tables, nested child blocks, oversized documents, and empty flattened text are rejected with `API_VALIDATION_FAILED`.
+Post create/edit bodies use `bodyJson`, a restricted BlockNote-compatible JSON document stored as text in D1. The backend accepts paragraph blocks with plain text, bold text, italic text, links, and native BlockNote empty `children: []` arrays only. Unsupported block types, uploads, media, tables, non-empty nested child blocks, oversized documents, and empty flattened text are rejected with `API_VALIDATION_FAILED`.
 
 New posts always default to member-only visibility with `is_public = false`, including posts created by admins. When an admin publishes their own draft, the request may include an explicit immediate-public option that sets `is_public = true`; the default remains `false`. Non-admin publish requests with an immediate-public option must be rejected.
 
