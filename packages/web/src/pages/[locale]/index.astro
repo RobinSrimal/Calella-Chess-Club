@@ -4,9 +4,9 @@ import PublicLayout from "../../layouts/PublicLayout.astro";
 import { getTranslations } from "../../i18n";
 import {
   getPublicLandingData,
-  previewPostBodyText,
   type PublicLandingData,
 } from "../../lib/public-feed";
+import { previewPostBodyText } from "../../lib/post-body";
 import { getLocaleFromParam, writeLocaleCookie } from "../../lib/locale";
 
 const locale = getLocaleFromParam(Astro.params.locale);

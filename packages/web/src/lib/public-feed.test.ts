@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { getPublicLandingData, previewPostBodyText } from "./public-feed";
+import { getPublicLandingData } from "./public-feed";
 
 test("fetches landing posts and events through the API binding", async () => {
   const requestedPaths: string[] = [];
@@ -64,28 +64,6 @@ test("fetches landing posts and events through the API binding", async () => {
   expect(requestedPaths).toEqual(["/api/public/posts", "/api/public/events"]);
   expect(data.posts).toEqual([post]);
   expect(data.events).toEqual([event]);
-});
-
-test("flattens post JSON body text for landing previews", () => {
-  expect(
-    previewPostBodyText([
-      {
-        type: "paragraph",
-        content: [
-          { type: "text", text: "First paragraph.", styles: {} },
-          {
-            type: "link",
-            href: "https://example.com",
-            content: [{ type: "text", text: " Link text.", styles: {} }],
-          },
-        ],
-      },
-      {
-        type: "paragraph",
-        content: [{ type: "text", text: "Second paragraph.", styles: {} }],
-      },
-    ]),
-  ).toBe("First paragraph. Link text.\n\nSecond paragraph.");
 });
 
 test("returns empty landing lists when the API binding is unavailable", async () => {
