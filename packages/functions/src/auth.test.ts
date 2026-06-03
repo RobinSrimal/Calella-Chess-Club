@@ -1,5 +1,5 @@
 import { expect, test, vi } from "vitest";
-import { handleAuthRequest } from "./auth";
+import authWorker, { handleAuthRequest } from "./auth";
 import { verifyPassword } from "./auth/password";
 
 test("GET /auth/health returns auth service status", async () => {
@@ -15,6 +15,10 @@ test("GET /auth/health returns auth service status", async () => {
     service: "auth",
     status: "ok",
   });
+});
+
+test("default Worker fetch wraps the testable request handler", () => {
+  expect(authWorker.fetch).not.toBe(handleAuthRequest);
 });
 
 test("unsupported auth routes return a stable error code", async () => {

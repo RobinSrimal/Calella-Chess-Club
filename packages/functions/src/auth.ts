@@ -287,5 +287,7 @@ function getEnv(name: string): string | undefined {
 }
 
 export default {
-  fetch: handleAuthRequest,
+  fetch(request: Request) {
+    return handleAuthRequest(request);
+  },
 };
