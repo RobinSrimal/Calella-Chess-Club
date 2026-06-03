@@ -352,19 +352,6 @@ export function createD1AuthRepository(database: D1Database): AuthRepository {
         database
           .prepare(
             [
-              "UPDATE refresh_sessions",
-              "SET revoked_at = ?, replaced_by = ?",
-              "WHERE id = ? AND revoked_at IS NULL",
-            ].join(" "),
-          )
-          .bind(
-            input.revokedAt,
-            input.replacement.id,
-            input.currentSessionId,
-          ),
-        database
-          .prepare(
-            [
               "INSERT INTO refresh_sessions (",
               "id, user_id, token_hash, created_at, expires_at, revoked_at, replaced_by, user_agent",
               ") VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
@@ -379,6 +366,19 @@ export function createD1AuthRepository(database: D1Database): AuthRepository {
             input.replacement.revokedAt,
             input.replacement.replacedBy,
             input.replacement.userAgent,
+          ),
+        database
+          .prepare(
+            [
+              "UPDATE refresh_sessions",
+              "SET revoked_at = ?, replaced_by = ?",
+              "WHERE id = ? AND revoked_at IS NULL",
+            ].join(" "),
+          )
+          .bind(
+            input.revokedAt,
+            input.replacement.id,
+            input.currentSessionId,
           ),
       ]);
     },
