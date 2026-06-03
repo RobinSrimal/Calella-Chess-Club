@@ -23,6 +23,11 @@ test("declares the initial scaffold migration", () => {
       path: "migrations/0003_auth_sessions.sql",
       description: "Create refresh sessions and login attempt records.",
     },
+    {
+      id: "0004_posts",
+      path: "migrations/0004_posts.sql",
+      description: "Create member posts.",
+    },
   ]);
 });
 
@@ -69,4 +74,22 @@ test("creates auth session tables and lookup indexes", () => {
   expect(sql).toMatch(/idx_refresh_sessions_user_active/i);
   expect(sql).toMatch(/idx_refresh_sessions_token_hash/i);
   expect(sql).toMatch(/idx_login_attempts_normalized_created_at/i);
+});
+
+test("creates posts table and lookup indexes", () => {
+  const migration = migrations[3];
+  const sql = readFileSync(resolve(packageRoot, migration.path), "utf8");
+
+  expect(sql).toMatch(/CREATE TABLE posts/i);
+  expect(sql).toMatch(/author_id TEXT NOT NULL/i);
+  expect(sql).toMatch(/body_markdown TEXT NOT NULL/i);
+  expect(sql).toMatch(/status TEXT NOT NULL DEFAULT 'draft'/i);
+  expect(sql).toMatch(/CHECK \(status IN \('draft', 'published', 'deleted'\)\)/i);
+  expect(sql).toMatch(/is_public INTEGER NOT NULL DEFAULT 0/i);
+  expect(sql).toMatch(/CHECK \(is_public IN \(0, 1\)\)/i);
+  expect(sql).toMatch(/FOREIGN KEY \(author_id\) REFERENCES users\(id\)/i);
+  expect(sql).toMatch(/FOREIGN KEY \(deleted_by\) REFERENCES users\(id\)/i);
+  expect(sql).toMatch(/idx_posts_author_status/i);
+  expect(sql).toMatch(/idx_posts_published/i);
+  expect(sql).toMatch(/idx_posts_public/i);
 });

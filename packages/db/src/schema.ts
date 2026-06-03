@@ -14,6 +14,11 @@ export const migrations = [
     path: "migrations/0003_auth_sessions.sql",
     description: "Create refresh sessions and login attempt records.",
   },
+  {
+    id: "0004_posts",
+    path: "migrations/0004_posts.sql",
+    description: "Create member posts.",
+  },
 ] as const;
 
 export type Migration = (typeof migrations)[number];
