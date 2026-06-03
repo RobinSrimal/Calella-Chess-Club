@@ -17,7 +17,7 @@ packages/db/migrations/
   Scaffold migration committed with the DB package. It contains no schema statements.
 
 0002_auth_registration.sql
-  Planned next. Creates users and email_verification_tokens for registration and email verification.
+  Creates users and email_verification_tokens for registration and email verification.
 
 Future auth/session migrations
   Create password_reset_tokens, refresh_sessions, and login_attempts.

@@ -17,15 +17,15 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-006-auth-registration-email-verification
+007-login-refresh-logout-me
 ```
 
-Goal: implement user registration, bcrypt password hashing, email verification token storage, and Resend delivery in the Auth Worker.
+Goal: implement login, access JWT cookies, refresh cookies, logout, and /api/me.
 
 Detailed plan:
 
 ```txt
-design/implementation/slices/006-auth-registration-email-verification.md
+design/implementation/slices/007-login-refresh-logout-me.md
 ```
 
 ## Future Slices
@@ -33,9 +33,6 @@ design/implementation/slices/006-auth-registration-email-verification.md
 Future slices are intentionally high-level until the previous slice has been completed and reviewed.
 
 ```txt
-007-login-refresh-logout-me
-  Implement login, access JWT cookies, refresh cookies, logout, and /api/me.
-
 008-membership-admin-users
   Implement admin membership approval, rejection, restore, and account disablement.
 

@@ -380,6 +380,100 @@ remaining note
 The web package is a static route shell only. Real login, registration submission, session detection, member data, admin data, posts CRUD, events CRUD, Markdown rendering, and API calls are intentionally not implemented yet.
 ```
 
+### Completed Slice: 006-auth-registration-email-verification
+
+```txt
+commit hashes
+1f182c3 Add auth registration migration
+3d98cbe Add auth registration helpers
+28b798d Add Resend verification email helper
+03d4e20 Add auth registration routes
+f56467e Fix AuthApi Worker adapter context
+772528e Fix Resend fetch binding
+566b2eb Clean up registration on email failure
+363b008 Update SST env for auth secrets
+
+files changed
+package-lock.json
+packages/functions/package.json
+packages/db/migrations/0002_auth_registration.sql
+packages/db/src/schema.ts
+packages/db/src/schema.test.ts
+packages/functions/src/auth.ts
+packages/functions/src/auth.test.ts
+packages/functions/src/auth/encoding.ts
+packages/functions/src/auth/email.ts
+packages/functions/src/auth/email.test.ts
+packages/functions/src/auth/password.ts
+packages/functions/src/auth/password.test.ts
+packages/functions/src/auth/repository.ts
+packages/functions/src/auth/tokens.ts
+packages/functions/src/auth/tokens.test.ts
+packages/functions/src/auth/validation.ts
+packages/functions/src/auth/validation.test.ts
+infra/secrets.ts
+infra/workers.ts
+sst-env.d.ts
+
+implemented routes
+POST /auth/register
+GET /auth/verify-email
+
+implemented stable error codes
+AUTH_INVALID_JSON
+AUTH_VALIDATION_FAILED
+AUTH_USERNAME_TAKEN
+AUTH_EMAIL_TAKEN
+AUTH_EMAIL_SEND_FAILED
+AUTH_VERIFICATION_TOKEN_INVALID
+AUTH_VERIFICATION_TOKEN_EXPIRED
+AUTH_VERIFICATION_TOKEN_USED
+
+password storage
+Passwords are stored as bcrypt hashes after pre-hashing password plus server-side pepper.
+Plaintext passwords and encrypted passwords are not stored.
+
+token storage
+Email verification tokens are stored as SHA-256 base64url hashes.
+Raw verification tokens are only used to build the Resend email link.
+
+D1 migration command
+npx wrangler d1 execute ccc-dev-databasedatabase-budbdcht --remote --file packages/db/migrations/0002_auth_registration.sql -y
+
+D1 migration result
+Wrangler executed 5 queries successfully.
+Remote D1 now has users and email_verification_tokens tables.
+
+deployment command
+npx sst deploy --stage dev --print-logs
+
+deployment result
+SST deployed AuthApi with PasswordPepper and ResendApiKey linked as secrets.
+AuthApiUrl: https://ccc-dev-authapiscript-bdteakex.robin-srimal.workers.dev
+DatabaseId: edf26084-32a2-4d25-b608-ec4ed6a0e763
+
+live verification commands
+node --input-type=module -e "const base='https://ccc-dev-authapiscript-bdteakex.robin-srimal.workers.dev'; for (const req of [new Request(base + '/auth/verify-email?token=missing'), new Request(base + '/auth/register', { method: 'POST', body: '{' }), new Request(base + '/auth/health')]) { const res = await fetch(req); console.log(req.method, new URL(req.url).pathname, res.status, await res.text()); }"
+
+node --input-type=module -e "const username = 'testuser' + Date.now(); const email = username + '@example.invalid'; const res = await fetch('https://ccc-dev-authapiscript-bdteakex.robin-srimal.workers.dev/auth/register', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ username, email, password: 'correct horse battery staple', locale: 'en' }) }); console.log(JSON.stringify({ username, email, status: res.status, body: await res.text() }));"
+
+npx wrangler d1 execute ccc-dev-databasedatabase-budbdcht --remote --command "SELECT COUNT(*) AS users_count FROM users WHERE username LIKE 'testuser%'; SELECT COUNT(*) AS tokens_count FROM email_verification_tokens WHERE user_id NOT IN (SELECT id FROM users);" --json
+
+live verification results
+GET /auth/verify-email?token=missing returned 400 {"error":{"code":"AUTH_VERIFICATION_TOKEN_INVALID"}}.
+POST /auth/register with invalid JSON returned 400 {"error":{"code":"AUTH_INVALID_JSON"}}.
+GET /auth/health returned 200 {"service":"auth","status":"ok"}.
+POST /auth/register with an example.invalid address returned 502 {"error":{"code":"AUTH_EMAIL_SEND_FAILED"}} and cleanup left zero test users and zero orphan verification tokens.
+
+runtime fixes found during live verification
+Cloudflare passes env as the second fetch argument. AuthApi now wraps the default Worker fetch so env is not mistaken for the injected test context.
+Cloudflare fetch requires the correct this binding. The Resend helper now calls the injected fetch function unbound.
+
+remaining note
+A successful live registration with email delivery still needs a verified Resend sender/recipient configuration. Current dev EMAIL_FROM is Calella Chess Club <onboarding@resend.dev>.
+Login, access JWTs, refresh sessions, logout, /api/me, admin membership approval, password reset, posts, and events are intentionally not implemented yet.
+```
+
 ### Current State
 
 ```txt
@@ -393,7 +487,8 @@ AuthApiUrl is https://ccc-dev-authapiscript-bdteakex.robin-srimal.workers.dev.
 ApiUrl is https://ccc-dev-apiscript-noawkcsx.robin-srimal.workers.dev.
 WebUrl is https://ccc-dev-webworkerscript.robin-srimal.workers.dev.
 packages/db now owns migration metadata and a comment-only 0001_empty.sql scaffold migration.
-packages/functions now owns an Auth Worker with GET /auth/health and stable AUTH_ROUTE_NOT_FOUND handling.
+packages/db now owns an applied auth registration migration for users and email_verification_tokens.
+packages/functions now owns an Auth Worker with GET /auth/health, POST /auth/register, and GET /auth/verify-email.
 packages/functions now owns an App API Worker with GET /api/health and stable API_ROUTE_NOT_FOUND handling.
 packages/web now owns the Astro shell, localized routes, layout components, i18n dictionaries, and generated hero image.
 Design docs mirror intended infra, package, route, page, and table structure.
@@ -404,7 +499,7 @@ No app-owned AWS scaffold references remain in active source or package metadata
 ### Next Slice
 
 ```txt
-006-auth-registration-email-verification
+007-login-refresh-logout-me
 ```
 
-The next slice candidate should implement the Auth Worker registration and email verification flow with D1-backed users, bcrypt password hashing, token hashing, and Resend delivery.
+The next slice candidate should implement login, access JWT cookies, refresh cookies, logout, and /api/me.

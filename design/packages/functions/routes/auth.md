@@ -8,16 +8,16 @@ Auth Worker.
 
 ```txt
 GET /auth/health
+POST /auth/register
+GET /auth/verify-email
 ```
 
 ## Future Routes
 
 ```txt
-POST /auth/register
 POST /auth/login
 POST /auth/logout
 POST /auth/refresh
-GET  /auth/verify-email
 POST /auth/forgot-password
 POST /auth/reset-password
 ```
@@ -37,5 +37,13 @@ All auth routes return stable error codes.
 ## Current Error Codes
 
 ```txt
+AUTH_EMAIL_SEND_FAILED
+AUTH_EMAIL_TAKEN
+AUTH_INVALID_JSON
 AUTH_ROUTE_NOT_FOUND
+AUTH_USERNAME_TAKEN
+AUTH_VALIDATION_FAILED
+AUTH_VERIFICATION_TOKEN_EXPIRED
+AUTH_VERIFICATION_TOKEN_INVALID
+AUTH_VERIFICATION_TOKEN_USED
 ```

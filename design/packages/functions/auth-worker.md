@@ -15,15 +15,24 @@ Owns username/password authentication and session refresh.
 ```txt
 GET /auth/health
   Returns the Auth Worker health status.
+
+POST /auth/register
+  Validates username, email, password, and locale.
+  Stores a bcrypt password hash with server-side pepper.
+  Stores a hashed email verification token.
+  Sends the raw verification token only through Resend email.
+  Creates users with membership_status = none.
+
+GET /auth/verify-email
+  Validates a hashed email verification token.
+  Marks the token used.
+  Marks the email verified.
+  Sets membership_status = pending.
 ```
 
 ## Future Responsibilities
 
 ```txt
-register users
-send email verification through Resend
-verify email tokens
-create pending membership after email verification
 log users in
 issue access JWT cookies
 issue refresh cookies
@@ -32,6 +41,23 @@ log users out
 send password reset email
 reset passwords
 record failed login attempts
+```
+
+## Secrets And Config
+
+```txt
+PasswordPepper:
+  SST secret linked only to AuthApi.
+
+ResendApiKey:
+  SST secret linked only to AuthApi.
+
+EMAIL_FROM:
+  Non-secret Worker environment value.
+  Current dev default is Calella Chess Club <onboarding@resend.dev>.
+
+WEB_ORIGIN:
+  Non-secret Worker environment value used to build email verification links.
 ```
 
 ## Cookies
