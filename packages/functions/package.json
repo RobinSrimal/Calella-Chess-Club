@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@CCC/core": "*",
+    "bcryptjs": "^3.0.3",
     "sst": "*"
   },
   "devDependencies": {
