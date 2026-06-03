@@ -72,55 +72,61 @@ bulk actions
 
 ### Task 1: Add Admin User Repository Methods
 
-- [ ] Add public/admin user row mapping helpers.
-- [ ] Add current-user lookup with account status and email verification state.
-- [ ] Add admin user list query with conservative filters.
-- [ ] Add membership status update methods.
-- [ ] Add account disable method that revokes refresh sessions.
-- [ ] Cover repository SQL behavior with focused tests where practical.
+- [x] Add public/admin user row mapping helpers.
+- [x] Add current-user lookup with account status and email verification state.
+- [x] Add admin user list query with conservative filters.
+- [x] Add membership status update methods.
+- [x] Add account disable method that revokes refresh sessions.
+- [x] Cover repository SQL behavior with focused tests where practical.
 
 ### Task 2: Add API Admin Auth Guard
 
-- [ ] Reuse access JWT cookie verification.
-- [ ] Load current user from D1.
-- [ ] Require active, verified, admin users.
-- [ ] Return stable API auth/forbidden errors.
-- [ ] Add tests for missing token, invalid token, non-admin user, and disabled admin.
+- [x] Reuse access JWT cookie verification.
+- [x] Load current user from D1.
+- [x] Require active, verified, admin users.
+- [x] Return stable API auth/forbidden errors.
+- [x] Add tests for missing token, invalid token, non-admin user, and disabled admin.
 
 ### Task 3: Implement Admin User List
 
-- [ ] Implement `GET /api/admin/users`.
-- [ ] Support `membershipStatus`, `role`, and `accountStatus` filters.
-- [ ] Return stable admin user summaries.
-- [ ] Add route tests.
+- [x] Implement `GET /api/admin/users`.
+- [x] Support `membershipStatus`, `role`, and `accountStatus` filters.
+- [x] Return stable admin user summaries.
+- [x] Add route tests.
 
 ### Task 4: Implement Membership Decisions
 
-- [ ] Implement approve membership.
-- [ ] Implement reject membership without disabling the account.
-- [ ] Implement restore membership to pending.
-- [ ] Reject unknown users with `API_USER_NOT_FOUND`.
-- [ ] Add route tests for each transition.
+- [x] Implement approve membership.
+- [x] Implement reject membership without disabling the account.
+- [x] Implement restore membership to pending.
+- [x] Reject unknown users with `API_USER_NOT_FOUND`.
+- [x] Add route tests for each transition.
 
 ### Task 5: Implement Account Disablement
 
-- [ ] Implement disable route.
-- [ ] Set `account_status = disabled`, `disabled_at`, and `disabled_by`.
-- [ ] Revoke active refresh sessions for the disabled user.
-- [ ] Add tests proving disabled users cannot log in after the change.
+- [x] Implement disable route.
+- [x] Set `account_status = disabled`, `disabled_at`, and `disabled_by`.
+- [x] Revoke active refresh sessions for the disabled user.
+- [x] Add tests proving disabled users cannot log in after the change.
 
 ### Task 6: Implement First Admin Promotion Script
 
-- [ ] Add `packages/scripts/src/promote-first-admin.ts`.
-- [ ] Accept username/email input.
-- [ ] Promote exactly one active, verified user to admin.
-- [ ] Return stable script errors for missing, unverified, or disabled users.
-- [ ] Add script tests or a dry-run unit around the repository logic.
+- [x] Add `packages/scripts/src/promote-first-admin.ts`.
+- [x] Accept username/email input.
+- [x] Promote exactly one active, verified user to admin.
+- [x] Return stable script errors for missing, unverified, or disabled users.
+- [x] Add script tests or a dry-run unit around the repository logic.
 
 ### Task 7: Deploy And Record
 
-- [ ] Run package tests and typechecks.
-- [ ] Deploy dev.
-- [ ] Promote a dev admin user for live checks, then clean up any temporary data.
-- [ ] Live-check admin list and membership transitions.
-- [ ] Update design docs, implementation log, and roadmap.
+- [x] Run package tests and typechecks.
+- [x] Deploy dev.
+- [x] Promote a dev admin user for live checks, then clean up any temporary data.
+- [x] Live-check admin list and membership transitions.
+- [x] Update design docs, implementation log, and roadmap.
+
+## Completion Notes
+
+The API routes were deployed to the dev stage and live-checked with temporary D1 users. The first-admin script runs through `sst shell`, but it uses the Cloudflare D1 HTTP API because `Resource.Database` exposes metadata rather than a D1 binding in that local script runtime.
+
+Temporary live-check users, sessions, and login attempts were cleaned up. The audit event table remains out of scope for this slice.

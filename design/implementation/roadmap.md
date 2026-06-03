@@ -17,15 +17,15 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-008-membership-admin-users
+009-posts-drafts-publish
 ```
 
-Goal: implement first-admin promotion, admin user listing, membership approval/rejection/restore, and account disablement.
+Goal: implement member post drafts, publishing, editing, soft delete, and admin public visibility.
 
 Detailed plan:
 
 ```txt
-design/implementation/slices/008-membership-admin-users.md
+design/implementation/slices/009-posts-drafts-publish.md
 ```
 
 ## Future Slices
@@ -33,9 +33,6 @@ design/implementation/slices/008-membership-admin-users.md
 Future slices are intentionally high-level until the previous slice has been completed and reviewed.
 
 ```txt
-009-posts-drafts-publish
-  Implement member post drafts, publishing, editing, soft delete, and admin public visibility.
-
 010-events-drafts-publish
   Implement member event drafts, publishing, editing, soft delete, and admin public visibility.
 

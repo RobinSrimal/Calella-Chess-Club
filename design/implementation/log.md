@@ -559,6 +559,68 @@ not automatically be sent to Api until same-domain routing or a website proxy is
 routes are implemented and live-checked with explicit cookie headers.
 ```
 
+### Completed Slice: 008-membership-admin-users
+
+```txt
+commit hashes
+f6140dd Add admin user repository methods
+e65593e Add admin user list route
+31bc1c2 Add admin membership routes
+e2c85f6 Add first admin promotion script
+d7005ad Use Cloudflare D1 API in admin promotion script
+
+files changed
+packages/functions/src/api.ts
+packages/functions/src/api.test.ts
+packages/functions/src/auth/repository.ts
+packages/functions/src/auth/repository.test.ts
+packages/scripts/src/promote-first-admin.ts
+packages/scripts/src/promote-first-admin.test.ts
+
+implemented routes
+GET /api/admin/users
+POST /api/admin/users/:id/approve-membership
+POST /api/admin/users/:id/reject-membership
+POST /api/admin/users/:id/restore-membership
+POST /api/admin/users/:id/disable
+
+implemented stable error codes
+API_FORBIDDEN
+API_USER_NOT_FOUND
+API_VALIDATION_FAILED
+SCRIPT_USER_NOT_FOUND
+SCRIPT_USER_NOT_VERIFIED
+SCRIPT_USER_DISABLED
+
+deployment command
+npx sst deploy --stage dev --print-logs
+
+deployment result
+SST deployed the dev stage.
+AuthApiUrl: https://ccc-dev-authapiscript-bdteakex.robin-srimal.workers.dev
+ApiUrl: https://ccc-dev-apiscript-noawkcsx.robin-srimal.workers.dev
+WebUrl: https://ccc-dev-webworkerscript.robin-srimal.workers.dev
+DatabaseId: edf26084-32a2-4d25-b608-ec4ed6a0e763
+
+live verification result
+Temporary verified users were inserted into dev D1.
+The first-admin script promoted codexadmin008 to admin.
+Admin login returned 200 and an access cookie.
+GET /api/admin/users with membershipStatus=pending, role=user, and accountStatus=active returned 200.
+Approve, reject, and restore membership routes returned 200 and the expected membership status.
+Disable returned 200, set accountStatus=disabled, and recorded disabledBy.
+Login for the disabled temporary user returned 403 with AUTH_ACCOUNT_DISABLED.
+Temporary live-check users, refresh sessions, and login attempts were deleted after verification.
+
+runtime fix found during live verification
+In SST shell, Resource.Database exposes D1 metadata rather than a D1 binding with prepare().
+The first-admin script now reads Resource.Database.databaseId and calls the Cloudflare D1 HTTP API.
+It requires CLOUDFLARE_API_TOKEN plus CLOUDFLARE_DEFAULT_ACCOUNT_ID or CLOUDFLARE_ACCOUNT_ID.
+
+remaining note
+Frontend admin screens are still static route shells. The audit_events table was intentionally not implemented in this slice.
+```
+
 ### Current State
 
 ```txt
@@ -575,7 +637,8 @@ packages/db now owns migration metadata and a comment-only 0001_empty.sql scaffo
 packages/db now owns an applied auth registration migration for users and email_verification_tokens.
 packages/db now owns an applied auth session migration for refresh_sessions and login_attempts.
 packages/functions now owns an Auth Worker with health, registration, email verification, login, refresh, and logout routes.
-packages/functions now owns an App API Worker with health and /api/me routes.
+packages/functions now owns an App API Worker with health, /api/me, and admin user management routes.
+packages/scripts now owns the first-admin promotion script.
 packages/web now owns the Astro shell, localized routes, layout components, i18n dictionaries, and generated hero image.
 Design docs mirror intended infra, package, route, page, and table structure.
 No AWS resources are active in SST infra.
@@ -585,7 +648,7 @@ No app-owned AWS scaffold references remain in active source or package metadata
 ### Next Slice
 
 ```txt
-008-membership-admin-users
+009-posts-drafts-publish
 ```
 
-The next slice candidate should implement first-admin promotion, admin user listing, membership approval/rejection/restore, and account disablement.
+The next slice candidate should implement member post drafts, publishing, editing, soft delete, and admin public visibility.

@@ -21,13 +21,24 @@ GET /api/me
   Verifies the HMAC JWT with JwtSigningSecret.
   Loads the current public user from D1.
   Returns stable API auth errors for missing or invalid tokens.
+
+GET /api/admin/users
+  Requires an active, verified admin account.
+  Supports membershipStatus, role, and accountStatus filters.
+  Returns admin-safe user summaries.
+
+POST /api/admin/users/:id/approve-membership
+POST /api/admin/users/:id/reject-membership
+POST /api/admin/users/:id/restore-membership
+POST /api/admin/users/:id/disable
+  Requires an active, verified admin account.
+  Changes membership state or disables an account.
+  Account disablement revokes active refresh sessions.
 ```
 
 ## Future Responsibilities
 
 ```txt
-admin membership decisions
-admin account disablement
 member posts/events
 public posts/events
 stable error-code responses
