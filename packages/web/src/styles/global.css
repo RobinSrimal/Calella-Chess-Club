@@ -198,6 +198,11 @@ input {
   font-weight: 700;
 }
 
+.button-link:disabled {
+  cursor: not-allowed;
+  opacity: 0.68;
+}
+
 .button-link.secondary {
   border-color: rgba(255, 255, 255, 0.7);
   background: rgba(255, 255, 255, 0.12);
@@ -335,6 +340,27 @@ input {
 .field-stack input:focus {
   border-color: var(--focus);
   outline: 2px solid color-mix(in srgb, var(--focus) 20%, transparent);
+}
+
+.form-message {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.form-message.error {
+  border-color: color-mix(in srgb, var(--danger) 35%, var(--line));
+  background: color-mix(in srgb, var(--danger) 8%, #fff);
+  color: var(--danger);
+}
+
+.form-message.success {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+  background: color-mix(in srgb, var(--accent) 8%, #fff);
+  color: var(--accent-strong);
 }
 
 .footer-content {
