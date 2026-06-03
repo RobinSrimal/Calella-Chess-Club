@@ -60,6 +60,7 @@ export type SoftDeletePublishedPostInput = {
 
 export type PostRepository = {
   listVisiblePosts(input: { userId: string }): Promise<Post[]>;
+  listPublicPosts(input: { limit: number }): Promise<Post[]>;
   findVisiblePostById(input: { postId: string; userId: string }): Promise<Post | null>;
   createPostDraft(input: CreatePostDraftInput): Promise<Post | null>;
   updateOwnPost(input: UpdateOwnPostInput): Promise<Post | null>;
@@ -99,6 +100,25 @@ export function createD1PostRepository(database: D1Database): PostRepository {
           ].join(" "),
         )
         .bind(input.userId)
+        .all<PostRow>();
+
+      return (result.results ?? []).map(mapPost);
+    },
+
+    async listPublicPosts(input) {
+      const result = await database
+        .prepare(
+          [
+            postSelect(),
+            "FROM posts",
+            "JOIN users ON users.id = posts.author_id",
+            "WHERE posts.status = 'published'",
+            "AND posts.is_public = 1",
+            "ORDER BY posts.published_at DESC, posts.created_at DESC",
+            "LIMIT ?",
+          ].join(" "),
+        )
+        .bind(input.limit)
         .all<PostRow>();
 
       return (result.results ?? []).map(mapPost);

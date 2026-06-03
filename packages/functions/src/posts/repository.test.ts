@@ -47,6 +47,37 @@ test("lists published posts plus the current user's own drafts", async () => {
   ]);
 });
 
+test("lists only public published posts for the landing page", async () => {
+  const queries: Array<{ sql: string; params: unknown[] }> = [];
+  const database = createRecordingD1Database(queries, {
+    allResults: [
+      postRow({
+        id: "post-public",
+        status: "published",
+        isPublic: 1,
+        publishedAt: "2026-06-03T09:00:00.000Z",
+      }),
+    ],
+  });
+  const repository = createD1PostRepository(database);
+
+  const posts = await repository.listPublicPosts({ limit: 3 });
+
+  expect(queries[0].sql).toContain("posts.status = 'published'");
+  expect(queries[0].sql).toContain("posts.is_public = 1");
+  expect(queries[0].sql).toContain("ORDER BY posts.published_at DESC");
+  expect(queries[0].sql).toContain("LIMIT ?");
+  expect(queries[0].params).toEqual([3]);
+  expect(posts).toEqual([
+    post({
+      id: "post-public",
+      status: "published",
+      isPublic: true,
+      publishedAt: "2026-06-03T09:00:00.000Z",
+    }),
+  ]);
+});
+
 test("creates draft posts as member-only content", async () => {
   const queries: Array<{ sql: string; params: unknown[] }> = [];
   const database = createRecordingD1Database(queries, {

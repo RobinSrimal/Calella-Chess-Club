@@ -48,6 +48,41 @@ test("lists published events plus the current user's own drafts", async () => {
   ]);
 });
 
+test("lists only upcoming public published events for the landing page", async () => {
+  const queries: Array<{ sql: string; params: unknown[] }> = [];
+  const database = createRecordingD1Database(queries, {
+    allResults: [
+      eventRow({
+        id: "event-public",
+        status: "published",
+        isPublic: 1,
+        publishedAt: "2026-06-03T09:00:00.000Z",
+      }),
+    ],
+  });
+  const repository = createD1EventRepository(database);
+
+  const events = await repository.listPublicEvents({
+    limit: 4,
+    nowIso: "2026-06-03T09:00:00.000Z",
+  });
+
+  expect(queries[0].sql).toContain("events.status = 'published'");
+  expect(queries[0].sql).toContain("events.is_public = 1");
+  expect(queries[0].sql).toContain("events.starts_at >= ?");
+  expect(queries[0].sql).toContain("ORDER BY events.starts_at ASC");
+  expect(queries[0].sql).toContain("LIMIT ?");
+  expect(queries[0].params).toEqual(["2026-06-03T09:00:00.000Z", 4]);
+  expect(events).toEqual([
+    event({
+      id: "event-public",
+      status: "published",
+      isPublic: true,
+      publishedAt: "2026-06-03T09:00:00.000Z",
+    }),
+  ]);
+});
+
 test("creates draft events as member-only content", async () => {
   const queries: Array<{ sql: string; params: unknown[] }> = [];
   const database = createRecordingD1Database(queries, {

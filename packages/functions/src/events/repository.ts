@@ -69,6 +69,10 @@ export type SoftDeletePublishedEventInput = {
 
 export type EventRepository = {
   listVisibleEvents(input: { userId: string }): Promise<ClubEvent[]>;
+  listPublicEvents(input: {
+    limit: number;
+    nowIso: string;
+  }): Promise<ClubEvent[]>;
   findVisibleEventById(input: {
     eventId: string;
     userId: string;
@@ -118,6 +122,26 @@ export function createD1EventRepository(database: D1Database): EventRepository {
           ].join(" "),
         )
         .bind(input.userId)
+        .all<EventRow>();
+
+      return (result.results ?? []).map(mapEvent);
+    },
+
+    async listPublicEvents(input) {
+      const result = await database
+        .prepare(
+          [
+            eventSelect(),
+            "FROM events",
+            "JOIN users ON users.id = events.author_id",
+            "WHERE events.status = 'published'",
+            "AND events.is_public = 1",
+            "AND events.starts_at >= ?",
+            "ORDER BY events.starts_at ASC, events.created_at ASC",
+            "LIMIT ?",
+          ].join(" "),
+        )
+        .bind(input.nowIso, input.limit)
         .all<EventRow>();
 
       return (result.results ?? []).map(mapEvent);
