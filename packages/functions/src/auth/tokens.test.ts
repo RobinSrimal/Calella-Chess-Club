@@ -1,5 +1,10 @@
 import { expect, test } from "vitest";
-import { createVerificationToken, hashToken } from "./tokens";
+import {
+  createRefreshToken,
+  createVerificationToken,
+  hashRefreshToken,
+  hashToken,
+} from "./tokens";
 
 test("hashes verification tokens without exposing the raw token", async () => {
   const hash = await hashToken("raw-token-value");
@@ -19,4 +24,22 @@ test("creates high entropy verification tokens and hashes", async () => {
   expect(created.token).toMatch(/^[A-Za-z0-9_-]{43}$/);
   expect(created.tokenHash).toMatch(/^[A-Za-z0-9_-]{43}$/);
   expect(created.tokenHash).not.toBe(created.token);
+});
+
+test("creates and hashes refresh tokens with the server refresh secret", async () => {
+  const created = await createRefreshToken("refresh-secret", {
+    randomBytes(length) {
+      return new Uint8Array(Array.from({ length }, (_, index) => 255 - index));
+    },
+  });
+
+  expect(created.token).toMatch(/^[A-Za-z0-9_-]{43}$/);
+  expect(created.tokenHash).toMatch(/^[A-Za-z0-9_-]{43}$/);
+  expect(created.tokenHash).not.toBe(created.token);
+  await expect(hashRefreshToken(created.token, "refresh-secret")).resolves.toBe(
+    created.tokenHash,
+  );
+  await expect(hashRefreshToken(created.token, "different-secret")).resolves.not.toBe(
+    created.tokenHash,
+  );
 });
