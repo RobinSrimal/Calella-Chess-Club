@@ -4,14 +4,32 @@ import { parsePostDraftBody, parsePostPublishBody } from "./validation";
 test("accepts and trims a valid post draft body", () => {
   const result = parsePostDraftBody({
     title: "  Club night results  ",
-    bodyMarkdown: "  **Round 1** starts at 19:00.  ",
+    bodyJson: [
+      {
+        type: "paragraph",
+        content: "Round 1 starts at 19:00.",
+      },
+    ],
   });
 
   expect(result).toEqual({
     ok: true,
     value: {
       title: "Club night results",
-      bodyMarkdown: "**Round 1** starts at 19:00.",
+      bodyJson: [
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "text",
+              text: "Round 1 starts at 19:00.",
+              styles: {},
+            },
+          ],
+        },
+      ],
+      bodyJsonSerialized:
+        '[{"type":"paragraph","content":[{"type":"text","text":"Round 1 starts at 19:00.","styles":{}}]}]',
     },
   });
 });
@@ -19,24 +37,24 @@ test("accepts and trims a valid post draft body", () => {
 test("rejects invalid post draft bodies with field errors", () => {
   const result = parsePostDraftBody({
     title: "x".repeat(121),
-    bodyMarkdown: "",
+    bodyJson: [],
   });
 
   expect(result).toEqual({
     ok: false,
-    fields: ["title", "bodyMarkdown"],
+    fields: ["title", "bodyJson"],
   });
 });
 
-test("rejects oversized post markdown bodies", () => {
+test("rejects oversized post JSON bodies", () => {
   const result = parsePostDraftBody({
     title: "Club night results",
-    bodyMarkdown: "x".repeat(10_001),
+    bodyJson: [{ type: "paragraph", content: "x".repeat(10_001) }],
   });
 
   expect(result).toEqual({
     ok: false,
-    fields: ["bodyMarkdown"],
+    fields: ["bodyJson"],
   });
 });
 

@@ -1,6 +1,12 @@
+import {
+  parsePostBodyJson,
+  type PostBodyJson,
+} from "./body-json";
+
 export type PostDraftBody = {
   title: string;
-  bodyMarkdown: string;
+  bodyJson: PostBodyJson;
+  bodyJsonSerialized: string;
 };
 
 export type PostDraftBodyResult =
@@ -28,7 +34,6 @@ export type PostPublishBodyResult =
     };
 
 const MAX_TITLE_LENGTH = 120;
-const MAX_BODY_MARKDOWN_LENGTH = 10_000;
 
 export function parsePostDraftBody(body: unknown): PostDraftBodyResult {
   if (!isRecord(body)) {
@@ -37,17 +42,13 @@ export function parsePostDraftBody(body: unknown): PostDraftBodyResult {
 
   const fields: string[] = [];
   const title = typeof body.title === "string" ? body.title.trim() : "";
-  const bodyMarkdown =
-    typeof body.bodyMarkdown === "string" ? body.bodyMarkdown.trim() : "";
+  const bodyJson = parsePostBodyJson(body.bodyJson);
 
   if (title.length === 0 || title.length > MAX_TITLE_LENGTH) {
     fields.push("title");
   }
-  if (
-    bodyMarkdown.length === 0 ||
-    bodyMarkdown.length > MAX_BODY_MARKDOWN_LENGTH
-  ) {
-    fields.push("bodyMarkdown");
+  if (!bodyJson.ok) {
+    fields.push("bodyJson");
   }
 
   if (fields.length > 0) {
@@ -58,7 +59,8 @@ export function parsePostDraftBody(body: unknown): PostDraftBodyResult {
     ok: true,
     value: {
       title,
-      bodyMarkdown,
+      bodyJson: bodyJson.value.document,
+      bodyJsonSerialized: bodyJson.value.serialized,
     },
   };
 }
