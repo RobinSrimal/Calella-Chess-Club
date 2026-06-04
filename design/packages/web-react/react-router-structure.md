@@ -41,7 +41,9 @@ The first React Router slice should only prove the shell and infrastructure.
 
 ```txt
 /                  -> redirect or render Catalan shell
+/login             -> redirect to /ca/login
 /:locale           -> localized public shell
+/:locale/login     -> localized login form
 /:locale/member    -> member placeholder shell
 /:locale/admin     -> admin placeholder shell
 /auth/*            -> AuthApi proxy
@@ -49,6 +51,8 @@ The first React Router slice should only prove the shell and infrastructure.
 ```
 
 Later slices will migrate the real auth forms, public feeds, member posts, member events, and admin screens.
+
+The login route is a narrow exception added after the first deploy so ReactWeb has an obvious authentication path during migration. It posts to the existing same-origin `/auth/login` proxy and sends successful users to the localized member area.
 
 The root `/` redirects to `/ca`. Invalid locale params fall back to Catalan in the shell.
 

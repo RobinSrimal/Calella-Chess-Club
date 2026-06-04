@@ -5,6 +5,7 @@ import {
   DEFAULT_LOCALE,
   type Locale,
   type ShellSection,
+  loginPath,
   localePath,
   resolveLocale,
   routeSectionFromPathname,
@@ -13,12 +14,12 @@ import {
 type Copy = {
   navPublic: string;
   navMember: string;
-  navAdmin: string;
+  navLogin: string;
   eyebrow: string;
   title: string;
   body: string;
+  loginCta: string;
   memberCta: string;
-  adminCta: string;
   statusLabel: string;
   publicStatus: string;
   memberStatus: string;
@@ -29,12 +30,12 @@ const COPY: Record<Locale, Copy> = {
   ca: {
     navPublic: "Inici",
     navMember: "Membres",
-    navAdmin: "Administració",
+    navLogin: "Entrar",
     eyebrow: "Club d'Escacs Calella",
     title: "Una nova interfície React per al club",
     body: "Aquesta primera versió valida el desplegament, la navegació localitzada i les rutes de proxy abans de migrar els fluxos complets.",
+    loginCta: "Entrar",
     memberCta: "Veure àrea de membres",
-    adminCta: "Veure administració",
     statusLabel: "Secció actual",
     publicStatus: "Pàgina pública",
     memberStatus: "Àrea de membres",
@@ -43,12 +44,12 @@ const COPY: Record<Locale, Copy> = {
   es: {
     navPublic: "Inicio",
     navMember: "Miembros",
-    navAdmin: "Administración",
+    navLogin: "Iniciar sesion",
     eyebrow: "Club de Ajedrez Calella",
     title: "Una nueva interfaz React para el club",
     body: "Esta primera versión valida el despliegue, la navegación localizada y las rutas de proxy antes de migrar los flujos completos.",
+    loginCta: "Iniciar sesion",
     memberCta: "Ver área de miembros",
-    adminCta: "Ver administración",
     statusLabel: "Sección actual",
     publicStatus: "Página pública",
     memberStatus: "Área de miembros",
@@ -57,12 +58,12 @@ const COPY: Record<Locale, Copy> = {
   en: {
     navPublic: "Home",
     navMember: "Members",
-    navAdmin: "Admin",
+    navLogin: "Log in",
     eyebrow: "Calella Chess Club",
     title: "A new React interface for the club",
     body: "This first version validates deployment, localized navigation, and same-origin proxy routes before migrating the complete workflows.",
+    loginCta: "Log in",
     memberCta: "View member area",
-    adminCta: "View admin area",
     statusLabel: "Current section",
     publicStatus: "Public page",
     memberStatus: "Member area",
@@ -121,8 +122,8 @@ export default function HomeRoute() {
             <NavLink active={section === "member"} to={localePath(locale, "member")}>
               {copy.navMember}
             </NavLink>
-            <NavLink active={section === "admin"} to={localePath(locale, "admin")}>
-              {copy.navAdmin}
+            <NavLink active={false} to={loginPath(locale)}>
+              {copy.navLogin}
             </NavLink>
           </div>
           <div className="flex items-center gap-1 text-sm">
@@ -155,15 +156,15 @@ export default function HomeRoute() {
           <div className="mt-7 flex flex-wrap gap-3">
             <Link
               className="rounded bg-stone-950 px-4 py-2.5 text-sm font-semibold text-white hover:bg-stone-800"
-              to={localePath(locale, "member")}
+              to={loginPath(locale)}
             >
-              {copy.memberCta}
+              {copy.loginCta}
             </Link>
             <Link
               className="rounded border border-stone-300 bg-white px-4 py-2.5 text-sm font-semibold text-stone-950 hover:bg-stone-100"
-              to={localePath(locale, "admin")}
+              to={localePath(locale, "member")}
             >
-              {copy.adminCta}
+              {copy.memberCta}
             </Link>
           </div>
           <div className="mt-8 inline-flex items-center gap-2 rounded border border-stone-300 bg-white px-3 py-2 text-sm text-stone-700">

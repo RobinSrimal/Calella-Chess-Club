@@ -18,6 +18,10 @@ export function localePath(locale: Locale, section: ShellSection = "public") {
   return section === "public" ? `/${locale}` : `/${locale}/${section}`;
 }
 
+export function loginPath(locale: Locale) {
+  return `/${locale}/login`;
+}
+
 export function routeSectionFromPathname(pathname: string): ShellSection {
   const [, maybeLocale, maybeSection] = pathname.split("/");
 
