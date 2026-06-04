@@ -1161,3 +1161,51 @@ Feature migration for auth forms, member posts, member events, and admin screens
 The roadmap now points current slice 016 at the React Router web shell plan.
 Member events moved to future slice 017.
 ```
+
+## 2026-06-04 - Completed Slice 016: React Router Web Shell
+
+```txt
+commits
+d86a8cf Add React Router web shell
+
+web-react
+Created packages/web-react as @CCC/web-react.
+Added React Router v7 framework mode with React 19, TypeScript, Tailwind CSS v4, Vite 7, and the Cloudflare Vite plugin.
+Added localized /, /ca, /es, /en, /:locale/member, and /:locale/admin shell routes.
+Copied the existing club hero image into the React package.
+Added a Cloudflare Workers server entry in workers/app.ts.
+Added same-origin /auth/* and /api/* proxy routes using the linked AuthApi and Api Workers.
+Added locale and proxy unit tests.
+
+infra
+Added SST ReactWeb as a parallel sst.cloudflare.ReactRouter resource.
+Kept the existing Astro Web resource deployed.
+Exported ReactWebUrl from sst.config.ts.
+ReactWebUrl: https://ccc-dev-reactwebworkerscript.robin-srimal.workers.dev
+
+runtime notes
+Kept React Router's default build output because SST expects packages/web-react/build/server/index.js.
+Added wrangler.local.jsonc only for standalone package builds; SST owns generated wrangler config during deploy.
+Pinned Vite 7 in the root toolchain because Vite 8 caused a React Router SSR manifest timing issue with the Cloudflare Vite plugin.
+Set ReactWeb Worker compatibility date to 2025-08-15 with nodejs_compat so React 19 SSR can use global MessageChannel.
+Do not set expose_global_message_channel with compatibility date 2025-08-15 because Cloudflare rejects it as redundant.
+
+verification
+npm test --workspace @CCC/web-react: 7 tests passed.
+npm run typecheck --workspace @CCC/web-react: passed.
+npm run build --workspace @CCC/web-react: passed.
+npm test --workspace @CCC/web: 55 tests passed.
+npx sst diff --stage dev: passed.
+npx sst deploy --stage dev: deployed ReactWebUrl.
+
+live verification
+GET ReactWebUrl /ca returned 200 and rendered the React shell.
+GET ReactWebUrl /api/health returned 200 with {"service":"api","status":"ok"}.
+GET ReactWebUrl /auth/health returned 200 with {"service":"auth","status":"ok"}.
+
+root tsc note
+npx tsc --noEmit at repo root is not a useful verification target yet because the repo has no root tsconfig and it tries to compile unrelated generated SST platform files.
+
+next slice
+017-member-events-ui
+```
