@@ -9,7 +9,7 @@ Infrastructure is defined in `infra/` using SST. The app is Cloudflare-first: we
 ```txt
 infra/
   cloudflare.ts
-  website.ts
+  web.ts
   workers.ts
   db.ts
   secrets.ts
@@ -20,8 +20,8 @@ infra/
 ## Resources
 
 ```txt
-Cloudflare Astro site:
-  packages/web
+Cloudflare React Router site:
+  packages/web-react
 
 Cloudflare auth Worker:
   packages/functions/src/auth.ts

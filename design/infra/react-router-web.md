@@ -25,19 +25,16 @@ new sst.cloudflare.ReactRouter("ReactWeb", {
 
 ## Purpose
 
-`ReactWeb` is the parallel React Router website used during the migration away from Astro. It should be deployed alongside the existing `Web` Astro resource until the React app has replaced the required user-facing workflows.
+`ReactWeb` is the active React Router website for the app.
 
 ## Outputs
 
 ```txt
-WebUrl
-  Existing Astro website URL.
-
 ReactWebUrl
-  New React Router website URL.
+  Active website URL.
 ```
 
-`ReactWebUrl` is exported from `sst.config.ts`. During migration both `WebUrl` and `ReactWebUrl` should remain available.
+`ReactWebUrl` is exported from `sst.config.ts`.
 
 ## Backend Bindings
 

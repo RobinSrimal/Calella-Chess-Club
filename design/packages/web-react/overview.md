@@ -2,19 +2,15 @@
 
 ## Purpose
 
-`packages/web-react` is the planned React Router replacement for the current Astro website package. It will be built with React, TypeScript, Tailwind, and React Router, and deployed to Cloudflare through SST.
+`packages/web-react` is the active website package. It is built with React, TypeScript, Tailwind, and React Router, and deployed to Cloudflare through SST.
 
 ## Migration Position
 
-The package will run in parallel with `packages/web` during migration.
+The package is the only active website package.
 
 ```txt
-packages/web
-  Current Astro website.
-  Deployed as SST resource Web.
-
 packages/web-react
-  New React Router website.
+  React Router website.
   Deployed as SST resource ReactWeb.
 ```
 

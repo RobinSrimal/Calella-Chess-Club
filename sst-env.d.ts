@@ -29,10 +29,6 @@ declare module "sst" {
       "type": "sst.sst.Secret"
       "value": string
     }
-    "Web": {
-      "type": "sst.cloudflare.Astro"
-      "url": string
-    }
   }
 }
 

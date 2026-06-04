@@ -10,7 +10,7 @@ The app is deployed with SST and Cloudflare.
 
 ```txt
 SST
-├─ sst.cloudflare.Astro  -> packages/web
+├─ sst.cloudflare.ReactRouter -> packages/web-react
 ├─ sst.cloudflare.Worker -> packages/functions auth Worker
 ├─ sst.cloudflare.Worker -> packages/functions app API Worker
 └─ sst.cloudflare.D1     -> packages/db migrations/schema
@@ -24,8 +24,8 @@ The existing `packages/functions` package remains the backend package. Although 
 infra/
   SST resource definitions for Cloudflare resources, secrets, domains, and bindings
 
-packages/web/
-  Astro website for public, member, and admin UI
+packages/web-react/
+  React Router website for public, member, and admin UI
 
 packages/functions/
   Cloudflare Worker APIs for auth, users, posts, events, and admin actions
@@ -47,7 +47,7 @@ The design folder mirrors the intended code areas and important substructures:
 ```txt
 design/architecture.md
 design/infra/
-design/packages/web/
+design/packages/web-react/
 design/packages/functions/
 design/packages/db/
 design/packages/scripts/

@@ -17,7 +17,6 @@ export default $config({
       DatabaseId: db.database.databaseId,
       AuthApiUrl: workers.authApi.url,
       ApiUrl: workers.api.url,
-      WebUrl: web.website.url,
       ReactWebUrl: web.reactWebsite.url,
     };
   },

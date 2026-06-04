@@ -1,6 +1,0 @@
----
-import { DEFAULT_LOCALE, readLocaleCookie } from "../lib/locale";
-
-const locale = readLocaleCookie(Astro.cookies) ?? DEFAULT_LOCALE;
-return Astro.redirect(`/${locale}`);
----

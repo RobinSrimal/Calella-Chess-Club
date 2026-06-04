@@ -4,10 +4,10 @@ Cloudflare/SST app for the Calella Chess Club.
 
 ## Current Stack
 
-- SST v3
+- SST v4
 - Cloudflare D1
-- Cloudflare Workers planned under `packages/functions`
-- Astro website planned under `packages/web`
+- Cloudflare Workers under `packages/functions`
+- React Router website under `packages/web-react`
 
 ## Setup
 
@@ -35,6 +35,7 @@ npx sst diff --stage dev
 
 - `packages/core`: shared domain code and tests.
 - `packages/functions`: Cloudflare Worker code.
+- `packages/web-react`: React Router website.
 - `packages/scripts`: operational scripts run through `sst shell`.
 
 ## Design Docs
