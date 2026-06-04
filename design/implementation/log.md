@@ -1345,3 +1345,47 @@ ReactWeb currently has login and registration forms, same-origin backend proxies
 ReactWeb still lacks UI routes for /{locale}/verify-email, /{locale}/forgot-password, /{locale}/reset-password, /{locale}/member/posts, /{locale}/member/events, /{locale}/admin/users, /{locale}/admin/posts, and /{locale}/admin/events.
 Those are UI migration gaps; the backend Workers and D1 data remain shared.
 ```
+
+## 2026-06-04 - Added ReactWeb Account And Admin Gap UI
+
+```txt
+commits
+3ccd97d Add ReactWeb account admin gap UI
+
+web-react
+Added explicit per-locale routes for:
+/{locale}/verify-email
+/{locale}/forgot-password
+/{locale}/reset-password
+/{locale}/admin/users
+
+Added account-api browser helpers for same-origin /auth/verify-email, /api/me, /api/admin/users, and admin user actions.
+Added admin-users-state helpers for sorting, visible actions, self-disable prevention, disabled-user action hiding, and English-only stable error messages.
+Added email verification UI that reads the token from the URL and calls the existing AuthApi verification route through ReactWeb /auth/*.
+Added forgot/reset password informational pages only; AuthApi does not implement password reset endpoints yet.
+Added admin users UI with /api/me gating, filters, approve/reject/restore membership actions, and disable account action.
+Added an admin shell CTA to /{locale}/admin/users.
+
+docs
+Updated active ReactWeb docs to include the new account/admin routes and route collision rule.
+Moved roadmap current slice to 018-reactweb-posts-events-ui.
+Added 019-password-reset-backend-ui as a future slice because the current password pages are informational only.
+
+verification
+npm test --workspace @CCC/web-react: 35 tests passed.
+npm run typecheck --workspace @CCC/web-react: passed.
+npm run build --workspace @CCC/web-react: passed.
+npx sst deploy --stage dev: deployed ReactWebUrl.
+
+live route verification
+GET ReactWebUrl /ca/verify-email returned 200 HTML.
+GET ReactWebUrl /ca/forgot-password returned 200 HTML.
+GET ReactWebUrl /ca/reset-password returned 200 HTML.
+GET ReactWebUrl /ca/admin/users returned 200 HTML.
+GET ReactWebUrl /auth/verify-email?token=missing returned 400 JSON AUTH_VERIFICATION_TOKEN_INVALID.
+GET ReactWebUrl /api/admin/users returned 401 JSON API_AUTH_REQUIRED when logged out.
+
+remaining gaps
+ReactWeb still lacks member posts/events UI and admin post/event content screens.
+Logged-in admin action smoke was not run in this slice because no disposable admin workflow target was selected during implementation.
+```
