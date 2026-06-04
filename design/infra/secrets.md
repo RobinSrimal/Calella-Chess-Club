@@ -23,4 +23,4 @@ ResendApiKey:
 
 ## Exposure Rules
 
-No auth secret is exposed to client-side code. Astro client-side environment variables must use `PUBLIC_`; secrets must not.
+No auth secret is exposed to client-side code. Client-side environment variables must never contain auth secrets.

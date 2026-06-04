@@ -4,6 +4,7 @@ import type { LoaderFunctionArgs, MetaFunction } from "react-router";
 import {
   DEFAULT_LOCALE,
   type Locale,
+  localeFromPathname,
   loginPath,
   localePath,
   registerPath,
@@ -77,7 +78,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
     throw redirect(loginPath(DEFAULT_LOCALE));
   }
 
-  const locale = resolveLocale(params.locale);
+  const locale = resolveLocale(params.locale ?? localeFromPathname(url.pathname));
 
   return {
     locale,

@@ -27,9 +27,11 @@ The React app should keep the same-origin proxy model:
 
 Browser code should continue to call same-origin paths with `credentials: "same-origin"`.
 
-## First Slice
+## Current Migration Scope
 
-The first slice creates the deployable shell, Tailwind setup, localized route skeleton, and proxy routes. Full feature migration remains split into later slices.
+The first ReactWeb slice created the deployable shell, Tailwind setup, localized route skeleton, and proxy routes. Login and registration forms have also been migrated.
+
+Remaining UI migrations include email verification, forgot/reset password, member posts, member events, and admin subpages. The existing backend Workers and D1 data are reused for those flows.
 
 ## Implemented Shell
 
@@ -55,3 +57,7 @@ The package intentionally uses the existing repo package scope:
 `ReactWeb` deploys with Cloudflare Worker compatibility date `2025-08-15` and `nodejs_compat`.
 
 React 19 server rendering imports `MessageChannel` through `react-dom/server.browser`. Cloudflare exposes `MessageChannel` globally by default on compatibility date `2025-08-15` or later. Do not add the explicit `expose_global_message_channel` flag with that date; Cloudflare rejects it because the flag is already default.
+
+## Route Collision Rule
+
+Keep auth page routes explicit per locale instead of using `/:locale/login` or `/:locale/register`. Dynamic locale auth routes can intercept same-origin `/auth/*` proxy requests before the proxy routes run.

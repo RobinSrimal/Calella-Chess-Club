@@ -1,5 +1,17 @@
 import { expect, test } from "vitest";
+import { readFileSync } from "node:fs";
 import { runLiveWebAuthCheck } from "./live-web-auth-check";
+
+test("reads the ReactWeb linked resource instead of the removed Astro Web resource", () => {
+  const source = readFileSync(
+    new URL("./live-web-auth-check.ts", import.meta.url),
+    "utf8",
+  );
+
+  expect(source).toContain("Resource.ReactWeb");
+  expect(source).not.toContain("Resource.Web");
+  expect(source).toContain("Missing Resource.ReactWeb.url.");
+});
 
 test("creates a verified user, logs in through Web, checks /api/me, and cleans up", async () => {
   const queries: Array<{ sql: string; params: string[] }> = [];

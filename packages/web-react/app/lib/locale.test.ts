@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
   DEFAULT_LOCALE,
+  localeFromPathname,
   localePath,
   resolveLocale,
   routeSectionFromPathname,
@@ -15,6 +16,13 @@ describe("locale helpers", () => {
   test("falls back to Catalan for invalid locale params", () => {
     expect(resolveLocale("fr")).toBe(DEFAULT_LOCALE);
     expect(resolveLocale("admin")).toBe(DEFAULT_LOCALE);
+  });
+
+  test("reads a supported locale from the first path segment", () => {
+    expect(localeFromPathname("/ca/login")).toBe("ca");
+    expect(localeFromPathname("/es/register")).toBe("es");
+    expect(localeFromPathname("/en/member")).toBe("en");
+    expect(localeFromPathname("/auth/login")).toBe(DEFAULT_LOCALE);
   });
 
   test("builds localized paths for app sections", () => {

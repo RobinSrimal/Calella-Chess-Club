@@ -14,6 +14,11 @@ export function resolveLocale(value: string | undefined): Locale {
   return isLocale(value) ? value : DEFAULT_LOCALE;
 }
 
+export function localeFromPathname(pathname: string): Locale {
+  const [, maybeLocale] = pathname.split("/");
+  return resolveLocale(maybeLocale);
+}
+
 export function localePath(locale: Locale, section: ShellSection = "public") {
   return section === "public" ? `/${locale}` : `/${locale}/${section}`;
 }

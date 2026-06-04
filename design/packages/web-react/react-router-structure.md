@@ -17,6 +17,8 @@ packages/web-react/
       proxy.test.ts
     routes/
       home.tsx
+      login.tsx
+      register.tsx
       proxy-api.ts
       proxy-auth.ts
   public/
@@ -44,19 +46,60 @@ The first React Router slice should only prove the shell and infrastructure.
 /login             -> redirect to /ca/login
 /register          -> redirect to /ca/register
 /:locale           -> localized public shell
-/:locale/login     -> localized login form
-/:locale/register  -> localized registration form
+/ca/login          -> Catalan login form
+/es/login          -> Spanish login form
+/en/login          -> English login form
+/ca/register       -> Catalan registration form
+/es/register       -> Spanish registration form
+/en/register       -> English registration form
 /:locale/member    -> member placeholder shell
 /:locale/admin     -> admin placeholder shell
 /auth/*            -> AuthApi proxy
 /api/*             -> Api proxy
 ```
 
-Later slices will migrate the real auth forms, public feeds, member posts, member events, and admin screens.
+Do not use `/:locale/login` or `/:locale/register`. Those dynamic routes can match `/auth/login` and `/auth/register` with `locale = "auth"` before the proxy routes run, causing POST requests to return React Router 405 HTML instead of AuthApi JSON.
 
 The login and registration routes are narrow exceptions added after the first deploy so ReactWeb has obvious authentication paths during migration. Login posts to the existing same-origin `/auth/login` proxy and sends successful users to the localized member area. Registration posts to the existing same-origin `/auth/register` proxy and shows the email-verification success message.
 
 The root `/` redirects to `/ca`. Invalid locale params fall back to Catalan in the shell.
+
+## Current Migration Coverage
+
+Implemented ReactWeb UI routes:
+
+```txt
+/
+/login
+/register
+/{ca|es|en}
+/{ca|es|en}/login
+/{ca|es|en}/register
+/{ca|es|en}/member
+/{ca|es|en}/admin
+```
+
+Implemented ReactWeb backend proxy routes:
+
+```txt
+/auth/*
+/api/*
+```
+
+Known ReactWeb UI routes still missing after the Astro removal:
+
+```txt
+/{ca|es|en}/verify-email
+/{ca|es|en}/forgot-password
+/{ca|es|en}/reset-password
+/{ca|es|en}/member/posts
+/{ca|es|en}/member/events
+/{ca|es|en}/admin/users
+/{ca|es|en}/admin/posts
+/{ca|es|en}/admin/events
+```
+
+The backend endpoints for email verification, password reset, posts, events, admin users, and admin content remain in the existing Workers. The missing items above are ReactWeb page migrations, not separate backend resources.
 
 ## Cloudflare Build Notes
 

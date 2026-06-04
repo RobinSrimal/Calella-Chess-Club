@@ -174,7 +174,7 @@ function readLiveWebAuthConfig() {
   const database = Resource.Database as unknown as {
     databaseId?: string;
   };
-  const web = Resource.Web as unknown as {
+  const web = Resource.ReactWeb as unknown as {
     url?: string;
   };
   const accountId =
@@ -184,7 +184,7 @@ function readLiveWebAuthConfig() {
   const passwordPepper = Resource.PasswordPepper.value;
 
   if (!web.url) {
-    throw new Error("Missing Resource.Web.url.");
+    throw new Error("Missing Resource.ReactWeb.url.");
   }
   if (!database.databaseId) {
     throw new Error("Missing Resource.Database.databaseId.");
