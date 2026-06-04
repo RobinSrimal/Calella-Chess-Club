@@ -8,4 +8,11 @@ describe("route config", () => {
     expect(source).toContain('route("login", "routes/login.tsx"');
     expect(source).toContain('route(":locale/login", "routes/login.tsx"');
   });
+
+  test("registers root and localized registration routes", () => {
+    const source = readFileSync(new URL("./routes.ts", import.meta.url), "utf8");
+
+    expect(source).toContain('route("register", "routes/register.tsx"');
+    expect(source).toContain('route(":locale/register", "routes/register.tsx"');
+  });
 });

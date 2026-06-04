@@ -10,101 +10,112 @@ import {
   resolveLocale,
 } from "../lib/locale";
 
-type LoginCopy = {
+type RegisterCopy = {
   navPublic: string;
-  navMember: string;
   navLogin: string;
   navRegister: string;
   title: string;
   body: string;
   usernameLabel: string;
+  emailLabel: string;
   passwordLabel: string;
   submit: string;
   submitting: string;
+  success: string;
   error: string;
 };
 
-const LOGIN_COPY: Record<Locale, LoginCopy> = {
+const REGISTER_COPY: Record<Locale, RegisterCopy> = {
   ca: {
     navPublic: "Inici",
-    navMember: "Membres",
     navLogin: "Entrar",
     navRegister: "Registrar-se",
-    title: "Entrar al compte",
-    body: "Accedeix amb el teu usuari o correu per continuar cap a l'àrea de membres.",
-    usernameLabel: "Usuari o correu",
+    title: "Crear un compte",
+    body: "Crea el teu compte. Despres cal verificar el correu i esperar l'aprovacio de soci.",
+    usernameLabel: "Nom d'usuari",
+    emailLabel: "Correu electronic",
     passwordLabel: "Contrasenya",
-    submit: "Entrar",
-    submitting: "Entrant...",
-    error: "No s'ha pogut iniciar sessio. Revisa les credencials.",
+    submit: "Registrar-se",
+    submitting: "Registrant...",
+    success: "Compte creat. Revisa el correu per verificar-lo.",
+    error: "No s'ha pogut crear el compte. Revisa les dades.",
   },
   es: {
     navPublic: "Inicio",
-    navMember: "Miembros",
     navLogin: "Iniciar sesion",
     navRegister: "Registrarse",
-    title: "Iniciar sesion",
-    body: "Accede con tu usuario o correo para continuar al area de miembros.",
-    usernameLabel: "Usuario o correo",
+    title: "Crear una cuenta",
+    body: "Crea tu cuenta. Despues hay que verificar el correo y esperar la aprobacion de socio.",
+    usernameLabel: "Nombre de usuario",
+    emailLabel: "Correo electronico",
     passwordLabel: "Contrasena",
-    submit: "Entrar",
-    submitting: "Entrando...",
-    error: "No se ha podido iniciar sesion. Revisa las credenciales.",
+    submit: "Registrarse",
+    submitting: "Registrando...",
+    success: "Cuenta creada. Revisa el correo para verificarla.",
+    error: "No se ha podido crear la cuenta. Revisa los datos.",
   },
   en: {
     navPublic: "Home",
-    navMember: "Members",
     navLogin: "Log in",
     navRegister: "Register",
-    title: "Log in",
-    body: "Use your username or email to continue to the member area.",
-    usernameLabel: "Username or email",
+    title: "Create an account",
+    body: "Create your account. After registration you need to verify your email and wait for membership approval.",
+    usernameLabel: "Username",
+    emailLabel: "Email",
     passwordLabel: "Password",
-    submit: "Log in",
-    submitting: "Logging in...",
-    error: "Login failed. Check your credentials.",
+    submit: "Register",
+    submitting: "Registering...",
+    success: "Account created. Check your email to verify it.",
+    error: "Could not create the account. Check the form details.",
   },
 };
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [
-  { title: data ? `${data.copy.title} | Calella Chess Club` : "Log in" },
+  {
+    title: data
+      ? `${data.copy.title} | Calella Chess Club`
+      : "Create an account",
+  },
 ];
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
 
-  if (url.pathname === "/login") {
-    throw redirect(loginPath(DEFAULT_LOCALE));
+  if (url.pathname === "/register") {
+    throw redirect(registerPath(DEFAULT_LOCALE));
   }
 
   const locale = resolveLocale(params.locale);
 
   return {
     locale,
-    copy: LOGIN_COPY[locale],
+    copy: REGISTER_COPY[locale],
   };
 }
 
-export default function LoginRoute() {
+export default function RegisterRoute() {
   const { locale, copy } = useLoaderData<typeof loader>();
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+    setMessage("");
     setIsSubmitting(true);
 
     const form = new FormData(event.currentTarget);
-    const usernameOrEmail = String(form.get("usernameOrEmail") ?? "").trim();
+    const username = String(form.get("username") ?? "").trim();
+    const email = String(form.get("email") ?? "").trim();
     const password = String(form.get("password") ?? "");
 
     try {
-      const response = await fetch("/auth/login", {
+      const response = await fetch("/auth/register", {
         method: "POST",
         credentials: "same-origin",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ usernameOrEmail, password }),
+        body: JSON.stringify({ username, email, password, locale }),
       });
 
       if (!response.ok) {
@@ -112,7 +123,8 @@ export default function LoginRoute() {
         return;
       }
 
-      window.location.assign(localePath(locale, "member"));
+      setMessage(copy.success);
+      event.currentTarget.reset();
     } catch {
       setError(copy.error);
     } finally {
@@ -128,16 +140,11 @@ export default function LoginRoute() {
             Calella Chess Club
           </Link>
           <div className="flex flex-wrap items-center gap-2 text-sm">
-            <LoginNavLink to={localePath(locale)}>{copy.navPublic}</LoginNavLink>
-            <LoginNavLink to={localePath(locale, "member")}>
-              {copy.navMember}
-            </LoginNavLink>
-            <LoginNavLink active to={loginPath(locale)}>
-              {copy.navLogin}
-            </LoginNavLink>
-            <LoginNavLink to={registerPath(locale)}>
+            <AuthNavLink to={localePath(locale)}>{copy.navPublic}</AuthNavLink>
+            <AuthNavLink to={loginPath(locale)}>{copy.navLogin}</AuthNavLink>
+            <AuthNavLink active to={registerPath(locale)}>
               {copy.navRegister}
-            </LoginNavLink>
+            </AuthNavLink>
           </div>
           <div className="flex items-center gap-1 text-sm">
             {(["ca", "es", "en"] as const).map((targetLocale) => (
@@ -148,7 +155,7 @@ export default function LoginRoute() {
                     : "text-stone-600 hover:bg-stone-100 hover:text-stone-950"
                 }`}
                 key={targetLocale}
-                to={loginPath(targetLocale)}
+                to={registerPath(targetLocale)}
               >
                 {targetLocale.toUpperCase()}
               </Link>
@@ -179,16 +186,27 @@ export default function LoginRoute() {
               <input
                 autoComplete="username"
                 className="rounded border border-stone-300 px-3 py-2.5 text-base font-normal text-stone-950 outline-none focus:border-emerald-700"
-                name="usernameOrEmail"
+                name="username"
                 required
                 type="text"
               />
             </label>
             <label className="grid gap-2 text-sm font-semibold text-stone-800">
+              {copy.emailLabel}
+              <input
+                autoComplete="email"
+                className="rounded border border-stone-300 px-3 py-2.5 text-base font-normal text-stone-950 outline-none focus:border-emerald-700"
+                name="email"
+                required
+                type="email"
+              />
+            </label>
+            <label className="grid gap-2 text-sm font-semibold text-stone-800">
               {copy.passwordLabel}
               <input
-                autoComplete="current-password"
+                autoComplete="new-password"
                 className="rounded border border-stone-300 px-3 py-2.5 text-base font-normal text-stone-950 outline-none focus:border-emerald-700"
+                minLength={12}
                 name="password"
                 required
                 type="password"
@@ -196,8 +214,20 @@ export default function LoginRoute() {
             </label>
           </div>
 
+          {message ? (
+            <p
+              className="mt-4 rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800"
+              role="status"
+            >
+              {message}
+            </p>
+          ) : null}
+
           {error ? (
-            <p className="mt-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+            <p
+              className="mt-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800"
+              role="alert"
+            >
               {error}
             </p>
           ) : null}
@@ -215,7 +245,7 @@ export default function LoginRoute() {
   );
 }
 
-function LoginNavLink({
+function AuthNavLink({
   active = false,
   children,
   to,

@@ -7,6 +7,7 @@ import {
   type ShellSection,
   loginPath,
   localePath,
+  registerPath,
   resolveLocale,
   routeSectionFromPathname,
 } from "../lib/locale";
@@ -19,7 +20,7 @@ type Copy = {
   title: string;
   body: string;
   loginCta: string;
-  memberCta: string;
+  registerCta: string;
   statusLabel: string;
   publicStatus: string;
   memberStatus: string;
@@ -35,7 +36,7 @@ const COPY: Record<Locale, Copy> = {
     title: "Una nova interfície React per al club",
     body: "Aquesta primera versió valida el desplegament, la navegació localitzada i les rutes de proxy abans de migrar els fluxos complets.",
     loginCta: "Entrar",
-    memberCta: "Veure àrea de membres",
+    registerCta: "Registrar-se",
     statusLabel: "Secció actual",
     publicStatus: "Pàgina pública",
     memberStatus: "Àrea de membres",
@@ -49,7 +50,7 @@ const COPY: Record<Locale, Copy> = {
     title: "Una nueva interfaz React para el club",
     body: "Esta primera versión valida el despliegue, la navegación localizada y las rutas de proxy antes de migrar los flujos completos.",
     loginCta: "Iniciar sesion",
-    memberCta: "Ver área de miembros",
+    registerCta: "Registrarse",
     statusLabel: "Sección actual",
     publicStatus: "Página pública",
     memberStatus: "Área de miembros",
@@ -63,7 +64,7 @@ const COPY: Record<Locale, Copy> = {
     title: "A new React interface for the club",
     body: "This first version validates deployment, localized navigation, and same-origin proxy routes before migrating the complete workflows.",
     loginCta: "Log in",
-    memberCta: "View member area",
+    registerCta: "Register",
     statusLabel: "Current section",
     publicStatus: "Public page",
     memberStatus: "Member area",
@@ -162,9 +163,9 @@ export default function HomeRoute() {
             </Link>
             <Link
               className="rounded border border-stone-300 bg-white px-4 py-2.5 text-sm font-semibold text-stone-950 hover:bg-stone-100"
-              to={localePath(locale, "member")}
+              to={registerPath(locale)}
             >
-              {copy.memberCta}
+              {copy.registerCta}
             </Link>
           </div>
           <div className="mt-8 inline-flex items-center gap-2 rounded border border-stone-300 bg-white px-3 py-2 text-sm text-stone-700">

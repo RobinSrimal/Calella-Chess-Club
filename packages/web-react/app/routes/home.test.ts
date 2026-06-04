@@ -10,6 +10,7 @@ describe("home route copy", () => {
 
     expect(data.copy.navLogin).toBe("Log in");
     expect(data.copy.loginCta).toBe("Log in");
+    expect(data.copy.registerCta).toBe("Register");
     expect(data.copy.adminCta).toBeUndefined();
   });
 });

@@ -22,6 +22,10 @@ export function loginPath(locale: Locale) {
   return `/${locale}/login`;
 }
 
+export function registerPath(locale: Locale) {
+  return `/${locale}/register`;
+}
+
 export function routeSectionFromPathname(pathname: string): ShellSection {
   const [, maybeLocale, maybeSection] = pathname.split("/");
 
