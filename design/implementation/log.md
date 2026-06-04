@@ -1235,3 +1235,32 @@ GET ReactWebUrl /ca/login returned 200.
 GET ReactWebUrl /en/login returned 200.
 GET ReactWebUrl /en returned 200 and did not include "View admin area".
 ```
+
+## 2026-06-04 - Corrected ReactWeb Registration Path
+
+```txt
+commits
+c9a984d Add ReactWeb registration route
+
+web-react
+Added /register redirecting to /ca/register.
+Added /:locale/register as a localized registration form.
+The registration form posts to the existing same-origin /auth/register proxy with username, email, password, and locale.
+Added Register as the secondary public landing CTA and as a link from the login page.
+
+credential note
+Astro and ReactWeb share AuthApi and D1, so existing usernames/passwords should work on ReactWeb.
+Existing browser sessions do not carry over from the Astro workers.dev host to the ReactWeb workers.dev host because cookies are host-specific.
+
+verification
+npm test --workspace @CCC/web-react: 10 tests passed.
+npm run typecheck --workspace @CCC/web-react: passed.
+npm run build --workspace @CCC/web-react: passed.
+npx sst deploy --stage dev: deployed ReactWebUrl.
+
+live verification
+GET ReactWebUrl /register returned 302 to /ca/register.
+GET ReactWebUrl /ca/register returned 200.
+GET ReactWebUrl /en/register returned 200.
+GET ReactWebUrl /en returned 200 and included Register.
+```
