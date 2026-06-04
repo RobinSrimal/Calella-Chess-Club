@@ -17,15 +17,15 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-018-reactweb-posts-events-ui
+018-reactweb-member-posts-blocknote-ui
 ```
 
-Goal: add ReactWeb member posts/events UI and admin post/event content screens.
+Goal: add the ReactWeb member posts workflow with a separate title field and restricted BlockNote body editor.
 
 Detailed plan:
 
 ```txt
-not defined yet
+design/implementation/slices/018-reactweb-member-posts-blocknote-ui.md
 ```
 
 ## Future Slices
@@ -33,6 +33,9 @@ not defined yet
 Future slices are intentionally high-level until the previous slice has been completed and reviewed.
 
 ```txt
-019-password-reset-backend-ui
+019-reactweb-events-ui
+  Add ReactWeb member event/calendar UI.
+
+020-password-reset-backend-ui
   Add backend forgot/reset password endpoints and replace the informational ReactWeb password pages with functional forms.
 ```
