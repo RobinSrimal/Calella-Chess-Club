@@ -1209,3 +1209,29 @@ npx tsc --noEmit at repo root is not a useful verification target yet because th
 next slice
 017-member-events-ui
 ```
+
+## 2026-06-04 - Corrected ReactWeb Login Path
+
+```txt
+commits
+d2c6c2f Add ReactWeb login route
+
+web-react
+Added /login redirecting to /ca/login.
+Added /:locale/login as a localized login form.
+The login form posts to the existing same-origin /auth/login proxy and redirects successful users to the localized member area.
+Changed the public landing navigation and primary CTA to expose login instead of admin.
+Removed the public "View admin area" CTA from the React shell.
+
+verification
+npm test --workspace @CCC/web-react: 9 tests passed.
+npm run typecheck --workspace @CCC/web-react: passed.
+npm run build --workspace @CCC/web-react: passed.
+npx sst deploy --stage dev: deployed ReactWebUrl.
+
+live verification
+GET ReactWebUrl /login returned 302 to /ca/login.
+GET ReactWebUrl /ca/login returned 200.
+GET ReactWebUrl /en/login returned 200.
+GET ReactWebUrl /en returned 200 and did not include "View admin area".
+```
