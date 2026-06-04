@@ -1,10 +1,14 @@
 import { describe, expect, test } from "vitest";
 import {
   DEFAULT_LOCALE,
+  adminUsersPath,
+  forgotPasswordPath,
   localeFromPathname,
   localePath,
+  resetPasswordPath,
   resolveLocale,
   routeSectionFromPathname,
+  verifyEmailPath,
 } from "./locale";
 
 describe("locale helpers", () => {
@@ -29,6 +33,16 @@ describe("locale helpers", () => {
     expect(localePath("ca")).toBe("/ca");
     expect(localePath("es", "member")).toBe("/es/member");
     expect(localePath("en", "admin")).toBe("/en/admin");
+  });
+
+  test("builds localized account and admin utility paths", () => {
+    expect(verifyEmailPath("ca")).toBe("/ca/verify-email");
+    expect(verifyEmailPath("ca", "raw token")).toBe(
+      "/ca/verify-email?token=raw+token",
+    );
+    expect(forgotPasswordPath("es")).toBe("/es/forgot-password");
+    expect(resetPasswordPath("en")).toBe("/en/reset-password");
+    expect(adminUsersPath("ca")).toBe("/ca/admin/users");
   });
 
   test("detects the current shell section from the localized pathname", () => {

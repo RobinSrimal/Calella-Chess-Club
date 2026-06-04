@@ -13,4 +13,14 @@ describe("home route copy", () => {
     expect(data.copy.registerCta).toBe("Register");
     expect(data.copy.adminCta).toBeUndefined();
   });
+
+  test("exposes an admin users link on the admin shell", async () => {
+    const data = (await loader({
+      params: { locale: "ca" },
+      request: new Request("https://club.example/ca/admin"),
+    } as never)) as any;
+
+    expect(data.section).toBe("admin");
+    expect(data.copy.adminUsersCta).toBe("Gestionar usuaris");
+  });
 });

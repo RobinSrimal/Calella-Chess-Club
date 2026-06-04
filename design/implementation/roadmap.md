@@ -17,15 +17,15 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-017-reactweb-account-admin-gaps
+018-reactweb-posts-events-ui
 ```
 
-Goal: close the non-post/event ReactWeb UI gaps left after the Astro removal: email verification, password utility routes, and admin user management.
+Goal: add ReactWeb member posts/events UI and admin post/event content screens.
 
 Detailed plan:
 
 ```txt
-design/implementation/slices/017-reactweb-account-admin-gaps.md
+not defined yet
 ```
 
 ## Future Slices
@@ -33,6 +33,6 @@ design/implementation/slices/017-reactweb-account-admin-gaps.md
 Future slices are intentionally high-level until the previous slice has been completed and reviewed.
 
 ```txt
-018-reactweb-posts-events-ui
-  Add ReactWeb member posts/events UI and admin post/event content screens.
+019-password-reset-backend-ui
+  Add backend forgot/reset password endpoints and replace the informational ReactWeb password pages with functional forms.
 ```

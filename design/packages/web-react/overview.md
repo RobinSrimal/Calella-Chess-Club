@@ -29,9 +29,11 @@ Browser code should continue to call same-origin paths with `credentials: "same-
 
 ## Current Migration Scope
 
-The first ReactWeb slice created the deployable shell, Tailwind setup, localized route skeleton, and proxy routes. Login and registration forms have also been migrated.
+The first ReactWeb slice created the deployable shell, Tailwind setup, localized route skeleton, and proxy routes. Login, registration, email verification, password utility route placeholders, and admin user management have also been migrated.
 
-Remaining UI migrations include email verification, forgot/reset password, member posts, member events, and admin subpages. The existing backend Workers and D1 data are reused for those flows.
+Remaining UI migrations include member posts, member events, and admin post/event subpages. The existing backend Workers and D1 data are reused for those flows.
+
+Password reset is not implemented by the backend yet. ReactWeb currently exposes localized forgot/reset password pages as informational support pages only.
 
 ## Implemented Shell
 
@@ -60,4 +62,4 @@ React 19 server rendering imports `MessageChannel` through `react-dom/server.bro
 
 ## Route Collision Rule
 
-Keep auth page routes explicit per locale instead of using `/:locale/login` or `/:locale/register`. Dynamic locale auth routes can intercept same-origin `/auth/*` proxy requests before the proxy routes run.
+Keep auth and admin utility page routes explicit per locale instead of using patterns such as `/:locale/login`, `/:locale/verify-email`, or `/:locale/admin/users`. Dynamic locale routes can intercept same-origin `/auth/*` and `/api/*` proxy requests before the proxy routes run.

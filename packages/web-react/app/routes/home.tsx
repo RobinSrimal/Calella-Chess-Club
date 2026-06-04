@@ -5,6 +5,7 @@ import {
   DEFAULT_LOCALE,
   type Locale,
   type ShellSection,
+  adminUsersPath,
   loginPath,
   localePath,
   registerPath,
@@ -21,6 +22,7 @@ type Copy = {
   body: string;
   loginCta: string;
   registerCta: string;
+  adminUsersCta: string;
   statusLabel: string;
   publicStatus: string;
   memberStatus: string;
@@ -37,6 +39,7 @@ const COPY: Record<Locale, Copy> = {
     body: "Aquesta primera versió valida el desplegament, la navegació localitzada i les rutes de proxy abans de migrar els fluxos complets.",
     loginCta: "Entrar",
     registerCta: "Registrar-se",
+    adminUsersCta: "Gestionar usuaris",
     statusLabel: "Secció actual",
     publicStatus: "Pàgina pública",
     memberStatus: "Àrea de membres",
@@ -51,6 +54,7 @@ const COPY: Record<Locale, Copy> = {
     body: "Esta primera versión valida el despliegue, la navegación localizada y las rutas de proxy antes de migrar los flujos completos.",
     loginCta: "Iniciar sesion",
     registerCta: "Registrarse",
+    adminUsersCta: "Gestionar usuarios",
     statusLabel: "Sección actual",
     publicStatus: "Página pública",
     memberStatus: "Área de miembros",
@@ -65,6 +69,7 @@ const COPY: Record<Locale, Copy> = {
     body: "This first version validates deployment, localized navigation, and same-origin proxy routes before migrating the complete workflows.",
     loginCta: "Log in",
     registerCta: "Register",
+    adminUsersCta: "Manage users",
     statusLabel: "Current section",
     publicStatus: "Public page",
     memberStatus: "Member area",
@@ -167,6 +172,14 @@ export default function HomeRoute() {
             >
               {copy.registerCta}
             </Link>
+            {section === "admin" ? (
+              <Link
+                className="rounded border border-stone-300 bg-white px-4 py-2.5 text-sm font-semibold text-stone-950 hover:bg-stone-100"
+                to={adminUsersPath(locale)}
+              >
+                {copy.adminUsersCta}
+              </Link>
+            ) : null}
           </div>
           <div className="mt-8 inline-flex items-center gap-2 rounded border border-stone-300 bg-white px-3 py-2 text-sm text-stone-700">
             <span className="font-semibold text-stone-950">{copy.statusLabel}</span>

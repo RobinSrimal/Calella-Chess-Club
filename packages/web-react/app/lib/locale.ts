@@ -31,6 +31,28 @@ export function registerPath(locale: Locale) {
   return `/${locale}/register`;
 }
 
+export function verifyEmailPath(locale: Locale, token?: string) {
+  const path = `/${locale}/verify-email`;
+  if (!token) {
+    return path;
+  }
+
+  const params = new URLSearchParams({ token });
+  return `${path}?${params.toString()}`;
+}
+
+export function forgotPasswordPath(locale: Locale) {
+  return `/${locale}/forgot-password`;
+}
+
+export function resetPasswordPath(locale: Locale) {
+  return `/${locale}/reset-password`;
+}
+
+export function adminUsersPath(locale: Locale) {
+  return `/${locale}/admin/users`;
+}
+
 export function routeSectionFromPathname(pathname: string): ShellSection {
   const [, maybeLocale, maybeSection] = pathname.split("/");
 
