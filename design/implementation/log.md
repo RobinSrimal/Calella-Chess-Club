@@ -1264,3 +1264,43 @@ GET ReactWebUrl /ca/register returned 200.
 GET ReactWebUrl /en/register returned 200.
 GET ReactWebUrl /en returned 200 and included Register.
 ```
+
+## 2026-06-04 - Removed Astro Website
+
+```txt
+commits
+0e510d9 Remove Astro web package
+
+cleanup
+Deleted packages/web and its Astro app code.
+Deleted current design/packages/web docs and design/infra/astro.md.
+Removed sst.cloudflare.Astro("Web") from infra/web.ts.
+Removed WebUrl from sst.config.ts outputs and removed the generated Web type from sst-env.d.ts.
+Updated README, architecture, and infra docs so packages/web-react is the active website package.
+Pruned Astro and BlockNote dependencies that were only used by packages/web from package-lock.json.
+
+deployment
+npx sst deploy --stage dev --print-logs completed after a retry.
+The first deploy attempt failed before changes were applied because Cloudflare API DNS/state loading timed out.
+The successful deploy deleted the old Web Astro component, WebWorker, WebWorkerScript, and WebWorkerUrl.
+Final dev outputs no longer include WebUrl.
+ReactWebUrl: https://ccc-dev-reactwebworkerscript.robin-srimal.workers.dev
+
+verification
+npm test --workspace @CCC/web-react: 10 tests passed.
+npm run typecheck --workspace @CCC/web-react: passed.
+npm run build --workspace @CCC/web-react: passed.
+npm test --workspace @CCC/functions: 96 tests passed.
+npm run typecheck --workspace @CCC/functions: passed.
+npm test --workspace @CCC/db: 7 tests passed.
+npm run typecheck --workspace @CCC/db: passed.
+npx sst diff --stage dev: passed and generated only ReactWebUrl plus backend outputs.
+
+live verification
+GET ReactWebUrl /ca returned 200.
+GET ReactWebUrl /ca/login returned 200.
+GET ReactWebUrl /ca/register returned 200.
+GET ReactWebUrl /api/health returned 200 with {"service":"api","status":"ok"}.
+GET ReactWebUrl /auth/health returned 200 with {"service":"auth","status":"ok"}.
+GET old WebUrl /ca returned 404 after the Web Worker deletion.
+```
