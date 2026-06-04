@@ -199,13 +199,13 @@ Create: packages/web-react/worker-configuration.d.ts
 Modify: package-lock.json
 ```
 
-- [ ] Add a new workspace package named `@CCC/web-react`.
-- [ ] Add scripts: `dev`, `build`, `typecheck`, and `test`.
-- [ ] Add React Router, React, React DOM, Vite, Cloudflare Vite plugin, Tailwind, TypeScript, and Vitest dependencies needed by the package.
-- [ ] Configure Vite with Cloudflare plugin using `configPath: process.env.SST_WRANGLER_PATH`.
-- [ ] Configure React Router framework mode.
-- [ ] Run `npm install`.
-- [ ] Run `npm run build --workspace packages/web-react` and expect failure only if app routes have not been created yet.
+- [x] Add a new workspace package named `@CCC/web-react`.
+- [x] Add scripts: `dev`, `build`, `typecheck`, and `test`.
+- [x] Add React Router, React, React DOM, Vite, Cloudflare Vite plugin, Tailwind, TypeScript, and Vitest dependencies needed by the package.
+- [x] Configure Vite with Cloudflare plugin using `configPath: process.env.SST_WRANGLER_PATH`.
+- [x] Configure React Router framework mode.
+- [x] Run `npm install`.
+- [x] Run `npm run build --workspace packages/web-react` and expect failure only if app routes have not been created yet.
 
 ### Task 2: Add React App Shell And Tailwind
 
@@ -221,13 +221,13 @@ Create: packages/web-react/app/lib/locale.test.ts
 Copy: packages/web/public/images/club-hero.png -> packages/web-react/public/images/club-hero.png
 ```
 
-- [ ] Add locale helpers for `ca`, `es`, and `en`.
-- [ ] Add tests proving `/` chooses Catalan and invalid locale params fall back to Catalan.
-- [ ] Add a root document component with Tailwind stylesheet import.
-- [ ] Add route definitions for `/`, `/:locale`, `/:locale/member`, and `/:locale/admin`.
-- [ ] Add a minimal localized shell that uses the existing club image and links between member/admin/public placeholders.
-- [ ] Run `npm test --workspace packages/web-react`.
-- [ ] Run `npm run typecheck --workspace packages/web-react`.
+- [x] Add locale helpers for `ca`, `es`, and `en`.
+- [x] Add tests proving `/` chooses Catalan and invalid locale params fall back to Catalan.
+- [x] Add a root document component with Tailwind stylesheet import.
+- [x] Add route definitions for `/`, `/:locale`, `/:locale/member`, and `/:locale/admin`.
+- [x] Add a minimal localized shell that uses the existing club image and links between member/admin/public placeholders.
+- [x] Run `npm test --workspace packages/web-react`.
+- [x] Run `npm run typecheck --workspace packages/web-react`.
 
 ### Task 3: Add Same-Origin Proxy Routes
 
@@ -241,13 +241,13 @@ Create: packages/web-react/app/routes/proxy-api.ts
 Modify: packages/web-react/app/routes.ts
 ```
 
-- [ ] Port the current Astro proxy semantics into React Router route loaders/actions.
-- [ ] Use `Resource.AuthApi` for `/auth/*`.
-- [ ] Use `Resource.Api` for `/api/*`.
-- [ ] Preserve method, headers, query string, body, response status, response headers, and response body.
-- [ ] Add tests for matching prefix, rejecting out-of-prefix paths, preserving query strings, and forwarding a JSON POST body.
-- [ ] Run `npm test --workspace packages/web-react`.
-- [ ] Run `npm run typecheck --workspace packages/web-react`.
+- [x] Port the current Astro proxy semantics into React Router route loaders/actions.
+- [x] Use `Resource.AuthApi` for `/auth/*`.
+- [x] Use `Resource.Api` for `/api/*`.
+- [x] Preserve method, headers, query string, body, response status, response headers, and response body.
+- [x] Add tests for matching prefix, rejecting out-of-prefix paths, preserving query strings, and forwarding a JSON POST body.
+- [x] Run `npm test --workspace packages/web-react`.
+- [x] Run `npm run typecheck --workspace packages/web-react`.
 
 ### Task 4: Add SST ReactWeb Resource
 
@@ -260,11 +260,11 @@ Modify: sst-env.d.ts
 Create: design/infra/react-router-web.md
 ```
 
-- [ ] Add `new sst.cloudflare.ReactRouter("ReactWeb", { path: "packages/web-react/", link: [api, authApi] })`.
-- [ ] Keep the existing Astro `Web` resource unchanged.
-- [ ] Export both `WebUrl` and `ReactWebUrl` from `sst.config.ts`.
-- [ ] Document that `ReactWeb` is parallel migration infrastructure and does not replace Astro yet.
-- [ ] Run `npx tsc --noEmit` if root TypeScript can check the SST config, otherwise run the package typechecks and `npx sst diff --stage dev`.
+- [x] Add `new sst.cloudflare.ReactRouter("ReactWeb", { path: "packages/web-react/", link: [api, authApi] })`.
+- [x] Keep the existing Astro `Web` resource unchanged.
+- [x] Export both `WebUrl` and `ReactWebUrl` from `sst.config.ts`.
+- [x] Document that `ReactWeb` is parallel migration infrastructure and does not replace Astro yet.
+- [x] Run `npx tsc --noEmit` if root TypeScript can check the SST config, otherwise run the package typechecks and `npx sst diff --stage dev`.
 
 ### Task 5: Verify And Deploy
 
@@ -277,14 +277,13 @@ Modify: design/implementation/log.md
 Modify: design/implementation/roadmap.md
 ```
 
-- [ ] Run `npm test --workspace packages/web-react`.
-- [ ] Run `npm run typecheck --workspace packages/web-react`.
-- [ ] Run `npm run build --workspace packages/web-react`.
-- [ ] Run existing web tests that protect shared expectations where practical: `npm test --workspace packages/web`.
-- [ ] Deploy dev with `npx sst deploy --stage dev`.
-- [ ] Live-check `ReactWebUrl` returns 200 for `/ca`.
-- [ ] Live-check `ReactWebUrl/api/health` returns the existing Api health response.
-- [ ] Live-check `ReactWebUrl/auth/health` returns the existing AuthApi health response.
-- [ ] Record ReactWebUrl and verification in the implementation log.
-- [ ] Move the roadmap to the next migration or feature slice.
-
+- [x] Run `npm test --workspace packages/web-react`.
+- [x] Run `npm run typecheck --workspace packages/web-react`.
+- [x] Run `npm run build --workspace packages/web-react`.
+- [x] Run existing web tests that protect shared expectations where practical: `npm test --workspace packages/web`.
+- [x] Deploy dev with `npx sst deploy --stage dev`.
+- [x] Live-check `ReactWebUrl` returns 200 for `/ca`.
+- [x] Live-check `ReactWebUrl/api/health` returns the existing Api health response.
+- [x] Live-check `ReactWebUrl/auth/health` returns the existing AuthApi health response.
+- [x] Record ReactWebUrl and verification in the implementation log.
+- [x] Move the roadmap to the next migration or feature slice.

@@ -9,7 +9,8 @@
     "@cloudflare/workers-types": "^4.20260602.1",
     "@tsconfig/node22": "^22",
     "prettier": "^3.8.3",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vite": "^7.3.5"
   },
   "dependencies": {
     "sst": "^4.15.2"

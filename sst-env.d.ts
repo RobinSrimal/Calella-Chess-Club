@@ -17,6 +17,10 @@ declare module "sst" {
       "type": "sst.sst.Secret"
       "value": string
     }
+    "ReactWeb": {
+      "type": "sst.cloudflare.ReactRouter"
+      "url": string
+    }
     "RefreshTokenSecret": {
       "type": "sst.sst.Secret"
       "value": string

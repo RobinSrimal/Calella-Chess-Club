@@ -18,6 +18,7 @@ export default $config({
       AuthApiUrl: workers.authApi.url,
       ApiUrl: workers.api.url,
       WebUrl: web.website.url,
+      ReactWebUrl: web.reactWebsite.url,
     };
   },
 });

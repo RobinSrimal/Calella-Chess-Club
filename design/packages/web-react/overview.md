@@ -35,3 +35,27 @@ Browser code should continue to call same-origin paths with `credentials: "same-
 
 The first slice creates the deployable shell, Tailwind setup, localized route skeleton, and proxy routes. Full feature migration remains split into later slices.
 
+## Implemented Shell
+
+```txt
+React Router v7 framework mode
+React 19
+TypeScript
+Tailwind CSS v4
+Vite 7
+Cloudflare Vite plugin
+```
+
+The package includes a Cloudflare Workers server entry and keeps a local-only `wrangler.local.jsonc` fallback for standalone package builds. SST still owns the real generated wrangler config during deploy through `SST_WRANGLER_PATH`.
+
+The package intentionally uses the existing repo package scope:
+
+```txt
+@CCC/web-react
+```
+
+## Runtime Compatibility
+
+`ReactWeb` deploys with Cloudflare Worker compatibility date `2025-08-15` and `nodejs_compat`.
+
+React 19 server rendering imports `MessageChannel` through `react-dom/server.browser`. Cloudflare exposes `MessageChannel` globally by default on compatibility date `2025-08-15` or later. Do not add the explicit `expose_global_message_channel` flag with that date; Cloudflare rejects it because the flag is already default.

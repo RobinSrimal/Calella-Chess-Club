@@ -1,0 +1,30 @@
+{
+  "name": "@CCC/web-react",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "react-router dev",
+    "build": "react-router build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest --run --config vitest.config.ts"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.39.2",
+    "@react-router/dev": "^7.16.0",
+    "@tailwindcss/vite": "^4.3.0",
+    "@types/react": "^19.2.16",
+    "@types/react-dom": "^19.2.3",
+    "tailwindcss": "^4.3.0",
+    "typescript": "^6.0.3",
+    "vite": "^7.3.5",
+    "vitest": "^2",
+    "wrangler": "^4.97.0"
+  },
+  "dependencies": {
+    "@react-router/cloudflare": "^7.16.0",
+    "isbot": "^5.1.40",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-router": "^7.16.0"
+  }
+}
