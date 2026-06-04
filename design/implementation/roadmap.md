@@ -17,15 +17,15 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-016-member-events-ui
+016-react-router-web-shell
 ```
 
-Goal: connect member event list/create/edit/publish/delete UI to the existing event APIs.
+Goal: add a parallel React Router web package on Cloudflare with TypeScript, Tailwind, localized shell routes, and same-origin backend proxy routes.
 
 Detailed plan:
 
 ```txt
-not written yet
+design/implementation/slices/016-react-router-web-shell.md
 ```
 
 ## Future Slices
@@ -33,6 +33,9 @@ not written yet
 Future slices are intentionally high-level until the previous slice has been completed and reviewed.
 
 ```txt
-017-admin-content-ui
+017-member-events-ui
+  Connect member event list/create/edit/publish/delete UI to the existing event APIs.
+
+018-admin-content-ui
   Connect admin post/event content screens to public/member-only visibility toggles and delete actions.
 ```

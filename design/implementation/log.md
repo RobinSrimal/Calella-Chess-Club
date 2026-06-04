@@ -1144,3 +1144,20 @@ Cleanup now nulls disabled_by for temporary smoke users before deleting users.
 next slice
 016-member-events-ui
 ```
+
+## 2026-06-04 - Defined Slice 016: React Router Web Shell
+
+```txt
+Created design/implementation/slices/016-react-router-web-shell.md.
+Created design/packages/web-react/overview.md.
+Created design/packages/web-react/react-router-structure.md.
+Created design/infra/react-router-web.md.
+The slice adds a new packages/web-react package using React Router, React, TypeScript, and Tailwind.
+The React app will deploy as a parallel SST Cloudflare ReactRouter resource named ReactWeb.
+The existing Astro Web resource stays deployed during migration.
+The new React app reuses AuthApi, Api, and the existing D1 data; it does not create separate backend data.
+The first slice is limited to package scaffold, localized shell routes, Tailwind setup, same-origin /auth/* and /api/* proxy routes, SST wiring, dev deploy, and live proxy smoke.
+Feature migration for auth forms, member posts, member events, and admin screens remains out of scope.
+The roadmap now points current slice 016 at the React Router web shell plan.
+Member events moved to future slice 017.
+```
