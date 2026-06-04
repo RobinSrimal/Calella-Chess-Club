@@ -17,15 +17,15 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-017-member-events-ui
+017-reactweb-account-admin-gaps
 ```
 
-Goal: connect member event list/create/edit/publish/delete UI to the existing event APIs.
+Goal: close the non-post/event ReactWeb UI gaps left after the Astro removal: email verification, password utility routes, and admin user management.
 
 Detailed plan:
 
 ```txt
-not defined yet
+design/implementation/slices/017-reactweb-account-admin-gaps.md
 ```
 
 ## Future Slices
@@ -33,6 +33,6 @@ not defined yet
 Future slices are intentionally high-level until the previous slice has been completed and reviewed.
 
 ```txt
-018-admin-content-ui
-  Connect admin post/event content screens to public/member-only visibility toggles and delete actions.
+018-reactweb-posts-events-ui
+  Add ReactWeb member posts/events UI and admin post/event content screens.
 ```
