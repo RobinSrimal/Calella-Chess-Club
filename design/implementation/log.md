@@ -1304,3 +1304,44 @@ GET ReactWebUrl /api/health returned 200 with {"service":"api","status":"ok"}.
 GET ReactWebUrl /auth/health returned 200 with {"service":"auth","status":"ok"}.
 GET old WebUrl /ca returned 404 after the Web Worker deletion.
 ```
+
+## 2026-06-04 - Fixed ReactWeb Auth Proxy Collision
+
+```txt
+commits
+09484d8 Fix ReactWeb auth proxy routes
+
+root cause
+React Router dynamic routes /:locale/login and /:locale/register matched /auth/login and /auth/register with locale = "auth" before the /auth/* proxy route could run.
+POST /auth/login and POST /auth/register therefore returned React Router 405 HTML instead of AuthApi JSON.
+
+web-react
+Replaced dynamic localized login and registration routes with explicit /ca, /es, and /en routes.
+Added localeFromPathname so shared login/register route modules still derive the locale from explicit path routes.
+Added route regression tests that forbid /:locale/login and /:locale/register.
+Updated active ReactWeb design docs with the route-collision rule and current migration coverage.
+
+scripts
+Changed the live web auth smoke helper from Resource.Web to Resource.ReactWeb after the Astro Web resource removal.
+Added a regression test that protects the ReactWeb resource reference.
+
+verification
+npm test --workspace @CCC/web-react: 11 tests passed.
+npm run typecheck --workspace @CCC/web-react: passed.
+npm run build --workspace @CCC/web-react: passed.
+npx vitest --run packages/scripts/src/live-web-auth-check.test.ts: 3 tests passed.
+npx tsc -p packages/scripts/tsconfig.json --noEmit: passed.
+npx sst deploy --stage dev: deployed ReactWebUrl.
+npx sst shell --stage dev -- npm run live-web-auth-check --workspace @CCC/scripts: loginStatus 200 and meStatus 200.
+
+live route verification
+GET ReactWebUrl /auth/health returned 200 with {"service":"auth","status":"ok"}.
+POST ReactWebUrl /auth/login with {} returned 400 JSON AUTH_VALIDATION_FAILED.
+POST ReactWebUrl /auth/register with {} returned 400 JSON AUTH_VALIDATION_FAILED.
+POST ReactWebUrl /api/posts with {} returned 401 JSON API_AUTH_REQUIRED.
+
+migration gaps found
+ReactWeb currently has login and registration forms, same-origin backend proxies, and top-level public/member/admin shells.
+ReactWeb still lacks UI routes for /{locale}/verify-email, /{locale}/forgot-password, /{locale}/reset-password, /{locale}/member/posts, /{locale}/member/events, /{locale}/admin/users, /{locale}/admin/posts, and /{locale}/admin/events.
+Those are UI migration gaps; the backend Workers and D1 data remain shared.
+```
