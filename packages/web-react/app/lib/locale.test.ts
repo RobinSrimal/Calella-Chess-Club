@@ -5,6 +5,7 @@ import {
   forgotPasswordPath,
   localeFromPathname,
   localePath,
+  memberPostsPath,
   resetPasswordPath,
   resolveLocale,
   routeSectionFromPathname,
@@ -43,6 +44,12 @@ describe("locale helpers", () => {
     expect(forgotPasswordPath("es")).toBe("/es/forgot-password");
     expect(resetPasswordPath("en")).toBe("/en/reset-password");
     expect(adminUsersPath("ca")).toBe("/ca/admin/users");
+  });
+
+  test("builds localized member posts paths", () => {
+    expect(memberPostsPath("ca")).toBe("/ca/member/posts");
+    expect(memberPostsPath("es")).toBe("/es/member/posts");
+    expect(memberPostsPath("en")).toBe("/en/member/posts");
   });
 
   test("detects the current shell section from the localized pathname", () => {

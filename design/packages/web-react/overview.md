@@ -29,9 +29,9 @@ Browser code should continue to call same-origin paths with `credentials: "same-
 
 ## Current Migration Scope
 
-The first ReactWeb slice created the deployable shell, Tailwind setup, localized route skeleton, and proxy routes. Login, registration, email verification, password utility route placeholders, and admin user management have also been migrated.
+The first ReactWeb slice created the deployable shell, Tailwind setup, localized route skeleton, and proxy routes. Login, registration, email verification, password utility route placeholders, admin user management, and member posts have also been migrated.
 
-Remaining UI migrations include member posts, member events, and admin post/event subpages. The existing backend Workers and D1 data are reused for those flows.
+Remaining UI migrations include member events and admin post/event subpages. The existing backend Workers and D1 data are reused for those flows.
 
 Password reset is not implemented by the backend yet. ReactWeb currently exposes localized forgot/reset password pages as informational support pages only.
 
@@ -63,3 +63,15 @@ React 19 server rendering imports `MessageChannel` through `react-dom/server.bro
 ## Route Collision Rule
 
 Keep auth and admin utility page routes explicit per locale instead of using patterns such as `/:locale/login`, `/:locale/verify-email`, or `/:locale/admin/users`. Dynamic locale routes can intercept same-origin `/auth/*` and `/api/*` proxy requests before the proxy routes run.
+
+Member post routes are also explicit per locale:
+
+```txt
+/ca/member/posts
+/es/member/posts
+/en/member/posts
+```
+
+Member posts use a separate required title field plus restricted BlockNote-compatible body JSON. The React editor schema is limited to paragraphs, text, links, bold, and italic. The backend remains authoritative for validation and rejects unsupported blocks, uploads, media, lists, headings, nesting, arbitrary styles, and empty body text.
+
+Admins use the same member posts workflow as members. Admin-authored posts remain member-only by default; admins can explicitly opt into landing-page visibility when publishing their own draft.

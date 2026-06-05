@@ -6,6 +6,7 @@ node_modules
 
 # generated package output
 packages/*/.astro
+packages/*/.react-router
 packages/*/.wrangler
 packages/*/build
 packages/*/dist

@@ -8,6 +8,8 @@ import {
   isRouteErrorResponse,
   useRouteError,
 } from "react-router";
+import "@blocknote/core/fonts/inter.css";
+import "@blocknote/mantine/style.css";
 import "./styles/tailwind.css";
 
 export function Layout({ children }: { children: ReactNode }) {

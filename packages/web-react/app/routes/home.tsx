@@ -8,6 +8,7 @@ import {
   adminUsersPath,
   loginPath,
   localePath,
+  memberPostsPath,
   registerPath,
   resolveLocale,
   routeSectionFromPathname,
@@ -23,6 +24,7 @@ type Copy = {
   loginCta: string;
   registerCta: string;
   adminUsersCta: string;
+  memberPostsCta: string;
   statusLabel: string;
   publicStatus: string;
   memberStatus: string;
@@ -40,6 +42,7 @@ const COPY: Record<Locale, Copy> = {
     loginCta: "Entrar",
     registerCta: "Registrar-se",
     adminUsersCta: "Gestionar usuaris",
+    memberPostsCta: "Escriure posts",
     statusLabel: "Secció actual",
     publicStatus: "Pàgina pública",
     memberStatus: "Àrea de membres",
@@ -55,6 +58,7 @@ const COPY: Record<Locale, Copy> = {
     loginCta: "Iniciar sesion",
     registerCta: "Registrarse",
     adminUsersCta: "Gestionar usuarios",
+    memberPostsCta: "Escribir posts",
     statusLabel: "Sección actual",
     publicStatus: "Página pública",
     memberStatus: "Área de miembros",
@@ -70,6 +74,7 @@ const COPY: Record<Locale, Copy> = {
     loginCta: "Log in",
     registerCta: "Register",
     adminUsersCta: "Manage users",
+    memberPostsCta: "Write posts",
     statusLabel: "Current section",
     publicStatus: "Public page",
     memberStatus: "Member area",
@@ -178,6 +183,14 @@ export default function HomeRoute() {
                 to={adminUsersPath(locale)}
               >
                 {copy.adminUsersCta}
+              </Link>
+            ) : null}
+            {section === "member" ? (
+              <Link
+                className="rounded border border-stone-300 bg-white px-4 py-2.5 text-sm font-semibold text-stone-950 hover:bg-stone-100"
+                to={memberPostsPath(locale)}
+              >
+                {copy.memberPostsCta}
               </Link>
             ) : null}
           </div>

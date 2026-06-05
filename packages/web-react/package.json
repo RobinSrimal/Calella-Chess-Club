@@ -21,6 +21,12 @@
     "wrangler": "^4.97.0"
   },
   "dependencies": {
+    "@blocknote/core": "^0.51.4",
+    "@blocknote/mantine": "^0.51.4",
+    "@blocknote/react": "^0.51.4",
+    "@mantine/core": "^9.3.0",
+    "@mantine/hooks": "^9.3.0",
+    "@mantine/utils": "^6.0.22",
     "@react-router/cloudflare": "^7.16.0",
     "isbot": "^5.1.40",
     "react": "^19.2.7",

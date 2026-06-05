@@ -61,4 +61,13 @@ describe("route config", () => {
     expect(source).toContain('route("en/admin/users", "routes/admin-users.tsx"');
     expect(source).not.toContain('route(":locale/admin/users"');
   });
+
+  test("registers explicit member posts routes without dynamic locale routes", () => {
+    const source = readFileSync(new URL("./routes.ts", import.meta.url), "utf8");
+
+    expect(source).toContain('route("ca/member/posts", "routes/member-posts.tsx"');
+    expect(source).toContain('route("es/member/posts", "routes/member-posts.tsx"');
+    expect(source).toContain('route("en/member/posts", "routes/member-posts.tsx"');
+    expect(source).not.toContain('route(":locale/member/posts"');
+  });
 });

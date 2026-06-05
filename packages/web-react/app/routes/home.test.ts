@@ -23,4 +23,14 @@ describe("home route copy", () => {
     expect(data.section).toBe("admin");
     expect(data.copy.adminUsersCta).toBe("Gestionar usuaris");
   });
+
+  test("exposes a posts link on the member shell", async () => {
+    const data = (await loader({
+      params: { locale: "ca" },
+      request: new Request("https://club.example/ca/member"),
+    } as never)) as any;
+
+    expect(data.section).toBe("member");
+    expect(data.copy.memberPostsCta).toBe("Escriure posts");
+  });
 });

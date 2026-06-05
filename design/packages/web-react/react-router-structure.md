@@ -10,13 +10,22 @@ packages/web-react/
     routes.ts
     styles/
       tailwind.css
+    components/
+      PostBlockEditor.tsx
     lib/
       account-api.ts
       account-api.test.ts
       admin-users-state.ts
       admin-users-state.test.ts
+      api-result.ts
       locale.ts
       locale.test.ts
+      member-posts-state.ts
+      member-posts-state.test.ts
+      post-api.ts
+      post-api.test.ts
+      post-body.ts
+      post-body.test.ts
       proxy.ts
       proxy.test.ts
     routes/
@@ -25,6 +34,8 @@ packages/web-react/
       forgot-password.tsx
       home.tsx
       login.tsx
+      member-posts.tsx
+      member-posts.test.ts
       password-utility.test.ts
       register.tsx
       reset-password.tsx
@@ -77,11 +88,14 @@ The first React Router slice should only prove the shell and infrastructure.
 /ca/admin/users    -> Catalan admin user management page
 /es/admin/users    -> Spanish admin user management page
 /en/admin/users    -> English admin user management page
+/ca/member/posts   -> Catalan member posts workflow
+/es/member/posts   -> Spanish member posts workflow
+/en/member/posts   -> English member posts workflow
 /auth/*            -> AuthApi proxy
 /api/*             -> Api proxy
 ```
 
-Do not use `/:locale/login`, `/:locale/register`, `/:locale/verify-email`, `/:locale/forgot-password`, `/:locale/reset-password`, or `/:locale/admin/users`. Those dynamic routes can match backend proxy paths such as `/auth/login`, `/auth/verify-email`, and `/api/admin/users` before the proxy routes run, causing API requests to return React Router HTML instead of Worker JSON.
+Do not use `/:locale/login`, `/:locale/register`, `/:locale/verify-email`, `/:locale/forgot-password`, `/:locale/reset-password`, `/:locale/admin/users`, or `/:locale/member/posts`. Those dynamic routes can match backend proxy paths such as `/auth/login`, `/auth/verify-email`, and `/api/admin/users` before the proxy routes run, causing API requests to return React Router HTML instead of Worker JSON.
 
 The login and registration routes are narrow exceptions added after the first deploy so ReactWeb has obvious authentication paths during migration. Login posts to the existing same-origin `/auth/login` proxy and sends successful users to the localized member area. Registration posts to the existing same-origin `/auth/register` proxy and shows the email-verification success message.
 
@@ -102,6 +116,7 @@ Implemented ReactWeb UI routes:
 /{ca|es|en}/forgot-password
 /{ca|es|en}/reset-password
 /{ca|es|en}/member
+/{ca|es|en}/member/posts
 /{ca|es|en}/admin
 /{ca|es|en}/admin/users
 ```
@@ -116,13 +131,14 @@ Implemented ReactWeb backend proxy routes:
 Known ReactWeb UI routes still missing after the Astro removal:
 
 ```txt
-/{ca|es|en}/member/posts
 /{ca|es|en}/member/events
 /{ca|es|en}/admin/posts
 /{ca|es|en}/admin/events
 ```
 
 The email verification page calls the existing AuthApi verification route. The forgot/reset password pages are informational only because AuthApi does not implement password reset endpoints yet.
+
+The member posts page calls the existing Api Worker post endpoints through the same-origin `/api/*` proxy. Posts use a separate required title field plus restricted BlockNote-compatible body JSON. The React editor only exposes paragraphs, text, links, bold, and italic, while the backend remains the final validator for allowed JSON. New posts start as drafts, members publish member-only, and admins can explicitly opt into landing-page visibility when publishing their own draft; that checkbox defaults off.
 
 The backend endpoints for posts, events, admin users, and admin content remain in the existing Workers. The missing items above are ReactWeb page migrations, not separate backend resources.
 

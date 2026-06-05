@@ -53,6 +53,10 @@ export function adminUsersPath(locale: Locale) {
   return `/${locale}/admin/users`;
 }
 
+export function memberPostsPath(locale: Locale) {
+  return `/${locale}/member/posts`;
+}
+
 export function routeSectionFromPathname(pathname: string): ShellSection {
   const [, maybeLocale, maybeSection] = pathname.split("/");
 
