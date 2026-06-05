@@ -1,20 +1,16 @@
-import type { ReactNode } from "react";
 import { Link, useLoaderData } from "react-router";
 import type { LoaderFunctionArgs, MetaFunction } from "react-router";
+import { SiteHeader } from "../components/SiteHeader";
 import {
   type Locale,
   forgotPasswordPath,
   localeFromPathname,
-  localePath,
   loginPath,
   registerPath,
   resetPasswordPath,
 } from "../lib/locale";
 
 type PasswordUtilityCopy = {
-  navPublic: string;
-  navLogin: string;
-  navRegister: string;
   title: string;
   body: string;
   loginCta: string;
@@ -24,9 +20,6 @@ type PasswordUtilityCopy = {
 
 const FORGOT_PASSWORD_COPY: Record<Locale, PasswordUtilityCopy> = {
   ca: {
-    navPublic: "Inici",
-    navLogin: "Entrar",
-    navRegister: "Registrar-se",
     title: "Recuperar contrasenya",
     body: "La recuperació automàtica de contrasenya encara no està activada. Contacta amb un administrador del club per rebre ajuda.",
     loginCta: "Entrar",
@@ -34,9 +27,6 @@ const FORGOT_PASSWORD_COPY: Record<Locale, PasswordUtilityCopy> = {
     resetLink: "Restablir contrasenya",
   },
   es: {
-    navPublic: "Inicio",
-    navLogin: "Iniciar sesión",
-    navRegister: "Registrarse",
     title: "Recuperar contraseña",
     body: "La recuperación automática de contraseña aún no está activada. Contacta con un administrador del club para recibir ayuda.",
     loginCta: "Iniciar sesión",
@@ -44,9 +34,6 @@ const FORGOT_PASSWORD_COPY: Record<Locale, PasswordUtilityCopy> = {
     resetLink: "Restablecer contraseña",
   },
   en: {
-    navPublic: "Home",
-    navLogin: "Log in",
-    navRegister: "Register",
     title: "Recover password",
     body: "Automatic password recovery is not enabled yet. Contact a club admin for help.",
     loginCta: "Log in",
@@ -92,9 +79,6 @@ function PasswordUtilityLayout({
   languagePath,
   locale,
   loginCta,
-  navLogin,
-  navPublic,
-  navRegister,
   registerCta,
   resetHref,
   resetLink,
@@ -108,33 +92,11 @@ function PasswordUtilityLayout({
 }) {
   return (
     <main className="min-h-screen bg-[#f8f7f2] text-stone-950">
-      <header className="border-b border-stone-200 bg-white/85">
-        <nav className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-4">
-          <Link className="text-base font-semibold" to={localePath(locale)}>
-            Calella Chess Club
-          </Link>
-          <div className="flex flex-wrap items-center gap-2 text-sm">
-            <NavLink to={localePath(locale)}>{navPublic}</NavLink>
-            <NavLink to={loginPath(locale)}>{navLogin}</NavLink>
-            <NavLink to={registerPath(locale)}>{navRegister}</NavLink>
-          </div>
-          <div className="flex items-center gap-1 text-sm">
-            {(["ca", "es", "en"] as const).map((targetLocale) => (
-              <Link
-                className={`rounded px-2.5 py-1.5 font-medium ${
-                  targetLocale === locale
-                    ? "bg-stone-950 text-white"
-                    : "text-stone-600 hover:bg-stone-100 hover:text-stone-950"
-                }`}
-                key={targetLocale}
-                to={languagePath(targetLocale)}
-              >
-                {targetLocale.toUpperCase()}
-              </Link>
-            ))}
-          </div>
-        </nav>
-      </header>
+      <SiteHeader
+        activeSection="public"
+        languagePath={languagePath}
+        locale={locale}
+      />
 
       <section className="mx-auto max-w-3xl px-5 py-10 md:py-14">
         <p className="text-sm font-semibold uppercase tracking-wide text-emerald-700">
@@ -171,16 +133,5 @@ function PasswordUtilityLayout({
         </div>
       </section>
     </main>
-  );
-}
-
-function NavLink({ children, to }: { children: ReactNode; to: string }) {
-  return (
-    <Link
-      className="rounded px-3 py-2 font-medium text-stone-600 hover:bg-stone-100 hover:text-stone-950"
-      to={to}
-    >
-      {children}
-    </Link>
   );
 }

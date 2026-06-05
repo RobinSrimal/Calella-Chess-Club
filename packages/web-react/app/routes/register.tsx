@@ -1,20 +1,18 @@
-import { type FormEvent, useState } from "react";
-import { Link, redirect, useLoaderData } from "react-router";
+import { type FormEvent, useEffect, useState } from "react";
+import { redirect, useLoaderData } from "react-router";
 import type { LoaderFunctionArgs, MetaFunction } from "react-router";
+import { SiteHeader } from "../components/SiteHeader";
+import { getCurrentUser } from "../lib/account-api";
 import {
   DEFAULT_LOCALE,
   type Locale,
   localeFromPathname,
-  loginPath,
   localePath,
   registerPath,
   resolveLocale,
 } from "../lib/locale";
 
 type RegisterCopy = {
-  navPublic: string;
-  navLogin: string;
-  navRegister: string;
   title: string;
   body: string;
   usernameLabel: string;
@@ -28,9 +26,6 @@ type RegisterCopy = {
 
 const REGISTER_COPY: Record<Locale, RegisterCopy> = {
   ca: {
-    navPublic: "Inici",
-    navLogin: "Entrar",
-    navRegister: "Registrar-se",
     title: "Crear un compte",
     body: "Crea el teu compte. Despres cal verificar el correu i esperar l'aprovacio de soci.",
     usernameLabel: "Nom d'usuari",
@@ -42,9 +37,6 @@ const REGISTER_COPY: Record<Locale, RegisterCopy> = {
     error: "No s'ha pogut crear el compte. Revisa les dades.",
   },
   es: {
-    navPublic: "Inicio",
-    navLogin: "Iniciar sesion",
-    navRegister: "Registrarse",
     title: "Crear una cuenta",
     body: "Crea tu cuenta. Despues hay que verificar el correo y esperar la aprobacion de socio.",
     usernameLabel: "Nombre de usuario",
@@ -56,9 +48,6 @@ const REGISTER_COPY: Record<Locale, RegisterCopy> = {
     error: "No se ha podido crear la cuenta. Revisa los datos.",
   },
   en: {
-    navPublic: "Home",
-    navLogin: "Log in",
-    navRegister: "Register",
     title: "Create an account",
     body: "Create your account. After registration you need to verify your email and wait for membership approval.",
     usernameLabel: "Username",
@@ -100,6 +89,23 @@ export default function RegisterRoute() {
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    let active = true;
+
+    async function redirectIfAlreadyLoggedIn() {
+      const result = await getCurrentUser();
+      if (active && result.ok) {
+        window.location.assign(localePath(locale, "member"));
+      }
+    }
+
+    void redirectIfAlreadyLoggedIn();
+
+    return () => {
+      active = false;
+    };
+  }, [locale]);
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
@@ -135,35 +141,11 @@ export default function RegisterRoute() {
 
   return (
     <main className="min-h-screen bg-[#f8f7f2] text-stone-950">
-      <header className="border-b border-stone-200 bg-white/85">
-        <nav className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-4">
-          <Link className="text-base font-semibold" to={localePath(locale)}>
-            Calella Chess Club
-          </Link>
-          <div className="flex flex-wrap items-center gap-2 text-sm">
-            <AuthNavLink to={localePath(locale)}>{copy.navPublic}</AuthNavLink>
-            <AuthNavLink to={loginPath(locale)}>{copy.navLogin}</AuthNavLink>
-            <AuthNavLink active to={registerPath(locale)}>
-              {copy.navRegister}
-            </AuthNavLink>
-          </div>
-          <div className="flex items-center gap-1 text-sm">
-            {(["ca", "es", "en"] as const).map((targetLocale) => (
-              <Link
-                className={`rounded px-2.5 py-1.5 font-medium ${
-                  targetLocale === locale
-                    ? "bg-stone-950 text-white"
-                    : "text-stone-600 hover:bg-stone-100 hover:text-stone-950"
-                }`}
-                key={targetLocale}
-                to={registerPath(targetLocale)}
-              >
-                {targetLocale.toUpperCase()}
-              </Link>
-            ))}
-          </div>
-        </nav>
-      </header>
+      <SiteHeader
+        activeSection="public"
+        languagePath={registerPath}
+        locale={locale}
+      />
 
       <section className="mx-auto grid max-w-6xl gap-8 px-5 py-8 md:grid-cols-[1fr_420px] md:items-start md:py-12">
         <div className="max-w-2xl">
@@ -243,28 +225,5 @@ export default function RegisterRoute() {
         </form>
       </section>
     </main>
-  );
-}
-
-function AuthNavLink({
-  active = false,
-  children,
-  to,
-}: {
-  active?: boolean;
-  children: string;
-  to: string;
-}) {
-  return (
-    <Link
-      className={`rounded px-3 py-2 font-medium ${
-        active
-          ? "bg-emerald-700 text-white"
-          : "text-stone-600 hover:bg-stone-100 hover:text-stone-950"
-      }`}
-      to={to}
-    >
-      {children}
-    </Link>
   );
 }

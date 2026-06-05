@@ -16,6 +16,12 @@ type SiteNavCopy = {
   register: string;
 };
 
+export type SiteSessionCopy = {
+  account: string;
+  logout: string;
+  loggingOut: string;
+};
+
 export type SiteNavItemId = "home" | "member" | "admin" | "login" | "register";
 
 export type SiteNavItem = {
@@ -48,6 +54,28 @@ const SITE_NAV_COPY: Record<Locale, SiteNavCopy> = {
     register: "Register",
   },
 };
+
+const SITE_SESSION_COPY: Record<Locale, SiteSessionCopy> = {
+  ca: {
+    account: "Compte",
+    logout: "Sortir",
+    loggingOut: "Sortint...",
+  },
+  es: {
+    account: "Cuenta",
+    logout: "Salir",
+    loggingOut: "Saliendo...",
+  },
+  en: {
+    account: "Account",
+    logout: "Log out",
+    loggingOut: "Logging out...",
+  },
+};
+
+export function siteSessionCopy(locale: Locale): SiteSessionCopy {
+  return SITE_SESSION_COPY[locale];
+}
 
 export function visibleSiteNavItems({
   currentUser,

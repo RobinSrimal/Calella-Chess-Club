@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { getCurrentUser, type PublicUser } from "../lib/account-api";
+import { logout } from "../lib/auth-api";
 import {
   SUPPORTED_LOCALES,
   type Locale,
   type ShellSection,
   localePath,
 } from "../lib/locale";
-import { visibleSiteNavItems } from "../lib/site-nav";
+import { siteSessionCopy, visibleSiteNavItems } from "../lib/site-nav";
 
 type SiteHeaderProps = {
   locale: Locale;
@@ -21,6 +22,8 @@ export function SiteHeader({
   locale,
 }: SiteHeaderProps) {
   const [currentUser, setCurrentUser] = useState<PublicUser | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const sessionCopy = siteSessionCopy(locale);
 
   useEffect(() => {
     let active = true;
@@ -40,6 +43,18 @@ export function SiteHeader({
       active = false;
     };
   }, []);
+
+  async function handleLogout() {
+    setIsLoggingOut(true);
+
+    try {
+      await logout();
+    } finally {
+      setCurrentUser(null);
+      setIsLoggingOut(false);
+      window.location.assign(localePath(locale));
+    }
+  }
 
   return (
     <header className="border-b border-stone-200 bg-white/85">
@@ -62,6 +77,24 @@ export function SiteHeader({
             </Link>
           ))}
         </div>
+        {currentUser ? (
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <span
+              aria-label={sessionCopy.account}
+              className="rounded border border-stone-200 bg-stone-50 px-3 py-2 font-medium text-stone-700"
+            >
+              {displayUsername(currentUser)}
+            </span>
+            <button
+              className="rounded border border-stone-300 bg-white px-3 py-2 font-medium text-stone-700 hover:bg-stone-100 hover:text-stone-950 disabled:cursor-not-allowed disabled:text-stone-400"
+              disabled={isLoggingOut}
+              onClick={handleLogout}
+              type="button"
+            >
+              {isLoggingOut ? sessionCopy.loggingOut : sessionCopy.logout}
+            </button>
+          </div>
+        ) : null}
         <div className="flex items-center gap-1 text-sm">
           {SUPPORTED_LOCALES.map((targetLocale) => (
             <Link
@@ -80,6 +113,10 @@ export function SiteHeader({
       </nav>
     </header>
   );
+}
+
+export function displayUsername(user: PublicUser) {
+  return user.username.trim() || user.email;
 }
 
 function isActiveNavItem(

@@ -29,7 +29,7 @@ Browser code should continue to call same-origin paths with `credentials: "same-
 
 ## Shared Header
 
-ReactWeb uses a shared auth-aware header for the public landing, member posts, and admin users pages.
+ReactWeb uses a shared auth-aware header for the public landing, account pages, member posts, and admin users pages.
 
 ```txt
 logged out
@@ -40,14 +40,20 @@ logged out
 logged in user
   home
   member
+  username
+  logout
 
 logged in admin
   home
   member
   admin
+  username
+  logout
 ```
 
 The header checks `/api/me` client-side through the same-origin API proxy. Auth-required or invalid-session responses are treated as logged out for navigation only; individual pages still perform their own authorization and informational states.
+
+The shared logout button posts to `/auth/logout` with same-origin credentials, clears the header session state regardless of network outcome, and navigates back to the localized public landing page. Login and registration pages also check `/api/me` after mount and send already logged-in visitors to the localized member area.
 
 ## Public Landing
 
@@ -63,9 +69,9 @@ Approved public posts are rendered as plain text previews. When no posts are pub
 
 ## Current Migration Scope
 
-The first ReactWeb slice created the deployable shell, Tailwind setup, localized route skeleton, and proxy routes. Login, registration, email verification, password utility route placeholders, admin user management, member posts, and the club-focused public landing page have also been migrated.
+The first ReactWeb slice created the deployable shell, Tailwind setup, localized route skeleton, and proxy routes. Login, registration, email verification, password utility route placeholders, admin user management, member posts, logout/session navigation, and the club-focused public landing page have also been migrated.
 
-Remaining UI migrations include member events and admin post/event subpages. The existing backend Workers and D1 data are reused for those flows.
+Remaining UI work includes admin post approval surfaces and functional password reset. Events are currently out of scope. The existing backend Workers and D1 data are reused for migrated flows.
 
 Password reset is not implemented by the backend yet. ReactWeb currently exposes localized forgot/reset password pages as informational support pages only.
 

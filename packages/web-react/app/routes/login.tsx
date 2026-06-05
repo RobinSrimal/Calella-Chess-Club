@@ -1,21 +1,18 @@
-import { type FormEvent, useState } from "react";
-import { Link, redirect, useLoaderData } from "react-router";
+import { type FormEvent, useEffect, useState } from "react";
+import { redirect, useLoaderData } from "react-router";
 import type { LoaderFunctionArgs, MetaFunction } from "react-router";
+import { SiteHeader } from "../components/SiteHeader";
+import { getCurrentUser } from "../lib/account-api";
 import {
   DEFAULT_LOCALE,
   type Locale,
   localeFromPathname,
   loginPath,
   localePath,
-  registerPath,
   resolveLocale,
 } from "../lib/locale";
 
 type LoginCopy = {
-  navPublic: string;
-  navMember: string;
-  navLogin: string;
-  navRegister: string;
   title: string;
   body: string;
   usernameLabel: string;
@@ -27,10 +24,6 @@ type LoginCopy = {
 
 const LOGIN_COPY: Record<Locale, LoginCopy> = {
   ca: {
-    navPublic: "Inici",
-    navMember: "Membres",
-    navLogin: "Entrar",
-    navRegister: "Registrar-se",
     title: "Entrar al compte",
     body: "Accedeix amb el teu usuari o correu per continuar cap a l'àrea de membres.",
     usernameLabel: "Usuari o correu",
@@ -40,10 +33,6 @@ const LOGIN_COPY: Record<Locale, LoginCopy> = {
     error: "No s'ha pogut iniciar sessio. Revisa les credencials.",
   },
   es: {
-    navPublic: "Inicio",
-    navMember: "Miembros",
-    navLogin: "Iniciar sesion",
-    navRegister: "Registrarse",
     title: "Iniciar sesion",
     body: "Accede con tu usuario o correo para continuar al area de miembros.",
     usernameLabel: "Usuario o correo",
@@ -53,10 +42,6 @@ const LOGIN_COPY: Record<Locale, LoginCopy> = {
     error: "No se ha podido iniciar sesion. Revisa las credenciales.",
   },
   en: {
-    navPublic: "Home",
-    navMember: "Members",
-    navLogin: "Log in",
-    navRegister: "Register",
     title: "Log in",
     body: "Use your username or email to continue to the member area.",
     usernameLabel: "Username or email",
@@ -91,6 +76,23 @@ export default function LoginRoute() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    let active = true;
+
+    async function redirectIfAlreadyLoggedIn() {
+      const result = await getCurrentUser();
+      if (active && result.ok) {
+        window.location.assign(localePath(locale, "member"));
+      }
+    }
+
+    void redirectIfAlreadyLoggedIn();
+
+    return () => {
+      active = false;
+    };
+  }, [locale]);
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
@@ -123,40 +125,11 @@ export default function LoginRoute() {
 
   return (
     <main className="min-h-screen bg-[#f8f7f2] text-stone-950">
-      <header className="border-b border-stone-200 bg-white/85">
-        <nav className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-4">
-          <Link className="text-base font-semibold" to={localePath(locale)}>
-            Calella Chess Club
-          </Link>
-          <div className="flex flex-wrap items-center gap-2 text-sm">
-            <LoginNavLink to={localePath(locale)}>{copy.navPublic}</LoginNavLink>
-            <LoginNavLink to={localePath(locale, "member")}>
-              {copy.navMember}
-            </LoginNavLink>
-            <LoginNavLink active to={loginPath(locale)}>
-              {copy.navLogin}
-            </LoginNavLink>
-            <LoginNavLink to={registerPath(locale)}>
-              {copy.navRegister}
-            </LoginNavLink>
-          </div>
-          <div className="flex items-center gap-1 text-sm">
-            {(["ca", "es", "en"] as const).map((targetLocale) => (
-              <Link
-                className={`rounded px-2.5 py-1.5 font-medium ${
-                  targetLocale === locale
-                    ? "bg-stone-950 text-white"
-                    : "text-stone-600 hover:bg-stone-100 hover:text-stone-950"
-                }`}
-                key={targetLocale}
-                to={loginPath(targetLocale)}
-              >
-                {targetLocale.toUpperCase()}
-              </Link>
-            ))}
-          </div>
-        </nav>
-      </header>
+      <SiteHeader
+        activeSection="public"
+        languagePath={loginPath}
+        locale={locale}
+      />
 
       <section className="mx-auto grid max-w-6xl gap-8 px-5 py-8 md:grid-cols-[1fr_420px] md:items-start md:py-12">
         <div className="max-w-2xl">
@@ -213,28 +186,5 @@ export default function LoginRoute() {
         </form>
       </section>
     </main>
-  );
-}
-
-function LoginNavLink({
-  active = false,
-  children,
-  to,
-}: {
-  active?: boolean;
-  children: string;
-  to: string;
-}) {
-  return (
-    <Link
-      className={`rounded px-3 py-2 font-medium ${
-        active
-          ? "bg-emerald-700 text-white"
-          : "text-stone-600 hover:bg-stone-100 hover:text-stone-950"
-      }`}
-      to={to}
-    >
-      {children}
-    </Link>
   );
 }

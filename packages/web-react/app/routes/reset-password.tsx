@@ -1,20 +1,16 @@
-import type { ReactNode } from "react";
 import { Link, useLoaderData } from "react-router";
 import type { LoaderFunctionArgs, MetaFunction } from "react-router";
+import { SiteHeader } from "../components/SiteHeader";
 import {
   type Locale,
   forgotPasswordPath,
   localeFromPathname,
-  localePath,
   loginPath,
   registerPath,
   resetPasswordPath,
 } from "../lib/locale";
 
 type PasswordUtilityCopy = {
-  navPublic: string;
-  navLogin: string;
-  navRegister: string;
   title: string;
   body: string;
   loginCta: string;
@@ -24,9 +20,6 @@ type PasswordUtilityCopy = {
 
 const RESET_PASSWORD_COPY: Record<Locale, PasswordUtilityCopy> = {
   ca: {
-    navPublic: "Inici",
-    navLogin: "Entrar",
-    navRegister: "Registrar-se",
     title: "Restablir contrasenya",
     body: "Els enllaços de restabliment de contrasenya encara no estan activats.",
     loginCta: "Entrar",
@@ -34,9 +27,6 @@ const RESET_PASSWORD_COPY: Record<Locale, PasswordUtilityCopy> = {
     forgotLink: "Recuperar contrasenya",
   },
   es: {
-    navPublic: "Inicio",
-    navLogin: "Iniciar sesión",
-    navRegister: "Registrarse",
     title: "Restablecer contraseña",
     body: "Los enlaces para restablecer la contraseña aún no están activados.",
     loginCta: "Iniciar sesión",
@@ -44,9 +34,6 @@ const RESET_PASSWORD_COPY: Record<Locale, PasswordUtilityCopy> = {
     forgotLink: "Recuperar contraseña",
   },
   en: {
-    navPublic: "Home",
-    navLogin: "Log in",
-    navRegister: "Register",
     title: "Reset password",
     body: "Password reset links are not enabled yet.",
     loginCta: "Log in",
@@ -76,33 +63,11 @@ export default function ResetPasswordRoute() {
 
   return (
     <main className="min-h-screen bg-[#f8f7f2] text-stone-950">
-      <header className="border-b border-stone-200 bg-white/85">
-        <nav className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-4">
-          <Link className="text-base font-semibold" to={localePath(locale)}>
-            Calella Chess Club
-          </Link>
-          <div className="flex flex-wrap items-center gap-2 text-sm">
-            <NavLink to={localePath(locale)}>{copy.navPublic}</NavLink>
-            <NavLink to={loginPath(locale)}>{copy.navLogin}</NavLink>
-            <NavLink to={registerPath(locale)}>{copy.navRegister}</NavLink>
-          </div>
-          <div className="flex items-center gap-1 text-sm">
-            {(["ca", "es", "en"] as const).map((targetLocale) => (
-              <Link
-                className={`rounded px-2.5 py-1.5 font-medium ${
-                  targetLocale === locale
-                    ? "bg-stone-950 text-white"
-                    : "text-stone-600 hover:bg-stone-100 hover:text-stone-950"
-                }`}
-                key={targetLocale}
-                to={resetPasswordPath(targetLocale)}
-              >
-                {targetLocale.toUpperCase()}
-              </Link>
-            ))}
-          </div>
-        </nav>
-      </header>
+      <SiteHeader
+        activeSection="public"
+        languagePath={resetPasswordPath}
+        locale={locale}
+      />
 
       <section className="mx-auto max-w-3xl px-5 py-10 md:py-14">
         <p className="text-sm font-semibold uppercase tracking-wide text-emerald-700">
@@ -137,16 +102,5 @@ export default function ResetPasswordRoute() {
         </div>
       </section>
     </main>
-  );
-}
-
-function NavLink({ children, to }: { children: ReactNode; to: string }) {
-  return (
-    <Link
-      className="rounded px-3 py-2 font-medium text-stone-600 hover:bg-stone-100 hover:text-stone-950"
-      to={to}
-    >
-      {children}
-    </Link>
   );
 }

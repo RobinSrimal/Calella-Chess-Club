@@ -17,15 +17,15 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-020-reactweb-logout-and-session-ui
+021-password-reset-backend-ui
 ```
 
-Goal: add logout controls and tighten logged-in session navigation across ReactWeb.
+Goal: add backend forgot/reset password endpoints and replace the informational ReactWeb password pages with functional forms.
 
 Detailed plan:
 
 ```txt
-design/implementation/slices/020-reactweb-logout-and-session-ui.md
+To be created before implementation starts.
 ```
 
 ## Future Slices
@@ -33,6 +33,6 @@ design/implementation/slices/020-reactweb-logout-and-session-ui.md
 Future slices are intentionally high-level until the previous slice has been completed and reviewed.
 
 ```txt
-021-password-reset-backend-ui
-  Add backend forgot/reset password endpoints and replace the informational ReactWeb password pages with functional forms.
+admin-post-approval-ui
+  Add ReactWeb admin screens for reviewing posts and controlling landing-page visibility.
 ```

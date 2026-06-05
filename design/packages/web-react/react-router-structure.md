@@ -11,6 +11,7 @@ packages/web-react/
     styles/
       tailwind.css
     components/
+      SiteHeader.test.ts
       PostBlockEditor.tsx
       SiteHeader.tsx
     lib/
@@ -19,6 +20,8 @@ packages/web-react/
       admin-users-state.ts
       admin-users-state.test.ts
       api-result.ts
+      auth-api.ts
+      auth-api.test.ts
       locale.ts
       locale.test.ts
       member-posts-state.ts
@@ -38,10 +41,12 @@ packages/web-react/
       admin-users.test.ts
       forgot-password.tsx
       home.tsx
+      login.test.ts
       login.tsx
       member-posts.tsx
       member-posts.test.ts
       password-utility.test.ts
+      register.test.ts
       register.tsx
       reset-password.tsx
       verify-email.tsx
@@ -117,14 +122,20 @@ logged out
 logged in user
   home
   member
+  username
+  logout
 
 logged in admin
   home
   member
   admin
+  username
+  logout
 ```
 
-The header only controls link visibility. Page routes still own their authorization checks and informational states.
+The header only controls link visibility. Page routes still own their authorization checks and informational states. Its logout control calls the same-origin `/auth/logout` proxy, clears local header state, and navigates to `/{locale}`.
+
+Login, registration, email verification, forgot-password, and reset-password routes use the same shared header. Login and registration also check `/api/me` after client mount and redirect already logged-in users to `/{locale}/member`.
 
 ## Current Migration Coverage
 
@@ -156,9 +167,7 @@ Implemented ReactWeb backend proxy routes:
 Known ReactWeb UI routes still missing after the Astro removal:
 
 ```txt
-/{ca|es|en}/member/events
 /{ca|es|en}/admin/posts
-/{ca|es|en}/admin/events
 ```
 
 The email verification page calls the existing AuthApi verification route. The forgot/reset password pages are informational only because AuthApi does not implement password reset endpoints yet.
@@ -167,7 +176,7 @@ The public landing page calls `GET /api/public/posts` through `public-content-ap
 
 The member posts page calls the existing Api Worker post endpoints through the same-origin `/api/*` proxy. Posts use a separate required title field plus restricted BlockNote-compatible body JSON. The React editor only exposes paragraphs, text, links, bold, and italic, while the backend remains the final validator for allowed JSON. New posts start as drafts, members publish member-only, and admins can explicitly opt into landing-page visibility when publishing their own draft; that checkbox defaults off.
 
-The backend endpoints for posts, events, admin users, and admin content remain in the existing Workers. The missing items above are ReactWeb page migrations, not separate backend resources.
+The backend endpoints for posts, admin users, and admin content remain in the existing Workers. The missing item above is a ReactWeb page migration, not a separate backend resource. Events are currently out of scope.
 
 ## Cloudflare Build Notes
 

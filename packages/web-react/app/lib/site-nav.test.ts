@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import type { PublicUser } from "./account-api";
-import { visibleSiteNavItems } from "./site-nav";
+import { siteSessionCopy, visibleSiteNavItems } from "./site-nav";
 
 describe("site navigation helpers", () => {
   test("shows home, login, and register to logged-out users", () => {
@@ -51,6 +51,24 @@ describe("site navigation helpers", () => {
         (item) => item.label,
       ),
     ).toEqual(["Home", "Log in", "Register"]);
+  });
+
+  test("returns localized session labels", () => {
+    expect(siteSessionCopy("ca")).toEqual({
+      account: "Compte",
+      logout: "Sortir",
+      loggingOut: "Sortint...",
+    });
+    expect(siteSessionCopy("es")).toEqual({
+      account: "Cuenta",
+      logout: "Salir",
+      loggingOut: "Saliendo...",
+    });
+    expect(siteSessionCopy("en")).toEqual({
+      account: "Account",
+      logout: "Log out",
+      loggingOut: "Logging out...",
+    });
   });
 });
 

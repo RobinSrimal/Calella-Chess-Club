@@ -1,21 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link, useLoaderData } from "react-router";
 import type { LoaderFunctionArgs, MetaFunction } from "react-router";
+import { SiteHeader } from "../components/SiteHeader";
 import { verifyEmailToken } from "../lib/account-api";
 import {
   type Locale,
   forgotPasswordPath,
   localeFromPathname,
-  localePath,
   loginPath,
   registerPath,
   verifyEmailPath,
 } from "../lib/locale";
 
 type VerifyEmailCopy = {
-  navPublic: string;
-  navLogin: string;
-  navRegister: string;
   title: string;
   checking: string;
   success: string;
@@ -27,9 +24,6 @@ type VerifyEmailCopy = {
 
 const VERIFY_EMAIL_COPY: Record<Locale, VerifyEmailCopy> = {
   ca: {
-    navPublic: "Inici",
-    navLogin: "Entrar",
-    navRegister: "Registrar-se",
     title: "Verificació del correu",
     checking: "Verificant el correu...",
     success:
@@ -40,9 +34,6 @@ const VERIFY_EMAIL_COPY: Record<Locale, VerifyEmailCopy> = {
     forgotPassword: "Recuperar contrasenya",
   },
   es: {
-    navPublic: "Inicio",
-    navLogin: "Iniciar sesión",
-    navRegister: "Registrarse",
     title: "Verificación del correo",
     checking: "Verificando el correo...",
     success:
@@ -53,9 +44,6 @@ const VERIFY_EMAIL_COPY: Record<Locale, VerifyEmailCopy> = {
     forgotPassword: "Recuperar contraseña",
   },
   en: {
-    navPublic: "Home",
-    navLogin: "Log in",
-    navRegister: "Register",
     title: "Email verification",
     checking: "Verifying your email...",
     success: "Email verified. Your membership request is pending approval.",
@@ -138,35 +126,11 @@ export default function VerifyEmailRoute() {
 
   return (
     <main className="min-h-screen bg-[#f8f7f2] text-stone-950">
-      <header className="border-b border-stone-200 bg-white/85">
-        <nav className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-4">
-          <Link className="text-base font-semibold" to={localePath(locale)}>
-            Calella Chess Club
-          </Link>
-          <div className="flex flex-wrap items-center gap-2 text-sm">
-            <AccountNavLink to={localePath(locale)}>{copy.navPublic}</AccountNavLink>
-            <AccountNavLink to={loginPath(locale)}>{copy.navLogin}</AccountNavLink>
-            <AccountNavLink to={registerPath(locale)}>
-              {copy.navRegister}
-            </AccountNavLink>
-          </div>
-          <div className="flex items-center gap-1 text-sm">
-            {(["ca", "es", "en"] as const).map((targetLocale) => (
-              <Link
-                className={`rounded px-2.5 py-1.5 font-medium ${
-                  targetLocale === locale
-                    ? "bg-stone-950 text-white"
-                    : "text-stone-600 hover:bg-stone-100 hover:text-stone-950"
-                }`}
-                key={targetLocale}
-                to={verifyEmailPath(targetLocale)}
-              >
-                {targetLocale.toUpperCase()}
-              </Link>
-            ))}
-          </div>
-        </nav>
-      </header>
+      <SiteHeader
+        activeSection="public"
+        languagePath={(targetLocale) => verifyEmailPath(targetLocale, token)}
+        locale={locale}
+      />
 
       <section className="mx-auto max-w-3xl px-5 py-10 md:py-14">
         <p className="text-sm font-semibold uppercase tracking-wide text-emerald-700">
@@ -209,22 +173,5 @@ export default function VerifyEmailRoute() {
         </div>
       </section>
     </main>
-  );
-}
-
-function AccountNavLink({
-  children,
-  to,
-}: {
-  children: React.ReactNode;
-  to: string;
-}) {
-  return (
-    <Link
-      className="rounded px-3 py-2 font-medium text-stone-600 hover:bg-stone-100 hover:text-stone-950"
-      to={to}
-    >
-      {children}
-    </Link>
   );
 }
