@@ -351,6 +351,24 @@ test("POST /auth/logout revokes refresh sessions and clears cookies", async () =
   });
 });
 
+test("POST /auth/logout clears cookies without a refresh session", async () => {
+  const context = createAuthTestContext();
+  const response = await handleAuthRequest(
+    new Request("https://calella-chess-club.test/auth/logout", {
+      method: "POST",
+    }),
+    context,
+  );
+
+  expect(response.status).toBe(204);
+  expect(await response.text()).toBe("");
+  expectSetCookie(response, ACCESS_TOKEN_COOKIE, "Max-Age=0");
+  expectSetCookie(response, REFRESH_TOKEN_COOKIE, "Max-Age=0");
+  expect(
+    context.repository.revokeRefreshSessionByTokenHash,
+  ).not.toHaveBeenCalled();
+});
+
 test("POST /auth/register rejects duplicate usernames and emails", async () => {
   const usernameContext = createAuthTestContext({
     existingUsername: { id: "existing-user" },

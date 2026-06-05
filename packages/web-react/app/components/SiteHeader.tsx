@@ -14,16 +14,20 @@ type SiteHeaderProps = {
   locale: Locale;
   activeSection: ShellSection;
   languagePath: (locale: Locale) => string;
+  navigate?: (path: string) => void;
 };
 
 export function SiteHeader({
   activeSection,
   languagePath,
   locale,
+  navigate,
 }: SiteHeaderProps) {
   const [currentUser, setCurrentUser] = useState<PublicUser | null>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const sessionCopy = siteSessionCopy(locale);
+  const navigateTo =
+    navigate ?? ((path: string) => window.location.assign(path));
 
   useEffect(() => {
     let active = true;
@@ -52,7 +56,7 @@ export function SiteHeader({
     } finally {
       setCurrentUser(null);
       setIsLoggingOut(false);
-      window.location.assign(localePath(locale));
+      navigateTo(localePath(locale));
     }
   }
 

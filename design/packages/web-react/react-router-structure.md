@@ -10,7 +10,12 @@ packages/web-react/
     routes.ts
     styles/
       tailwind.css
+    test/
+      render.tsx
+      setup.ts
+      users.ts
     components/
+      SiteHeader.render.test.tsx
       SiteHeader.test.ts
       PostBlockEditor.tsx
       SiteHeader.tsx
@@ -187,6 +192,28 @@ The repo pins Vite 7 for the React package and root toolchain. Vite 8 produced a
 `wrangler.local.jsonc` exists only so `npm run build --workspace @CCC/web-react` can run outside SST. Do not add a `wrangler.jsonc` file in this package; SST rejects it because SST generates and manages wrangler config for `sst.cloudflare.ReactRouter`.
 
 The SST `ReactWeb` resource sets the deployed Worker compatibility date to `2025-08-15`. This is required for React 19 SSR because Cloudflare only exposes global `MessageChannel` by default from that date onward.
+
+## Testing
+
+ReactWeb uses Vitest for helper, route-loader, API helper, and component tests.
+
+The default Vitest environment stays as `node` so existing loader and browser-helper tests do not run under jsdom by default. Rendered component tests opt into jsdom per file with:
+
+```ts
+// @vitest-environment jsdom
+```
+
+Shared component test utilities live under:
+
+```txt
+packages/web-react/app/test/setup.ts
+packages/web-react/app/test/render.tsx
+packages/web-react/app/test/users.ts
+```
+
+`setup.ts` loads `@testing-library/jest-dom/vitest`. `render.tsx` wraps components in `MemoryRouter` for tests that need React Router context. `users.ts` provides reusable public-user fixtures.
+
+`SiteHeader.render.test.tsx` covers the shared header's rendered logged-out, member, admin, and logout interaction states. Keep rendered component tests focused on observable DOM and user behavior instead of Tailwind classes or large snapshots.
 
 ## Styling
 

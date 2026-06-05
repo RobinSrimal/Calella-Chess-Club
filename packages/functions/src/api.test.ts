@@ -75,6 +75,35 @@ test("GET /api/me rejects missing and invalid access JWTs", async () => {
   });
 });
 
+test("GET /api/me rejects a valid access JWT when the user no longer exists", async () => {
+  const token = await signAccessJwt({
+    secret: "jwt-secret",
+    userId: "missing-user",
+    issuedAt: new Date("2026-06-03T08:00:00.000Z"),
+    expiresAt: new Date("2026-06-03T10:00:00.000Z"),
+  });
+  const context = createApiTestContext({
+    user: null,
+  });
+
+  const response = await handleApiRequest(
+    new Request("https://calella-chess-club.test/api/me", {
+      headers: {
+        cookie: `${ACCESS_TOKEN_COOKIE}=${token}`,
+      },
+    }),
+    context,
+  );
+
+  expect(response.status).toBe(401);
+  await expect(response.json()).resolves.toEqual({
+    error: { code: "API_AUTH_INVALID" },
+  });
+  expect(context.repository.findPublicUserById).toHaveBeenCalledWith(
+    "missing-user",
+  );
+});
+
 test("GET /api/admin/users returns filtered admin user summaries for admins", async () => {
   const token = await accessTokenFor("admin-1");
   const context = createApiTestContext({
