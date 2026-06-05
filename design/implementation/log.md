@@ -2,6 +2,89 @@
 
 ## 2026-06-05
 
+### Completed Slice: 019-reactweb-landing-auth-nav-cleanup
+
+```txt
+commit hash
+b730f2b
+
+files changed
+design/implementation/roadmap.md
+design/packages/web-react/overview.md
+design/packages/web-react/react-router-structure.md
+packages/web-react/app/components/SiteHeader.tsx
+packages/web-react/app/lib/locale.test.ts
+packages/web-react/app/lib/locale.ts
+packages/web-react/app/lib/public-content-api.test.ts
+packages/web-react/app/lib/public-content-api.ts
+packages/web-react/app/lib/site-nav.test.ts
+packages/web-react/app/lib/site-nav.ts
+packages/web-react/app/routes/admin-users.tsx
+packages/web-react/app/routes/home.test.ts
+packages/web-react/app/routes/home.tsx
+packages/web-react/app/routes/member-posts.tsx
+
+implemented UI behavior
+The public landing page now uses chess-club copy instead of React migration/deployment copy.
+Login and registration actions are only in the shared header.
+The shared header shows home/login/register while logged out.
+The shared header shows home/member after /api/me returns a logged-in user.
+The shared header shows home/member/admin after /api/me returns a user with role=admin.
+The public landing page includes a public news section backed by /api/public/posts.
+The public news section renders a localized empty placeholder when no public posts exist.
+The home, member posts, and admin users routes use the shared header.
+
+verification commands
+npx vitest --run packages/web-react/app/lib/site-nav.test.ts packages/web-react/app/lib/locale.test.ts --config packages/web-react/vitest.config.ts
+npx vitest --run packages/web-react/app/lib/public-content-api.test.ts --config packages/web-react/vitest.config.ts
+npx vitest --run packages/web-react/app/lib/public-content-api.test.ts packages/web-react/app/routes/home.test.ts --config packages/web-react/vitest.config.ts
+npm test --workspace @CCC/web-react
+npm run typecheck --workspace @CCC/web-react
+npm run build --workspace @CCC/web-react
+
+verification results
+Site navigation and locale tests exited 0 with 11 tests passing.
+Public content API helper tests exited 0 with 2 tests passing.
+Public content helper plus home route tests exited 0 with 6 tests passing.
+ReactWeb Vitest exited 0 with 16 test files and 68 tests passing.
+ReactWeb typecheck exited 0.
+ReactWeb production build exited 0.
+
+build notes
+React Router future flag warnings remain unchanged.
+The BlockNote member posts route chunk remains larger than 500 kB after minification.
+
+deployment command
+npx sst deploy --stage dev
+
+deployment result
+SST deployed the ReactWeb update successfully.
+ReactWebUrl: https://ccc-dev-reactwebworkerscript.robin-srimal.workers.dev
+ApiUrl: https://ccc-dev-apiscript-noawkcsx.robin-srimal.workers.dev
+AuthApiUrl: https://ccc-dev-authapiscript-bdteakex.robin-srimal.workers.dev
+DatabaseId: edf26084-32a2-4d25-b608-ec4ed6a0e763
+
+live verification command
+node --input-type=module -e "const base='https://ccc-dev-reactwebworkerscript.robin-srimal.workers.dev'; const paths=['/ca','/es','/en','/api/public/posts','/api/me']; for (const path of paths) { const res=await fetch(base+path,{redirect:'manual'}); const text=await res.text(); console.log(path,res.status,res.headers.get('content-type'),text.slice(0,220).replace(/\\s+/g,' ')); }"
+
+live verification result
+/ca returned 200 text/html.
+/es returned 200 text/html.
+/en returned 200 text/html.
+/api/public/posts returned 200 application/json with {"posts":[]}.
+/api/me returned 401 application/json with API_AUTH_REQUIRED when logged out.
+
+content verification command
+node --input-type=module -e "const html=await (await fetch('https://ccc-dev-reactwebworkerscript.robin-srimal.workers.dev/ca')).text(); for (const term of ['Escacs, formació i competició a Calella','Notícies del club','Encara no hi ha notícies aprovades per a la portada.']) console.log(term, html.includes(term)); for (const term of ['React','desplegament','proxy']) console.log('forbidden', term, html.includes(term));"
+
+content verification result
+The deployed Catalan landing page contained the expected chess-club/news copy.
+The deployed Catalan landing page did not contain React, desplegament, or proxy.
+
+remaining note
+Logged-in member/admin header visibility is covered by helper tests, but was not browser-smoked with a live authenticated session because no password was available in the tool context.
+```
+
 ### Completed Slice: 018-reactweb-member-posts-blocknote-ui
 
 ```txt
