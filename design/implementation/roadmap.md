@@ -17,15 +17,15 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-019-reactweb-events-ui
+019-reactweb-landing-auth-nav-cleanup
 ```
 
-Goal: add the ReactWeb member event/calendar UI.
+Goal: clean up the ReactWeb landing page and top navigation so the site reads like a chess club website and responds correctly to logged-in member/admin state.
 
 Detailed plan:
 
 ```txt
-To be created before implementation starts.
+design/implementation/slices/019-reactweb-landing-auth-nav-cleanup.md
 ```
 
 ## Future Slices
@@ -33,6 +33,9 @@ To be created before implementation starts.
 Future slices are intentionally high-level until the previous slice has been completed and reviewed.
 
 ```txt
-020-password-reset-backend-ui
+020-reactweb-events-ui
+  Add ReactWeb member event/calendar UI.
+
+021-password-reset-backend-ui
   Add backend forgot/reset password endpoints and replace the informational ReactWeb password pages with functional forms.
 ```
