@@ -2,6 +2,97 @@
 
 ## 2026-06-05
 
+### Completed Slice: 020-reactweb-logout-and-session-ui
+
+```txt
+commit hash
+7134100
+
+files changed
+design/implementation/roadmap.md
+design/packages/web-react/overview.md
+design/packages/web-react/react-router-structure.md
+packages/web-react/app/components/SiteHeader.tsx
+packages/web-react/app/components/SiteHeader.test.ts
+packages/web-react/app/lib/auth-api.ts
+packages/web-react/app/lib/auth-api.test.ts
+packages/web-react/app/lib/site-nav.ts
+packages/web-react/app/lib/site-nav.test.ts
+packages/web-react/app/routes/forgot-password.tsx
+packages/web-react/app/routes/login.tsx
+packages/web-react/app/routes/login.test.ts
+packages/web-react/app/routes/register.tsx
+packages/web-react/app/routes/register.test.ts
+packages/web-react/app/routes/reset-password.tsx
+packages/web-react/app/routes/verify-email.tsx
+
+implemented UI behavior
+Added a browser logout helper for POST /auth/logout through the same-origin AuthApi proxy.
+The shared SiteHeader now shows the current username and a localized logout button after /api/me returns a user.
+Logout disables the button while in flight, calls /auth/logout, clears local header session state, and navigates to the localized public landing page.
+Login and registration pages now use SiteHeader and redirect already logged-in visitors to the localized member area after /api/me succeeds.
+Email verification, forgot-password, and reset-password pages now use SiteHeader instead of route-local nav markup.
+Account routes keep route-specific language switch paths, including preserving the verify-email token.
+Site session labels are localized in Catalan, Spanish, and English.
+
+docs
+Updated the ReactWeb overview and route-structure docs for logout/session behavior and account-route shared header usage.
+Moved the roadmap current slice to 021-password-reset-backend-ui.
+Kept events out of the roadmap and documented admin post approval as future UI work.
+
+verification commands
+npx vitest --run packages/web-react/app/lib/auth-api.test.ts --config packages/web-react/vitest.config.ts
+npx vitest --run packages/web-react/app/lib/site-nav.test.ts --config packages/web-react/vitest.config.ts
+npx vitest --run packages/web-react/app/components/SiteHeader.test.ts --config packages/web-react/vitest.config.ts
+npx vitest --run packages/web-react/app/routes/login.test.ts packages/web-react/app/routes/register.test.ts packages/web-react/app/routes/verify-email.test.ts packages/web-react/app/routes/password-utility.test.ts --config packages/web-react/vitest.config.ts
+npm test --workspace @CCC/web-react
+npm run typecheck --workspace @CCC/web-react
+npm run build --workspace @CCC/web-react
+
+verification results
+Auth API helper tests exited 0 with 3 tests passing.
+Site navigation tests exited 0 with 5 tests passing.
+SiteHeader helper tests exited 0 with 2 tests passing.
+Account route tests exited 0 with 7 tests passing.
+ReactWeb Vitest exited 0 with 20 test files and 76 tests passing.
+ReactWeb typecheck exited 0.
+ReactWeb production build exited 0.
+
+build notes
+React Router future flag warnings remain unchanged.
+The BlockNote member posts route chunk remains larger than 500 kB after minification.
+
+deployment command
+npx sst deploy --stage dev
+
+deployment result
+The first sandboxed deploy attempt failed on DNS lookup for SST telemetry.
+The approved network deploy completed successfully.
+ReactWebUrl: https://ccc-dev-reactwebworkerscript.robin-srimal.workers.dev
+ApiUrl: https://ccc-dev-apiscript-noawkcsx.robin-srimal.workers.dev
+AuthApiUrl: https://ccc-dev-authapiscript-bdteakex.robin-srimal.workers.dev
+DatabaseId: edf26084-32a2-4d25-b608-ec4ed6a0e763
+
+live verification command
+node --input-type=module -e "const base='https://ccc-dev-reactwebworkerscript.robin-srimal.workers.dev'; const paths=['/ca','/ca/login','/ca/register','/api/me']; for (const path of paths) { const res=await fetch(base+path,{redirect:'manual'}); const text=await res.text(); console.log(path,res.status,res.headers.get('content-type'),text.slice(0,220).replace(/\\s+/g,' ')); }"
+
+live verification result
+/ca returned 200 text/html.
+/ca/login returned 200 text/html.
+/ca/register returned 200 text/html.
+/api/me returned 401 application/json with API_AUTH_REQUIRED when logged out.
+
+logout endpoint smoke command
+node --input-type=module -e "const res=await fetch('https://ccc-dev-reactwebworkerscript.robin-srimal.workers.dev/auth/logout',{method:'POST',headers:{'content-type':'application/json'},body:'{}'}); console.log(res.status); console.log(res.headers.getSetCookie?.() ?? res.headers.get('set-cookie') ?? []);"
+
+logout endpoint smoke result
+POST /auth/logout returned 204.
+The response included cookie-clearing Set-Cookie headers for ccc_access_token and ccc_refresh_token.
+
+remaining note
+The authenticated browser click flow was not live-smoked in the tool context. The endpoint behavior, header helper behavior, and logged-out route behavior are covered by tests and live endpoint checks.
+```
+
 ### Completed Slice: 019-reactweb-landing-auth-nav-cleanup
 
 ```txt
