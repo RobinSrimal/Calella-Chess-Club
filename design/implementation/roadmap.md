@@ -25,7 +25,7 @@ Goal: add logout controls and tighten logged-in session navigation across ReactW
 Detailed plan:
 
 ```txt
-To be created before implementation starts.
+design/implementation/slices/020-reactweb-logout-and-session-ui.md
 ```
 
 ## Future Slices
