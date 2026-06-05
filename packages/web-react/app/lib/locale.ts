@@ -49,6 +49,10 @@ export function resetPasswordPath(locale: Locale) {
   return `/${locale}/reset-password`;
 }
 
+export function adminHomePath(locale: Locale) {
+  return `/${locale}/admin`;
+}
+
 export function adminUsersPath(locale: Locale) {
   return `/${locale}/admin/users`;
 }

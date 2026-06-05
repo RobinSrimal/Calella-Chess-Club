@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
   DEFAULT_LOCALE,
+  adminHomePath,
   adminUsersPath,
   forgotPasswordPath,
   localeFromPathname,
@@ -43,6 +44,7 @@ describe("locale helpers", () => {
     );
     expect(forgotPasswordPath("es")).toBe("/es/forgot-password");
     expect(resetPasswordPath("en")).toBe("/en/reset-password");
+    expect(adminHomePath("en")).toBe("/en/admin");
     expect(adminUsersPath("ca")).toBe("/ca/admin/users");
   });
 

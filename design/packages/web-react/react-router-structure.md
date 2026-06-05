@@ -12,6 +12,7 @@ packages/web-react/
       tailwind.css
     components/
       PostBlockEditor.tsx
+      SiteHeader.tsx
     lib/
       account-api.ts
       account-api.test.ts
@@ -26,8 +27,12 @@ packages/web-react/
       post-api.test.ts
       post-body.ts
       post-body.test.ts
+      public-content-api.ts
+      public-content-api.test.ts
       proxy.ts
       proxy.test.ts
+      site-nav.ts
+      site-nav.test.ts
     routes/
       admin-users.tsx
       admin-users.test.ts
@@ -67,7 +72,7 @@ The first React Router slice should only prove the shell and infrastructure.
 /                  -> redirect or render Catalan shell
 /login             -> redirect to /ca/login
 /register          -> redirect to /ca/register
-/:locale           -> localized public shell
+/:locale           -> localized public landing page
 /ca/login          -> Catalan login form
 /es/login          -> Spanish login form
 /en/login          -> English login form
@@ -100,6 +105,26 @@ Do not use `/:locale/login`, `/:locale/register`, `/:locale/verify-email`, `/:lo
 The login and registration routes are narrow exceptions added after the first deploy so ReactWeb has obvious authentication paths during migration. Login posts to the existing same-origin `/auth/login` proxy and sends successful users to the localized member area. Registration posts to the existing same-origin `/auth/register` proxy and shows the email-verification success message.
 
 The root `/` redirects to `/ca`. Invalid locale params fall back to Catalan in the shell.
+
+The shared `SiteHeader` checks `/api/me` client-side and renders top-level navigation from `site-nav.ts`:
+
+```txt
+logged out
+  home
+  login
+  register
+
+logged in user
+  home
+  member
+
+logged in admin
+  home
+  member
+  admin
+```
+
+The header only controls link visibility. Page routes still own their authorization checks and informational states.
 
 ## Current Migration Coverage
 
@@ -137,6 +162,8 @@ Known ReactWeb UI routes still missing after the Astro removal:
 ```
 
 The email verification page calls the existing AuthApi verification route. The forgot/reset password pages are informational only because AuthApi does not implement password reset endpoints yet.
+
+The public landing page calls `GET /api/public/posts` through `public-content-api.ts` and renders approved public posts as plain text previews. If the public feed is empty or unavailable, it renders localized empty copy instead of a blank section.
 
 The member posts page calls the existing Api Worker post endpoints through the same-origin `/api/*` proxy. Posts use a separate required title field plus restricted BlockNote-compatible body JSON. The React editor only exposes paragraphs, text, links, bold, and italic, while the backend remains the final validator for allowed JSON. New posts start as drafts, members publish member-only, and admins can explicitly opt into landing-page visibility when publishing their own draft; that checkbox defaults off.
 

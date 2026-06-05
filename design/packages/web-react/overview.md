@@ -27,9 +27,43 @@ The React app should keep the same-origin proxy model:
 
 Browser code should continue to call same-origin paths with `credentials: "same-origin"`.
 
+## Shared Header
+
+ReactWeb uses a shared auth-aware header for the public landing, member posts, and admin users pages.
+
+```txt
+logged out
+  home
+  login
+  register
+
+logged in user
+  home
+  member
+
+logged in admin
+  home
+  member
+  admin
+```
+
+The header checks `/api/me` client-side through the same-origin API proxy. Auth-required or invalid-session responses are treated as logged out for navigation only; individual pages still perform their own authorization and informational states.
+
+## Public Landing
+
+The localized public landing page uses chess-club copy and avoids migration/development process text. It includes a club overview, activity summary, membership-request explanation, and a public news section.
+
+The news section calls:
+
+```txt
+GET /api/public/posts
+```
+
+Approved public posts are rendered as plain text previews. When no posts are public yet, or the public feed fails, the landing page renders a localized empty placeholder.
+
 ## Current Migration Scope
 
-The first ReactWeb slice created the deployable shell, Tailwind setup, localized route skeleton, and proxy routes. Login, registration, email verification, password utility route placeholders, admin user management, and member posts have also been migrated.
+The first ReactWeb slice created the deployable shell, Tailwind setup, localized route skeleton, and proxy routes. Login, registration, email verification, password utility route placeholders, admin user management, member posts, and the club-focused public landing page have also been migrated.
 
 Remaining UI migrations include member events and admin post/event subpages. The existing backend Workers and D1 data are reused for those flows.
 

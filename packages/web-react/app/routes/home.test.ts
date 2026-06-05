@@ -2,15 +2,32 @@ import { describe, expect, test } from "vitest";
 import { loader } from "./home";
 
 describe("home route copy", () => {
-  test("uses login as the public action instead of admin", async () => {
+  test("uses chess-club public landing copy", async () => {
+    const data = (await loader({
+      params: { locale: "ca" },
+      request: new Request("https://club.example/ca"),
+    } as never)) as any;
+
+    expect(data.copy.title).toBe("Escacs, formació i competició a Calella");
+    expect(data.copy.clubIntroTitle).toBe("Un club obert al tauler");
+    expect(data.copy.publicPostsTitle).toBe("Notícies del club");
+    expect(data.copy.publicPostsEmpty).toBe(
+      "Encara no hi ha notícies aprovades per a la portada.",
+    );
+  });
+
+  test("keeps development-process copy out of the public landing page", async () => {
     const data = (await loader({
       params: { locale: "en" },
       request: new Request("https://club.example/en"),
     } as never)) as any;
+    const publicCopy = JSON.stringify(data.copy).toLowerCase();
 
-    expect(data.copy.navLogin).toBe("Log in");
-    expect(data.copy.loginCta).toBe("Log in");
-    expect(data.copy.registerCta).toBe("Register");
+    expect(publicCopy).not.toContain("react");
+    expect(publicCopy).not.toContain("deployment");
+    expect(publicCopy).not.toContain("deploy");
+    expect(publicCopy).not.toContain("proxy");
+    expect(publicCopy).not.toContain("migration");
     expect(data.copy.adminCta).toBeUndefined();
   });
 
