@@ -1,5 +1,71 @@
 # Implementation Log
 
+## 2026-06-06
+
+### Completed Slice: 021-reactweb-component-and-backend-test-coverage
+
+```txt
+commit hash
+f8b1771
+
+files changed
+design/implementation/roadmap.md
+design/packages/web-react/react-router-structure.md
+package-lock.json
+packages/functions/src/api.test.ts
+packages/functions/src/auth.test.ts
+packages/web-react/app/components/SiteHeader.render.test.tsx
+packages/web-react/app/components/SiteHeader.tsx
+packages/web-react/app/test/render.tsx
+packages/web-react/app/test/setup.ts
+packages/web-react/app/test/users.ts
+packages/web-react/package.json
+packages/web-react/vitest.config.ts
+
+implemented test behavior
+Added React Testing Library, user-event, jest-dom matchers, and jsdom as ReactWeb dev dependencies.
+Kept ReactWeb Vitest's default environment as node and loaded jest-dom through an absolute setup file path.
+Added shared ReactWeb test helpers for MemoryRouter rendering and public-user fixtures.
+Added rendered SiteHeader tests for logged-out navigation, member navigation, admin navigation, and logout interaction.
+Added an optional SiteHeader navigate test seam while keeping runtime callers on window.location.assign.
+Added backend handler tests for POST /auth/logout without a refresh cookie and GET /api/me with a valid JWT for a missing user.
+No backend handler production changes were needed; the new backend tests covered existing behavior.
+
+docs
+Documented ReactWeb component test helpers and jsdom-per-file rendered test usage.
+Moved the roadmap current slice to 022-password-reset-backend-ui.
+
+verification commands
+npm test --workspace @CCC/web-react
+npm run typecheck --workspace @CCC/web-react
+npm run build --workspace @CCC/web-react
+npm test --workspace @CCC/functions
+npm run typecheck --workspace @CCC/functions
+
+verification results
+ReactWeb Vitest exited 0 with 21 test files and 80 tests passing.
+ReactWeb typecheck exited 0.
+ReactWeb production build exited 0.
+Functions Vitest exited 0 with 14 test files and 98 tests passing.
+Functions typecheck exited 0.
+
+focused red/green checks
+SiteHeader rendered test initially failed because logout still called window.location.assign instead of the injected navigate callback.
+After adding the optional navigate prop, the focused SiteHeader helper and rendered tests exited 0 with 6 tests passing.
+The new backend tests passed without production code changes because the existing handlers already had the intended behavior.
+
+build notes
+React Router future flag warnings remain unchanged.
+The BlockNote member posts route chunk remains larger than 500 kB after minification.
+
+dependency note
+npm install reported 5 audit findings after adding test dependencies.
+No npm audit fix was run because that would be a broader dependency-change slice.
+
+deployment
+Skipped. This slice added test infrastructure, docs, backend test coverage, and a no-runtime-change SiteHeader test seam.
+```
+
 ## 2026-06-05
 
 ### Completed Slice: 020-reactweb-logout-and-session-ui
