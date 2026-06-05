@@ -1,5 +1,97 @@
 # Implementation Log
 
+## 2026-06-05
+
+### Completed Slice: 018-reactweb-member-posts-blocknote-ui
+
+```txt
+commit hash
+b67875d
+
+files changed
+.gitignore
+package-lock.json
+packages/web-react/package.json
+packages/web-react/app/components/PostBlockEditor.test.ts
+packages/web-react/app/components/PostBlockEditor.tsx
+packages/web-react/app/lib/account-api.ts
+packages/web-react/app/lib/api-result.ts
+packages/web-react/app/lib/locale.test.ts
+packages/web-react/app/lib/locale.ts
+packages/web-react/app/lib/member-posts-state.test.ts
+packages/web-react/app/lib/member-posts-state.ts
+packages/web-react/app/lib/post-api.test.ts
+packages/web-react/app/lib/post-api.ts
+packages/web-react/app/lib/post-body.test.ts
+packages/web-react/app/lib/post-body.ts
+packages/web-react/app/root.tsx
+packages/web-react/app/routes.test.ts
+packages/web-react/app/routes.ts
+packages/web-react/app/routes/home.test.ts
+packages/web-react/app/routes/home.tsx
+packages/web-react/app/routes/member-posts.test.ts
+packages/web-react/app/routes/member-posts.tsx
+design/implementation/roadmap.md
+design/packages/web-react/overview.md
+design/packages/web-react/react-router-structure.md
+
+implemented routes
+/ca/member/posts
+/es/member/posts
+/en/member/posts
+
+implemented UI behavior
+Members and admins can use the member posts workflow.
+Admins are treated as members with additional capabilities.
+New posts start as drafts.
+The post title is a separate required field.
+The post body uses a restricted BlockNote editor.
+The editor schema is limited to paragraph blocks, text, links, bold, and italic.
+Unsupported nested/unsupported JSON is preserved for backend validation instead of silently converted.
+Admins can explicitly publish their own draft as public, default off.
+Non-admin publish calls always send makePublic=false.
+
+verification commands
+npx vitest --run packages/web-react/app/lib/post-body.test.ts --config packages/web-react/vitest.config.ts
+npx vitest --run packages/web-react/app/routes/member-posts.test.ts --config packages/web-react/vitest.config.ts
+npm test --workspace @CCC/web-react
+npm run typecheck --workspace @CCC/web-react
+npm run build --workspace @CCC/web-react
+
+verification results
+Post body helper tests exited 0 with 6 tests passing.
+Member posts route tests exited 0 with 4 tests passing.
+ReactWeb Vitest exited 0 with 14 test files and 61 tests passing.
+ReactWeb typecheck exited 0.
+ReactWeb production build exited 0.
+
+build notes
+The BlockNote member posts route chunk is larger than 500 kB after minification.
+This is expected for the first BlockNote integration and is isolated to the member posts route.
+
+deployment command
+npx sst deploy --stage dev
+
+deployment result
+SST deployed the ReactWeb update successfully.
+ReactWebUrl: https://ccc-dev-reactwebworkerscript.robin-srimal.workers.dev
+ApiUrl: https://ccc-dev-apiscript-noawkcsx.robin-srimal.workers.dev
+AuthApiUrl: https://ccc-dev-authapiscript-bdteakex.robin-srimal.workers.dev
+DatabaseId: edf26084-32a2-4d25-b608-ec4ed6a0e763
+
+live verification command
+node --input-type=module -e "const base='https://ccc-dev-reactwebworkerscript.robin-srimal.workers.dev'; const paths=['/ca/member/posts','/es/member/posts','/en/member/posts','/api/posts']; for (const path of paths) { const res=await fetch(base+path,{redirect:'manual'}); const text=await res.text(); console.log(path,res.status,res.headers.get('content-type'),text.slice(0,240).replace(/\\s+/g,' ')); }"
+
+live verification result
+/ca/member/posts returned 200 text/html with title "Posts dels membres | Calella Chess Club".
+/es/member/posts returned 200 text/html with title "Posts de miembros | Calella Chess Club".
+/en/member/posts returned 200 text/html with title "Member posts | Calella Chess Club".
+/api/posts returned 401 application/json with API_AUTH_REQUIRED when logged out.
+
+remaining note
+Authenticated authoring was not browser-smoked in this automated pass because no password was available for a logged-in session in the tool context.
+```
+
 ## 2026-06-02
 
 ### Completed Design And Setup Work
