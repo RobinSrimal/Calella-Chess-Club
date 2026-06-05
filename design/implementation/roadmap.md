@@ -17,10 +17,10 @@ update the log after every completed slice
 ## Current Slice
 
 ```txt
-020-reactweb-events-ui
+020-reactweb-logout-and-session-ui
 ```
 
-Goal: add the ReactWeb member event/calendar UI.
+Goal: add logout controls and tighten logged-in session navigation across ReactWeb.
 
 Detailed plan:
 
