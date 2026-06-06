@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="ca">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Proposta inicial per a la web del Calella Chess Club</title>
+    <style>
+      body {
+        color: #1f2933;
+        font-family: Arial, sans-serif;
+        line-height: 1.55;
+        margin: 40px auto;
+        max-width: 820px;
+        padding: 0 24px;
+      }
+
+      h1 {
+        color: #111827;
+        font-size: 30px;
+        line-height: 1.2;
+        margin-bottom: 18px;
+      }
+
+      h2 {
+        border-bottom: 1px solid #d7ded7;
+        color: #14532d;
+        font-size: 22px;
+        margin-top: 34px;
+        padding-bottom: 6px;
+      }
+
+      h3 {
+        color: #1f2933;
+        font-size: 18px;
+        margin-top: 24px;
+      }
+
+      blockquote {
+        border-left: 4px solid #15803d;
+        color: #374151;
+        margin: 16px 0;
+        padding: 8px 0 8px 16px;
+      }
+
+      .note {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 6px;
+        color: #14532d;
+        padding: 12px 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Proposta inicial per a la web del Calella Chess Club</h1>
+
+    <p class="note">
+      Per copiar-ho a Google Docs: obre aquest fitxer al navegador, selecciona
+      el contingut renderitzat i copia'l. En enganxar-lo a Google Docs, els
+      títols i les llistes haurien de mantenir el format.
+    </p>
+
+    <p>
+      Aquest document és una proposta de treball perquè els membres del club
+      puguin opinar sobre què hauria d'aparèixer a la web, especialment a la
+      pàgina d'inici.
+    </p>
+
+    <p>
+      La idea no és tancar decisions ara, sinó recollir comentaris, detectar
+      coses importants que falten i acordar quina informació volem mostrar
+      públicament.
+    </p>
+
+    <h2>Objectiu de la web</h2>
+
+    <p>La web hauria de servir per a tres coses principals:</p>
+
+    <ol>
+      <li>Presentar el Calella Chess Club a persones que encara no ens coneixen.</li>
+      <li>
+        Donar un espai privat als membres per publicar informació i seguir
+        l'activitat del club.
+      </li>
+      <li>
+        Donar als administradors eines senzilles per revisar usuaris i decidir
+        què es publica a la pàgina principal.
+      </li>
+    </ol>
+
+    <h2>Estructura general</h2>
+
+    <p>La web tindrà tres zones principals:</p>
+
+    <h3>Pàgina pública</h3>
+
+    <p>
+      La pàgina pública és la part visible per a tothom, encara que no tinguin
+      compte.
+    </p>
+
+    <p>Hauria d'explicar:</p>
+
+    <ul>
+      <li>qui som;</li>
+      <li>on i quan ens trobem;</li>
+      <li>quin tipus d'activitats fem;</li>
+      <li>com es pot contactar amb el club;</li>
+      <li>com es pot demanar accés com a membre;</li>
+      <li>notícies o publicacions aprovades pels administradors.</li>
+    </ul>
+
+    <h3>Zona de membres</h3>
+
+    <p>
+      La zona de membres és per a persones que tenen compte i han estat
+      acceptades com a membres del club.
+    </p>
+
+    <p>Els membres podran:</p>
+
+    <ul>
+      <li>veure contingut intern;</li>
+      <li>crear publicacions;</li>
+      <li>guardar publicacions com a esborrany;</li>
+      <li>publicar contingut per a altres membres.</li>
+    </ul>
+
+    <p>
+      Per defecte, les publicacions dels membres només seran visibles dins la
+      zona de membres.
+    </p>
+
+    <h3>Zona d'administració</h3>
+
+    <p>La zona d'administració és només per als administradors.</p>
+
+    <p>Els administradors podran:</p>
+
+    <ul>
+      <li>acceptar o rebutjar sol·licituds de membres;</li>
+      <li>veure usuaris registrats;</li>
+      <li>gestionar l'estat dels membres;</li>
+      <li>decidir quines publicacions també apareixen a la pàgina pública;</li>
+      <li>crear publicacions com qualsevol altre membre.</li>
+    </ul>
+
+    <p>
+      Quan un administrador crea una publicació, també serà privada per defecte.
+      Si vol que surti a la pàgina pública, ho haurà d'indicar explícitament.
+    </p>
+
+    <h2>Tipus d'usuari</h2>
+
+    <h3>Usuari</h3>
+
+    <p>Un usuari és una persona que s'ha registrat a la web.</p>
+
+    <p>Després del registre:</p>
+
+    <ul>
+      <li>té un compte;</li>
+      <li>ha de verificar el correu electrònic;</li>
+      <li>queda automàticament com a sol·licitant de membre;</li>
+      <li>encara no té accés complet a la zona de membres.</li>
+    </ul>
+
+    <p>
+      Si la sol·licitud és rebutjada, la persona continua sent usuària, però no
+      es converteix en membre.
+    </p>
+
+    <h3>Membre</h3>
+
+    <p>Un membre és un usuari acceptat per un administrador.</p>
+
+    <p>Un membre pot:</p>
+
+    <ul>
+      <li>accedir a la zona de membres;</li>
+      <li>crear publicacions;</li>
+      <li>veure publicacions internes;</li>
+      <li>publicar contingut per a altres membres.</li>
+    </ul>
+
+    <p>
+      Un membre no pot decidir que una publicació aparegui a la pàgina pública.
+    </p>
+
+    <h3>Administrador</h3>
+
+    <p>Un administrador és també un membre, però amb permisos addicionals.</p>
+
+    <p>Un administrador pot:</p>
+
+    <ul>
+      <li>fer tot el que pot fer un membre;</li>
+      <li>acceptar o rebutjar sol·licituds de membre;</li>
+      <li>decidir quins continguts són visibles a la pàgina pública;</li>
+      <li>gestionar usuaris i membres.</li>
+    </ul>
+
+    <h2>Publicacions</h2>
+
+    <p>Les publicacions tindran:</p>
+
+    <ul>
+      <li>un títol;</li>
+      <li>un cos amb format senzill, com negreta, cursiva i enllaços;</li>
+      <li>un estat d'esborrany o publicat.</li>
+    </ul>
+
+    <p>Quan una publicació es crea, comença com a esborrany.</p>
+
+    <p>Un esborrany:</p>
+
+    <ul>
+      <li>només és visible per la persona que l'ha creat;</li>
+      <li>no apareix a la zona de membres;</li>
+      <li>no apareix a la pàgina pública.</li>
+    </ul>
+
+    <p>
+      Quan l'autor prem “publicar”, la publicació passa a ser visible per als
+      membres.
+    </p>
+
+    <p>
+      Només un administrador pot fer que una publicació també sigui visible a la
+      pàgina pública.
+    </p>
+
+    <h2>Pàgina d'inici: què hauria d'incloure?</h2>
+
+    <p>Aquesta és la part on necessitem més opinió del club.</p>
+
+    <h3>Presentació del club</h3>
+
+    <p>Proposta:</p>
+
+    <blockquote>
+      El Calella Chess Club és un espai obert per jugar, aprendre i compartir
+      escacs a Calella. Reunim jugadors de diferents nivells, des de persones
+      que comencen fins a jugadors amb experiència en competició.
+    </blockquote>
+
+    <p>Preguntes:</p>
+
+    <ul>
+      <li>Aquesta descripció representa bé el club?</li>
+      <li>Hauria de ser més formal, més propera o més breu?</li>
+      <li>Volem destacar més la part social, la formació o la competició?</li>
+    </ul>
+
+    <h3>Informació pràctica</h3>
+
+    <p>Hauríem de decidir quina informació pública volem mostrar.</p>
+
+    <p>Possibles elements:</p>
+
+    <ul>
+      <li>lloc habitual de trobada;</li>
+      <li>horaris;</li>
+      <li>dies d'activitat;</li>
+      <li>edats o nivells recomanats;</li>
+      <li>si cal contactar abans de venir;</li>
+      <li>quota o informació de soci, si escau;</li>
+      <li>correu de contacte;</li>
+      <li>enllaç a WhatsApp.</li>
+    </ul>
+
+    <p>Preguntes:</p>
+
+    <ul>
+      <li>Quina informació hauria d'estar visible per a tothom?</li>
+      <li>Hi ha informació que preferim donar només després del primer contacte?</li>
+      <li>Quin text exacte volem posar sobre horaris i lloc?</li>
+    </ul>
+
+    <h3>Activitats</h3>
+
+    <p>Possibles activitats a mencionar:</p>
+
+    <ul>
+      <li>partides amistoses;</li>
+      <li>entrenaments;</li>
+      <li>tornejos interns;</li>
+      <li>participació en competicions;</li>
+      <li>sessions per a principiants;</li>
+      <li>activitats per a joves;</li>
+      <li>anàlisi de partides;</li>
+      <li>trobades socials.</li>
+    </ul>
+
+    <p>Preguntes:</p>
+
+    <ul>
+      <li>Quines activitats fem realment i volem destacar?</li>
+      <li>Quines activitats volem començar a oferir?</li>
+      <li>Hi ha activitats que no hauríem de prometre encara?</li>
+    </ul>
+
+    <h3>Notícies i publicacions públiques</h3>
+
+    <p>
+      La pàgina d'inici podrà mostrar publicacions aprovades pels
+      administradors.
+    </p>
+
+    <p>Exemples:</p>
+
+    <ul>
+      <li>cròniques de tornejos;</li>
+      <li>avisos importants;</li>
+      <li>resultats;</li>
+      <li>anuncis d'activitats;</li>
+      <li>resums de trobades;</li>
+      <li>informació per a nous interessats.</li>
+    </ul>
+
+    <p>Preguntes:</p>
+
+    <ul>
+      <li>Quin tipus de publicacions haurien de sortir a la pàgina pública?</li>
+      <li>Hauríem de publicar resultats i fotos, o només avisos generals?</li>
+      <li>Qui hauria de revisar el contingut abans de fer-lo públic?</li>
+    </ul>
+
+    <h2>Enllaç de WhatsApp</h2>
+
+    <p>
+      S'ha proposat afegir un enllaç a un grup de WhatsApp perquè les persones
+      interessades puguin contactar fàcilment amb el club.
+    </p>
+
+    <p>Opcions possibles:</p>
+
+    <ol>
+      <li>Enllaç directe a un grup de WhatsApp.</li>
+      <li>Enllaç a un xat amb una persona responsable.</li>
+      <li>Formulari o correu de contacte en lloc de WhatsApp.</li>
+      <li>WhatsApp només després d'un primer contacte per correu.</li>
+    </ol>
+
+    <p>Avantatges d'un enllaç directe:</p>
+
+    <ul>
+      <li>és fàcil i ràpid;</li>
+      <li>pot ajudar persones noves a contactar sense barreres;</li>
+      <li>és pràctic per resoldre dubtes senzills.</li>
+    </ul>
+
+    <p>Possibles inconvenients:</p>
+
+    <ul>
+      <li>qualsevol persona amb l'enllaç pot entrar;</li>
+      <li>pot generar soroll dins el grup;</li>
+      <li>pot exposar números de telèfon dels membres;</li>
+      <li>pot ser millor tenir un grup separat només per interessats.</li>
+    </ul>
+
+    <p>Preguntes:</p>
+
+    <ul>
+      <li>Volem posar un enllaç de WhatsApp a la pàgina pública?</li>
+      <li>Si sí, hauria de ser un grup o un xat amb una persona responsable?</li>
+      <li>Necessitem un grup separat per a persones interessades?</li>
+      <li>Quin text hauria d'acompanyar l'enllaç?</li>
+    </ul>
+
+    <p>Proposta de text si decidim afegir WhatsApp:</p>
+
+    <blockquote>
+      Tens interès a conèixer el club? Escriu-nos per WhatsApp i t'explicarem
+      quan pots venir a jugar o demanar més informació.
+    </blockquote>
+
+    <h2>Idiomes</h2>
+
+    <p>La web tindrà el català com a idioma principal.</p>
+
+    <p>També hi haurà opcions en:</p>
+
+    <ul>
+      <li>castellà;</li>
+      <li>anglès.</li>
+    </ul>
+
+    <p>Preguntes:</p>
+
+    <ul>
+      <li>Quin contingut hauria d'estar traduït des del principi?</li>
+      <li>Hi ha textos que poden quedar només en català al començament?</li>
+      <li>Qui podria revisar les traduccions?</li>
+    </ul>
+
+    <h2>Decisions que cal prendre</h2>
+
+    <p>Per avançar, estaria bé decidir:</p>
+
+    <ol>
+      <li>Quin text principal volem a la pàgina d'inici.</li>
+      <li>Quina informació pràctica volem fer pública.</li>
+      <li>Si volem afegir WhatsApp i de quina manera.</li>
+      <li>Quin tipus de publicacions poden aparèixer a la pàgina pública.</li>
+      <li>Qui pot revisar o aprovar contingut públic.</li>
+      <li>Si falta alguna secció important per a nous interessats.</li>
+    </ol>
+
+    <h2>Comentaris oberts</h2>
+
+    <p>Afegiu aquí qualsevol idea, dubte o proposta:</p>
+
+    <ul>
+      <li>&nbsp;</li>
+      <li>&nbsp;</li>
+      <li>&nbsp;</li>
+    </ul>
+  </body>
+</html>
